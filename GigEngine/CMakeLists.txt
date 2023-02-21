@@ -35,14 +35,10 @@ FetchContent_Declare(
 set(CMAKE_FOLDER "${CMAKE_FOLDER_OLD}/vendor/lm")
 FetchContent_MakeAvailable(LibMath)
 
-message(STATUS "CMake_old folder: "${CMAKE_FOLDER_OLD})
-message(STATUS "CMake folder: "${CMAKE_FOLDER})
 
-message(STATUS "Set CMake folder")
 set(CMAKE_FOLDER ${CMAKE_FOLDER_OLD})
 
-message(STATUS "CMake_old folder: "${CMAKE_FOLDER_OLD})
-message(STATUS "CMake folder: "${CMAKE_FOLDER})
+
 
 
 
@@ -88,10 +84,7 @@ target_include_directories(${MAIN_PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE_DIR})
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${THIRD_PARTY_PROJECT})
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${LIBMATHS_LIBRARY})
   
-  
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${MAIN_PROJECT_NAME})
 set_target_properties(${MAIN_PROJECT_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
-
 
 #Copy resources Folder
 add_custom_command(TARGET ${MAIN_PROJECT_NAME} POST_BUILD
