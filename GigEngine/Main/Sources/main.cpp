@@ -1,4 +1,8 @@
+#include "Application.h"
+
 int main()
 {
-    return 0;
+    Application app;
+
+    app.Run();
 }

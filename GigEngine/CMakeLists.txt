@@ -16,9 +16,9 @@ FetchContent_Declare(
 	GIT_TAG 3.3.8)
 	
 set(CMAKE_FOLDER "${CMAKE_FOLDER_OLD}/vendor/glfw")
-FetchContent_MakeAvailable(GLFW)
 set(GLFW_BUILD_TESTS OFF)
 set(GLFW_BUILD_EXAMPLES OFF)
+FetchContent_MakeAvailable(GLFW)
 
 FetchContent_Declare(
 	assimp
@@ -38,16 +38,10 @@ FetchContent_MakeAvailable(LibMath)
 
 set(CMAKE_FOLDER ${CMAKE_FOLDER_OLD})
 
-
-
-
-
 set( THIRD_PARTY_INCLUDE
 ${glfw_SOURCE_DIR}
 ${assimp_SOURCE_DIR}
 )
-
-
 
 
 include_directories(${MAIN_PROJECT_NAME} PRIVATE ${glfw_SOURCE_DIR}/include)
@@ -83,7 +77,8 @@ add_executable(${MAIN_PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES} )
 target_include_directories(${MAIN_PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE_DIR})
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${THIRD_PARTY_PROJECT})
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${LIBMATHS_LIBRARY})
-  
+target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE glfw)
+
 set_target_properties(${MAIN_PROJECT_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
 target_compile_options(${MAIN_PROJECT_NAME} PRIVATE /W4 /WX)
 #Copy resources Folder
@@ -106,4 +101,3 @@ file(GLOB_RECURSE TARGET_SHADER_FILES #any name for extentions --> choice
 #Add raw file to main with filter
 source_group(Shaders FILES ${TARGET_SHADER_FILES})
 target_sources(${MAIN_PROJECT_NAME} PRIVATE ${TARGET_SHADER_FILES})
-
