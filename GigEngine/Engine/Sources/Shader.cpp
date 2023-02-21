@@ -1,0 +1,79 @@
+#include "Shader.h"
+#include <vector>
+#include <algorithm>
+#include <iostream>
+#include <sstream>
+#include <fstream>
+
+Shader::Shader(std::string const& filename, int shaderType)
+{
+	if (shaderProgram == GL_FALSE)
+		shaderProgram = glCreateProgram();
+
+	std::string str = readFile(filename);
+	if (str == "") {
+		std::cout << "no fragment file at path " << filename << std::endl;
+		return;
+	}
+	shaderId = glCreateShader(shaderType);
+	const char* content = str.c_str();
+
+	glShaderSource(shaderId, 1, &content, NULL);
+	glCompileShader(shaderId);
+
+	GLint success = GL_FALSE;
+	char infoLog[512];
+	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
+	if (success == GL_FALSE) {
+		glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
+		std::cout << "error compiling fragment : " << filename << std::endl;
+		std::cout << infoLog << std::endl;
+		return;
+	}
+}
+
+bool Shader::Link(VertexShader& vertex, FragmentShader& fragment)
+{
+	if (vertex.shaderId == GL_FALSE || fragment.shaderId == GL_FALSE) return false;
+
+	glAttachShader(shaderProgram, vertex.shaderId);
+	glAttachShader(shaderProgram, fragment.shaderId);
+	glLinkProgram(shaderProgram);
+
+	GLint success = GL_TRUE;
+	char infoLog[512]{ 0 };
+	glGetShaderiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (success == GL_FALSE) {
+		GLint logLen;
+		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLen);
+		GLsizei written;
+		glGetProgramInfoLog(shaderProgram, 512, &written, infoLog);
+		std::cout << "error linking program : " << std::endl;
+		std::cout << infoLog << std::endl;
+		return false;
+	}
+
+	glDeleteShader(vertex.shaderId);
+	glDeleteShader(fragment.shaderId);
+
+	vertex.shaderId = GL_FALSE;
+	fragment.shaderId = GL_FALSE;
+
+	return true;
+}
+
+void Shader::Use()
+{
+	if (shaderProgram != GL_FALSE)
+		glUseProgram(shaderProgram);
+}
+
+VertexShader::VertexShader(std::string const& filename)
+	:Shader(filename, GL_VERTEX_SHADER)
+{
+}
+
+FragmentShader::FragmentShader(std::string const& filename)
+	: Shader(filename, GL_FRAGMENT_SHADER)
+{
+}

@@ -11,7 +11,7 @@ set(INCLUDE_FOLDER "Headers")
 ###############################
 
 # Add source files
-set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE_FOLDE})
+set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE_FOLDER})
 file(GLOB_RECURSE SOURCE_FILES 
 	${PROJECT_SOURCE_DIR}/*.c
 	${PROJECT_SOURCE_DIR}/*.cc
@@ -20,7 +20,7 @@ file(GLOB_RECURSE SOURCE_FILES
 	${PROJECT_SOURCE_DIR}/*.c++)
 	
 # Add header files
-set(PROJECT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_FOLDE})
+set(PROJECT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_FOLDER})
 file(GLOB_RECURSE HEADER_FILES 
 	${PROJECT_INCLUDE_DIR}/*.h
 	${PROJECT_INCLUDE_DIR}/*.hpp
@@ -34,13 +34,17 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${HEADER_FILES} ${SOURCE_FIL
 #                             #
 ###############################
 
-add_library(${PROJECT_NAME} STATIC)
-target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES} ${HEADER_FILES})
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
+target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_FOLDER})
+target_include_directories(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC
+	${DEPENDS_DIR}/GLAD/include)
+target_sources(${PROJECT_NAME} PUBLIC ${DEPENDS_DIR}/GLAD/src/glad.cpp)
 
 foreach( project_i ${THIRD_PARTY_PROJECT})
-	include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/${project_i}/${INCLUDE_FOLDE})
+	include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/${project_i}/${INCLUDE_FOLDER})
 endforeach( project_i )
 
 foreach( include_i ${THIRD_PARTY_INCLUDE})
-	include_directories(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/${include_i}/${INCLUDE_FOLDE})
+	include_directories(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/${include_i}/${INCLUDE_FOLDER})
 endforeach( include_i )

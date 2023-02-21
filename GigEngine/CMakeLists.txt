@@ -38,17 +38,10 @@ FetchContent_MakeAvailable(LibMath)
 
 set(CMAKE_FOLDER ${CMAKE_FOLDER_OLD})
 
-
-
-
-
 set( THIRD_PARTY_INCLUDE
 ${glfw_SOURCE_DIR}
 ${assimp_SOURCE_DIR}
 )
-
-
-
 
 include_directories(${MAIN_PROJECT_NAME} PRIVATE ${glfw_SOURCE_DIR}/include)
 include_directories(${MAIN_PROJECT_NAME} PRIVATE ${assimp_SOURCE_DIR}/include)
@@ -106,4 +99,3 @@ file(GLOB_RECURSE TARGET_SHADER_FILES #any name for extentions --> choice
 #Add raw file to main with filter
 source_group(Shaders FILES ${TARGET_SHADER_FILES})
 target_sources(${MAIN_PROJECT_NAME} PRIVATE ${TARGET_SHADER_FILES})
-
