@@ -85,7 +85,7 @@ target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${THIRD_PARTY_PROJECT})
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${LIBMATHS_LIBRARY})
   
 set_target_properties(${MAIN_PROJECT_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
-
+target_compile_options(${MAIN_PROJECT_NAME} PRIVATE /W4 /WX)
 #Copy resources Folder
 add_custom_command(TARGET ${MAIN_PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
