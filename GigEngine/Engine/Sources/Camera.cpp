@@ -1,22 +1,22 @@
 #include "Camera.h"
 
 Camera::Camera()
-	:GameObject("Camera")
+    :GameObject("Camera")
 {
-	CreateViewMatrix();
+    CreateViewMatrix();
 }
 
 Camera::~Camera()
 {
 }
 
-lm::mat4 Camera::CreateViewMatrix()
+lm::FMat4 Camera::CreateViewMatrix()
 {
-	view = lm::mat4::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());
-	return view;
+    view = lm::FMat4::LookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());
+    return view;
 }
 
-lm::mat4 Camera::GetViewMatrix() const
+lm::FMat4 Camera::GetViewMatrix() const
 {
-	return view;
+    return view;
 }

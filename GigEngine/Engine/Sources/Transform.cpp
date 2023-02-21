@@ -8,102 +8,102 @@ Transform::~Transform()
 {
 }
 
-void Transform::SetPosition(lm::vec3 pos)
+void Transform::SetPosition(lm::FVec3 pos)
 {
-	position = pos;
+    position = pos;
 }
 
-void Transform::SetRotation(lm::vec3 rot)
+void Transform::SetRotation(lm::FVec3 rot)
 {
-	rotation = rot;
-	ClampRotation();
+    rotation = rot;
+    ClampRotation();
 }
 
-void Transform::SetScale(lm::vec3 scl)
+void Transform::SetScale(lm::FVec3 scl)
 {
-	scale = scl;
+    scale = scl;
 }
 
-lm::vec3 Transform::GetPosition() const
+lm::FVec3 Transform::GetPosition() const
 {
-	return position;
+    return position;
 }
 
-lm::vec3 Transform::GetScale() const
+lm::FVec3 Transform::GetScale() const
 {
-	return scale;
+    return scale;
 }
 
-lm::vec3 Transform::GetRotation() const
+lm::FVec3 Transform::GetRotation() const
 {
-	return rotation;
+    return rotation;
 }
 
-void Transform::AddPosition(lm::vec3 pos)
+void Transform::AddPosition(lm::FVec3 pos)
 {
-	position += pos;
+    position += pos;
 }
 
-lm::vec3 Transform::GetFront()
+lm::FVec3 Transform::GetFront()
 {
-	lm::mat4 inverse = GetMatrix().getInverse();
-	lm::vec4 temp = inverse[2];
-	lm::vec3 forward(temp[0], temp[1], temp[2]);
+    lm::FMat4 inverse = lm::FMat4::Inverse(GetMatrix());
+    lm::FVec4 temp = inverse[2];
+    lm::FVec3 forward(temp[0], temp[1], temp[2]);
 
-	return -forward.normalized();
+    return lm::FVec4::Normalize(-forward);
 }
 
-lm::vec3 Transform::GetRight()
+lm::FVec3 Transform::GetRight()
 {
-	lm::mat4 inverse = GetMatrix().getInverse();
-	lm::vec4 temp = inverse[0];
-	lm::vec3 forward(temp[0], temp[1], temp[2]);
+    lm::FMat4 inverse = lm::FMat4::Inverse(GetMatrix());
+    lm::FVec4 temp = inverse[0];
+    lm::FVec3 forward(temp[0], temp[1], temp[2]);
 
-	return forward.normalized();
+    return lm::FVec4::Normalize(forward);
 }
 
-lm::vec3 Transform::GetUp()
+lm::FVec3 Transform::GetUp()
 {
-	lm::mat4 inverse = GetMatrix().getInverse();
-	lm::vec4 temp = inverse[1];
-	lm::vec3 forward(temp[0], temp[1], temp[2]);
+    lm::FMat4 inverse = lm::FMat4::Inverse(GetMatrix());
+    lm::FVec4 temp = inverse[1];
+    lm::FVec3 forward(temp[0], temp[1], temp[2]);
 
-	return forward.normalized();
+    return lm::FVec4::Normalize(forward);
 }
 
-lm::mat4 Transform::GetMatrix()
+lm::FMat4 Transform::GetMatrix()
 {
-	UpdateMatrix();
-	return matrix;
+    UpdateMatrix();
+    return matrix;
 }
 
-void Transform::AddRotation(lm::vec3 rot)
+void Transform::AddRotation(lm::FVec3 rot)
 {
-	rotation += rot;
-	ClampRotation();
+    rotation += rot;
+    ClampRotation();
 }
 
-void Transform::AddScale(lm::vec3 scl)
+void Transform::AddScale(lm::FVec3 scl)
 {
-	scale += scl;
+    scale += scl;
 }
 
 void Transform::UpdateMatrix()
 {
-	matrix = lm::mat4::createTransformMatrix(position, rotation, scale);
+    matrix = lm::FMat4::Transform(position, rotation, scale);
 }
 
 void Transform::ClampRotation()
 {
-	for (int i = 0; i < 3; i++)
-	{
-		while (rotation[i] < 0)
-		{
-			rotation[i] += 360;
-		}
-		while (rotation[i] > 360)
-		{
-			rotation[i] -= 360;
-		}
-	}
+    for (int i = 0; i < 3; i++)
+    {
+        while (rotation[i] < 0)
+        {
+            rotation[i] += 360;
+        }
+        while (rotation[i] > 360)
+        {
+            rotation[i] -= 360;
+        }
+    }
 }
