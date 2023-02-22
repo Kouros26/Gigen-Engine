@@ -1,37 +1,37 @@
 #pragma once
-#include "Vec3/Vec3.h"
-#include "Mat4/Mat4.h"
+#include "Vec3/FVec3.hpp"
+#include "Mat4/FMat4.hpp"
 
 class Transform
 {
 public:
-	Transform();
-	~Transform();
+    Transform();
+    ~Transform();
 
-	void SetPosition(lm::vec3 pos);
-	void SetRotation(lm::vec3 rot);
-	void SetScale(lm::vec3 scl);
+    void SetPosition(lm::FVec3 pos);
+    void SetRotation(lm::FVec3 rot);
+    void SetScale(lm::FVec3 scl);
 
-	lm::vec3 GetPosition() const;
-	lm::vec3 GetScale() const;
-	lm::vec3 GetRotation() const;
+    lm::FVec3 GetPosition() const;
+    lm::FVec3 GetScale() const;
+    lm::FVec3 GetRotation() const;
 
-	void AddScale(lm::vec3 scl);
-	void AddRotation(lm::vec3 rot);
-	void AddPosition(lm::vec3 pos);
+    void AddScale(lm::FVec3 scl);
+    void AddRotation(lm::FVec3 rot);
+    void AddPosition(lm::FVec3 pos);
 
-	lm::vec3 GetFront();
-	lm::vec3 GetUp();
-	lm::vec3 GetRight();
+    lm::FVec3 GetFront();
+    lm::FVec3 GetUp();
+    lm::FVec3 GetRight();
 
-	lm::mat4 GetMatrix();
+    lm::FMat4 GetMatrix();
 
 private:
-	void UpdateMatrix();
-	void ClampRotation();
+    void UpdateMatrix();
+    void ClampRotation();
 
-	lm::vec3 scale = lm::vec3(1);
-	lm::vec3 position;
-	lm::vec3 rotation;
-	lm::mat4 matrix;
+    lm::FVec3 scale = lm::FVec3(1);
+    lm::FVec3 position;
+    lm::FVec3 rotation;
+    lm::FMat4 matrix;
 };

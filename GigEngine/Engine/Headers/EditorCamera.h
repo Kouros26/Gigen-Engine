@@ -4,23 +4,23 @@
 class EditorCamera : public Camera
 {
 public:
-	EditorCamera();
-	~EditorCamera();
+    EditorCamera();
+    ~EditorCamera();
 
-	virtual void Update() override;
+    virtual void Update() override;
 
 private:
-	void ChangeSpeed();
-	void Move();
-	void Look();
+    void ChangeSpeed();
+    void Move();
+    void Look();
 
-	float speed = 2;
-	float speedStep = 2;
-	float speedMax = 50;
-	float sensitivity = 2;
+    float speed = 2;
+    float speedStep = 2;
+    float speedMax = 50;
+    float sensitivity = 2;
 
-	float maxLookAngle = 80;
+    float maxLookAngle = 80;
 
-	bool pressLeftShift = false;
-	bool pressRightShift = false;
+    bool pressLeftShift = false;
+    bool pressRightShift = false;
 };
