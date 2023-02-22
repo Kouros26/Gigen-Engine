@@ -5,6 +5,9 @@
 #include <vector>
 #include "GLFW/glfw3.h"
 
+constexpr int VERTEX_SIZE = 8; //8 is 3 pos + 3 normal + 2 texture
+constexpr int FACE_SIZE = 3; //triangle
+
 class Mesh : public IResource
 {
 public:

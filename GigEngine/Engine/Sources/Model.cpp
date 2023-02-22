@@ -51,36 +51,36 @@ void Model::processNode(const aiNode* pNode, const aiScene* pScene)
 
 void Model::processMesh(const aiMesh* pMesh, const aiScene* pScene)
 {
-	Mesh* mesh = new Mesh(pMesh->mNumVertices * 8, pMesh->mNumFaces * 3);
-	mesh->vertices = new float[pMesh->mNumVertices * 8]; //8 is 3 pos + 3 normal + 2 texture
+	Mesh* mesh = new Mesh(pMesh->mNumVertices * VERTEX_SIZE, pMesh->mNumFaces * FACE_SIZE);
+	mesh->vertices = new float[pMesh->mNumVertices * VERTEX_SIZE];
 
 	for (unsigned int i = 0; i < pMesh->mNumVertices; i++)
 	{
-		mesh->vertices[i * 8] = pMesh->mVertices[i].x;
-		mesh->vertices[(i * 8) + 1] = pMesh->mVertices[i].y;
-		mesh->vertices[(i * 8) + 2] = pMesh->mVertices[i].z;
+		mesh->vertices[i * VERTEX_SIZE] = pMesh->mVertices[i].x;
+		mesh->vertices[(i * VERTEX_SIZE) + 1] = pMesh->mVertices[i].y;
+		mesh->vertices[(i * VERTEX_SIZE) + 2] = pMesh->mVertices[i].z;
 
 		if (pMesh->HasNormals())
 		{
-			mesh->vertices[(i * 8) + 3] = pMesh->mNormals[i].x;
-			mesh->vertices[(i * 8) + 4] = pMesh->mNormals[i].y;
-			mesh->vertices[(i * 8) + 5] = pMesh->mNormals[i].z;
+			mesh->vertices[(i * VERTEX_SIZE) + 3] = pMesh->mNormals[i].x;
+			mesh->vertices[(i * VERTEX_SIZE) + 4] = pMesh->mNormals[i].y;
+			mesh->vertices[(i * VERTEX_SIZE) + 5] = pMesh->mNormals[i].z;
 		}
 
 		if (pMesh->mTextureCoords[0])
 		{
-			mesh->vertices[(i * 8) + 6] = pMesh->mTextureCoords[0][i].x;
-			mesh->vertices[(i * 8) + 7] = pMesh->mTextureCoords[0][i].y;
+			mesh->vertices[(i * VERTEX_SIZE) + 6] = pMesh->mTextureCoords[0][i].x;
+			mesh->vertices[(i * VERTEX_SIZE) + 7] = pMesh->mTextureCoords[0][i].y;
 		}
 	}
 
-	mesh->indices = new unsigned int[pMesh->mNumFaces * 3]; // *3 because triangle
+	mesh->indices = new unsigned int[pMesh->mNumFaces * FACE_SIZE];
 
 	for (unsigned int i = 0; i < pMesh->mNumFaces; i++)
 	{
-		mesh->indices[(i * 3)] = pMesh->mFaces[i].mIndices[0];
-		mesh->indices[(i * 3) + 1] = pMesh->mFaces[i].mIndices[1];
-		mesh->indices[(i * 3) + 2] = pMesh->mFaces[i].mIndices[2];
+		mesh->indices[(i * FACE_SIZE)] = pMesh->mFaces[i].mIndices[0];
+		mesh->indices[(i * FACE_SIZE) + 1] = pMesh->mFaces[i].mIndices[1];
+		mesh->indices[(i * FACE_SIZE) + 2] = pMesh->mFaces[i].mIndices[2];
 	}
 
 	mesh->setUpBuffers();
