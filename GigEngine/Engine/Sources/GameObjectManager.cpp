@@ -1,6 +1,5 @@
 #include "GameObjectManager.h"
 //#include "Model.h"
-#include "FreeCam.h"
 
 GameObjectManager::GameObjectManager()
 {
@@ -8,13 +7,6 @@ GameObjectManager::GameObjectManager()
 
 GameObjectManager::~GameObjectManager()
 {
-}
-
-void GameObjectManager::Init()
-{
-	editorCamera = new Camera();
-	editorCamera->AddNewComponent<FreeCam>();
-	SetCurrentCamera(editorCamera);
 }
 
 unsigned int GameObjectManager::GetSize()
@@ -37,9 +29,6 @@ void GameObjectManager::Cleanup()
 
 	//if (SkyBox)
 	//	delete SkyBox;
-
-	if (editorCamera)
-		delete editorCamera;
 }
 
 void GameObjectManager::AddGameObject(GameObject* object)

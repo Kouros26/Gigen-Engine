@@ -3,18 +3,24 @@
 #include <glad/glad.h>
 #include <string>
 
+class ShaderProgram : public IResource
+{
+public:
+	ShaderProgram();
+	~ShaderProgram();
+	bool Link(class VertexShader& vertex, class FragmentShader& fragment);
+	void Use();
+
+	GLuint GetId();
+
+private:
+	GLuint shaderProgram = GL_FALSE;
+};
+
 class Shader : public IResource
 {
 public:
 	Shader(std::string const& filename, int shaderType);
-
-	static bool Link(class VertexShader& vertex, class FragmentShader& fragment);
-	static void Use();
-
-private:
-	inline static GLuint shaderProgram = GL_FALSE;
-
-protected:
 	GLuint shaderId = GL_FALSE;
 };
 

@@ -2,12 +2,21 @@
 #include "Inputs.h"
 #include "Watch.h"
 #include "Shader.h"
+#include "Model.h"
+#include "GameObjectManager.h"
 #include <iostream>
+
+//to remove when resource manager
+ShaderProgram shaderProg;
+GLint viewProjLocation;
+GLint ModelLocation;
+GLint viewPosLocation;
 
 Application::Application()
 {
 	InitOpenGl();
 	window.Init();
+	editorCamera.SetRatio(1920.0f / 1080.0f);
 	InitGlad();
 }
 
@@ -20,13 +29,33 @@ Window& Application::GetWindow()
 	return window;
 }
 
+EditorCamera& Application::GetEditorCamera()
+{
+	return editorCamera;
+}
+
 void Application::Run()
 {
-	//test
+	//to remove =====================================================
 	VertexShader vertex("Assets/Shaders/vert.vert");
 	FragmentShader fragment("Assets/Shaders/frag.frag");
 
-	Shader::Link(vertex, fragment);
+	shaderProg.Link(vertex, fragment);
+
+	viewProjLocation = glGetUniformLocation(shaderProg.GetId(), "viewProj");
+	ModelLocation = glGetUniformLocation(shaderProg.GetId(), "model");
+	viewPosLocation = glGetUniformLocation(shaderProg.GetId(), "viewPos");
+
+	GameObject* base = new GameObject();
+	Model* model = new Model(base, "Assets/Models/Car.fbx");
+	base->transform.SetScale(lm::vec3(1.0f));
+	base->AddComponent(model);
+	testComponent* test = new testComponent(base);
+	base->AddComponent(test);
+	GameObjectManager::AddGameObject(base);
+	//==================================================================
+
+	glEnable(GL_DEPTH_TEST);
 
 	while (!window.ShouldClose())
 	{
@@ -56,8 +85,50 @@ void Application::InitGlad()
 
 void Application::Draw()
 {
-	Shader::Use();
 	//clear
-	glClearColor(0, 0, 0, 1);
+	glClearColor(0.2f, 0.2f, 0.2f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	if (isEditor)
+	{
+		editorCamera.Update();
+
+		lm::mat4 viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
+		lm::vec3 viewPos = editorCamera.transform.GetPosition();
+
+		shaderProg.Use();
+
+		float m[16];
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				m[(i * 4) + j] = viewProj[i][j];
+			}
+		}
+
+		float m2[16];
+
+		glUniformMatrix4fv(viewProjLocation, 1, GL_FALSE, m);
+		glUniform3f(viewPosLocation, viewPos.X(), viewPos.Y(), viewPos.Z());
+
+		for (int i = 0; i < GameObjectManager::GetSize(); i++)
+		{
+			GameObject* object = GameObjectManager::GetGameObject(i);
+
+			if (object)
+			{
+				for (int k = 0; k < 4; k++)
+				{
+					for (int j = 0; j < 4; j++)
+					{
+						m[(k * 4) + j] = viewProj[k][j];
+					}
+				}
+
+				glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, m2);
+				object->Update();
+			}
+		}
+	}
 }

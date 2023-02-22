@@ -9,7 +9,6 @@ public:
 	GameObjectManager();
 	~GameObjectManager();
 
-	static void Init();
 	static unsigned int GetSize();
 	static GameObject* GetGameObject(int i);
 	static void Cleanup();
@@ -21,7 +20,6 @@ public:
 	//static Model* GetSkyBox();
 
 private:
-	inline static Camera* editorCamera;
 	inline static Camera* currentCamera;
 	//inline static Model* SkyBox;
 	inline static std::vector<GameObject*> gameObjects;

@@ -5,35 +5,21 @@
 class Component
 {
 public:
-    Component(GameObject* gameObject);
-    virtual ~Component();
+	Component(GameObject* gameObject);
+	virtual ~Component();
 
-    virtual void Update();
+	virtual void Update();
 
 protected:
-    GameObject* gameObject;
+	GameObject* gameObject;
 };
 
-class testComponent1 : public Component
+class testComponent : public Component
 {
 public:
-    testComponent1(GameObject* gameObject) : Component(gameObject) {};
+	testComponent(GameObject* gameObject) : Component(gameObject) {};
 
-    virtual void Update() override {
-        gameObject->transform.AddRotation(lm::FVec3(20) * static_cast<float>(Time::GetDeltaTime()));
-    }
-};
-
-class testComponent2 : public Component
-{
-public:
-    testComponent2(GameObject* gameObject) : Component(gameObject) {}
-
-    virtual void Update() override {
-        float sinus = static_cast<float>(sin(glfwGetTime())) * 3;
-        if (sinus < 0) {
-            sinus *= -1;
-        }
-        gameObject->transform.SetScale(lm::FVec3(1 + sinus));
-    }
+	virtual void Update() override {
+		gameObject->transform.AddRotation(lm::vec3(20) * Time::GetDeltaTime());
+	};
 };

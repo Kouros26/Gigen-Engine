@@ -7,9 +7,6 @@
 
 Shader::Shader(std::string const& filename, int shaderType)
 {
-	if (shaderProgram == GL_FALSE)
-		shaderProgram = glCreateProgram();
-
 	std::string str = readFile(filename);
 	if (str == "") {
 		std::cout << "no fragment file at path " << filename << std::endl;
@@ -32,8 +29,29 @@ Shader::Shader(std::string const& filename, int shaderType)
 	}
 }
 
-bool Shader::Link(VertexShader& vertex, FragmentShader& fragment)
+VertexShader::VertexShader(std::string const& filename)
+	:Shader(filename, GL_VERTEX_SHADER)
 {
+}
+
+FragmentShader::FragmentShader(std::string const& filename)
+	: Shader(filename, GL_FRAGMENT_SHADER)
+{
+}
+
+ShaderProgram::ShaderProgram()
+{
+}
+
+ShaderProgram::~ShaderProgram()
+{
+}
+
+bool ShaderProgram::Link(VertexShader& vertex, FragmentShader& fragment)
+{
+	if (shaderProgram == GL_FALSE)
+		shaderProgram = glCreateProgram();
+
 	if (vertex.shaderId == GL_FALSE || fragment.shaderId == GL_FALSE) return false;
 
 	glAttachShader(shaderProgram, vertex.shaderId);
@@ -62,18 +80,13 @@ bool Shader::Link(VertexShader& vertex, FragmentShader& fragment)
 	return true;
 }
 
-void Shader::Use()
+void ShaderProgram::Use()
 {
 	if (shaderProgram != GL_FALSE)
 		glUseProgram(shaderProgram);
 }
 
-VertexShader::VertexShader(std::string const& filename)
-	:Shader(filename, GL_VERTEX_SHADER)
+GLuint ShaderProgram::GetId()
 {
-}
-
-FragmentShader::FragmentShader(std::string const& filename)
-	: Shader(filename, GL_FRAGMENT_SHADER)
-{
+	return shaderProgram;
 }

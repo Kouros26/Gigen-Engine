@@ -1,15 +1,19 @@
 #pragma once
-#include "Component.h"
+#include "Camera.h"
 
-class FreeCam : public Component
+class EditorCamera : public Camera
 {
 public:
-	FreeCam(GameObject* gameObject);
-	~FreeCam();
+	EditorCamera();
+	~EditorCamera();
 
 	virtual void Update() override;
 
 private:
+	void ChangeSpeed();
+	void Move();
+	void Look();
+
 	float speed = 2;
 	float speedStep = 2;
 	float speedMax = 50;

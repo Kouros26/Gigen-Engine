@@ -1,12 +1,10 @@
 #include "Window.h"
 #include "Inputs.h"
+#include "Application.h"
 #include <iostream>
 
 void Window::Init()
 {
-	height = 0;
-	width = 0;
-
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -15,7 +13,10 @@ void Window::Init()
 	GLFWmonitor* MyMonitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode mode = *glfwGetVideoMode(MyMonitor);
 
-	window = glfwCreateWindow(mode.width, mode.height, APPLICATION_NAME, nullptr, nullptr);
+	width = mode.width;
+	height = mode.height;
+
+	window = glfwCreateWindow(width, height, APPLICATION_NAME, nullptr, nullptr);
 
 	if (window == NULL)
 	{
@@ -24,6 +25,7 @@ void Window::Init()
 		return;
 	}
 
+	glfwSetWindowPos(window, 0, 0);
 	glfwSetWindowUserPointer(window, this);
 	glfwSetFramebufferSizeCallback(window, FrameBufferResizeCallback);
 	glfwMakeContextCurrent(window);
@@ -51,9 +53,30 @@ void Window::MouseButtonCallback(GLFWwindow* /*window*/, int button, int action,
 	Inputs::UpdateMouseButton(button, action);
 }
 
-void Window::FrameBufferResizeCallback(GLFWwindow* /*pWindow*/, int width, int height)
+void Window::FrameBufferResizeCallback(GLFWwindow* pWindow, int width, int height)
 {
 	glViewport(0, 0, width, height);
+
+	Window* window = static_cast<Window*>(glfwGetWindowUserPointer(pWindow));
+	window->width = width;
+	window->height = height;
+	Application::GetEditorCamera().SetRatio(window->GetRatio());
+}
+
+unsigned int Window::GetWidth() const
+{
+	return width;
+}
+
+unsigned int Window::GetHeight() const
+{
+	return height;
+}
+
+float Window::GetRatio() const
+{
+	if (height == 0) return 1;
+	return (float)width / (float)height;
 }
 
 bool Window::ShouldClose() const
