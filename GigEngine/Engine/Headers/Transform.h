@@ -34,4 +34,6 @@ private:
     lm::FVec3 position;
     lm::FVec3 rotation;
     lm::FMat4 matrix;
+
+    bool hasChanged = true;
 };

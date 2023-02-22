@@ -7,7 +7,7 @@
 #include <iostream>
 
 //to remove when resource manager
-ShaderProgram shaderProg;
+ShaderProgram mainShader;
 GLint viewProjLocation;
 GLint ModelLocation;
 GLint viewPosLocation;
@@ -16,7 +16,7 @@ Application::Application()
 {
     InitOpenGl();
     window.Init();
-    editorCamera.SetRatio(1920.0f / 1080.0f);
+    editorCamera.SetRatio(window.GetRatio());
     InitGlad();
 }
 
@@ -37,17 +37,17 @@ EditorCamera& Application::GetEditorCamera()
 void Application::Run()
 {
     //to remove =====================================================
-    VertexShader vertex("Resources/Shaders/vert.vert");
-    FragmentShader fragment("Resources/Shaders/frag.frag");
+    VertexShader mainVertex("Resources/Shaders/vert.vert");
+    FragmentShader mainFragment("Resources/Shaders/frag.frag");
 
-    shaderProg.Link(vertex, fragment);
+    mainShader.Link(mainVertex, mainFragment);
 
-    viewProjLocation = glGetUniformLocation(shaderProg.GetId(), "viewProj");
-    ModelLocation = glGetUniformLocation(shaderProg.GetId(), "model");
-    viewPosLocation = glGetUniformLocation(shaderProg.GetId(), "viewPos");
+    viewProjLocation = glGetUniformLocation(mainShader.GetId(), "viewProj");
+    ModelLocation = glGetUniformLocation(mainShader.GetId(), "model");
+    viewPosLocation = glGetUniformLocation(mainShader.GetId(), "viewPos");
 
     GameObject* base = new GameObject();
-    Model* model = new Model(base, "Resources/Models/Car.fbx");
+    Model* model = new Model(base, "Resources/Models/sponza.obj");
     base->transform.SetScale(lm::FVec3(0.01f));
     base->AddComponent(model);
     testComponent* test = new testComponent(base);
@@ -85,50 +85,43 @@ void Application::InitGlad()
 
 void Application::Draw()
 {
-    //clear
-    glClearColor(0.2f, 0.2f, 0.2f, 1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    ClearWindow();
+    
     if (isEditor)
     {
         editorCamera.Update();
+        UpdateUniforms();
+        UpdateGameObjects();
+    }
+}
 
-        lm::FMat4 viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
-        lm::FVec3 viewPos = editorCamera.transform.GetPosition();
+void Application::ClearWindow()
+{
+    glClearColor(0.2f, 0.2f, 0.2f, 1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
-        shaderProg.Use();
+void Application::UpdateGameObjects()
+{
+    for (int i = 0; i < GameObjectManager::GetSize(); i++)
+    {
+        GameObject* object = GameObjectManager::GetGameObject(i);
 
-        float m[16];
-        for (int i = 0; i < 4; i++)
+        if (object)
         {
-            for (int j = 0; j < 4; j++)
-            {
-                m[(i * 4) + j] = viewProj[i][j];
-            }
-        }
-
-        float m2[16];
-
-        glUniformMatrix4fv(viewProjLocation, 1, GL_FALSE, m);
-        glUniform3f(viewPosLocation, viewPos.x, viewPos.y, viewPos.z);
-
-        for (int i = 0; i < GameObjectManager::GetSize(); i++)
-        {
-            GameObject* object = GameObjectManager::GetGameObject(i);
-
-            if (object)
-            {
-                for (int k = 0; k < 4; k++)
-                {
-                    for (int j = 0; j < 4; j++)
-                    {
-                        m[(k * 4) + j] = viewProj[k][j];
-                    }
-                }
-
-                glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, m2);
-                object->Update();
-            }
+            glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, lm::FMat4::ToArray(object->transform.GetMatrix()));
+            object->Update();
         }
     }
+}
+
+void Application::UpdateUniforms()
+{
+    mainShader.Use();
+
+    lm::FMat4 viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
+    lm::FVec3 viewPos = editorCamera.transform.GetPosition();
+
+    glUniformMatrix4fv(viewProjLocation, 1, GL_FALSE, lm::FMat4::ToArray(viewProj));
+    glUniform3f(viewPosLocation, viewPos.x, viewPos.y, viewPos.z);
 }

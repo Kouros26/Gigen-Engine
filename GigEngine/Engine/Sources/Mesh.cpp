@@ -8,6 +8,8 @@ Mesh::Mesh(unsigned int verticesSize, unsigned int indicesSize)
 
 Mesh::~Mesh()
 {
+	delete[] vertices;
+	delete[] indices;
 }
 
 void Mesh::Draw()

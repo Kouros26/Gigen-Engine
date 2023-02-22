@@ -11,17 +11,20 @@ Transform::~Transform()
 void Transform::SetPosition(lm::FVec3 pos)
 {
     position = pos;
+    hasChanged = true;
 }
 
 void Transform::SetRotation(lm::FVec3 rot)
 {
     rotation = rot;
     ClampRotation();
+    hasChanged = true;
 }
 
 void Transform::SetScale(lm::FVec3 scl)
 {
     scale = scl;
+    hasChanged = true;
 }
 
 lm::FVec3 Transform::GetPosition() const
@@ -42,6 +45,7 @@ lm::FVec3 Transform::GetRotation() const
 void Transform::AddPosition(lm::FVec3 pos)
 {
     position += pos;
+    hasChanged = true;
 }
 
 lm::FVec3 Transform::GetFront()
@@ -50,7 +54,7 @@ lm::FVec3 Transform::GetFront()
     lm::FVec4 temp = inverse[2];
     lm::FVec3 forward(temp[0], temp[1], temp[2]);
 
-    return lm::FVec3::Normalize(-forward);
+    return lm::FVec3::Normalize(forward);
 }
 
 lm::FVec3 Transform::GetRight()
@@ -68,12 +72,14 @@ lm::FVec3 Transform::GetUp()
     lm::FVec4 temp = inverse[1];
     lm::FVec3 forward(temp[0], temp[1], temp[2]);
 
-    return lm::FVec3::Normalize(forward);
+    return lm::FVec3::Normalize(-forward);
 }
 
 lm::FMat4 Transform::GetMatrix()
 {
-    UpdateMatrix();
+    if(hasChanged)
+        UpdateMatrix();
+
     return matrix;
 }
 
@@ -81,18 +87,22 @@ void Transform::AddRotation(lm::FVec3 rot)
 {
     rotation += rot;
     ClampRotation();
+    hasChanged = true;
 }
 
 void Transform::AddScale(lm::FVec3 scl)
 {
     scale += scl;
+    hasChanged = true;
 }
 
 void Transform::UpdateMatrix()
 {
     matrix = lm::FMat4::Transform(position, rotation, scale);
+    hasChanged = false;
 }
 
+//rename this function, clamp not good
 void Transform::ClampRotation()
 {
     for (int i = 0; i < 3; i++)

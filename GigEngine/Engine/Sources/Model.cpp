@@ -11,8 +11,8 @@ Model::Model(GameObject* gameObject, std::string filePath)
 Model::~Model()
 {
 	//to remove into ressource manager
-	for (const auto& mMeshe : meshes)
-		delete mMeshe;
+	for (const auto& mesh : meshes)
+		delete mesh;
 }
 
 void Model::Update()

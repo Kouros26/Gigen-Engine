@@ -21,4 +21,7 @@ private:
     void InitOpenGl();
     void InitGlad();
     void Draw();
+    void ClearWindow();
+    void UpdateGameObjects();
+    void UpdateUniforms();
 };
