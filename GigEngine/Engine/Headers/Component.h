@@ -5,21 +5,21 @@
 class Component
 {
 public:
-	Component(GameObject* gameObject);
-	virtual ~Component();
+    Component(GameObject* gameObject);
+    virtual ~Component();
 
-	virtual void Update();
+    virtual void Update();
 
 protected:
-	GameObject* gameObject;
+    GameObject* gameObject;
 };
 
 class testComponent : public Component
 {
 public:
-	testComponent(GameObject* gameObject) : Component(gameObject) {};
+    testComponent(GameObject* gameObject) : Component(gameObject) {};
 
-	virtual void Update() override {
-		gameObject->transform.AddRotation(lm::vec3(20) * Time::GetDeltaTime());
-	};
+    virtual void Update() override {
+        gameObject->transform.AddRotation(lm::FVec3(20) * Time::GetDeltaTime());
+    };
 };

@@ -5,20 +5,20 @@
 class Application
 {
 public:
-	Application();
-	~Application();
+    Application();
+    ~Application();
 
-	static Window& GetWindow();
-	static EditorCamera& GetEditorCamera();
+    static Window& GetWindow();
+    static EditorCamera& GetEditorCamera();
 
-	void Run();
+    void Run();
 private:
-	static inline Window window;
-	static inline EditorCamera editorCamera;
+    static inline Window window;
+    static  inline  EditorCamera editorCamera;
 
-	bool isEditor = true;
+    bool isEditor = true;
 
-	void InitOpenGl();
-	void InitGlad();
-	void Draw();
+    void InitOpenGl();
+    void InitGlad();
+    void Draw();
 };

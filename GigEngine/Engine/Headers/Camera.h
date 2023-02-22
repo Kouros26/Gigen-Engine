@@ -4,26 +4,26 @@
 class Camera : public GameObject
 {
 public:
-	Camera();
-	~Camera();
+    Camera();
+    ~Camera();
 
-	lm::mat4 CreateViewMatrix();
-	lm::mat4 GetViewMatrix() const;
+    lm::FMat4 CreateViewMatrix();
+    lm::FMat4 GetViewMatrix() const;
 
-	void SetFov(float fov);
-	void SetNear(float near);
-	void SetFar(float far);
-	void SetRatio(float ratio);
-	lm::mat4 GetProjectionMatrix();
+    void SetFov(float fov);
+    void SetNear(float near);
+    void SetFar(float far);
+    void SetRatio(float ratio);
+    lm::FMat4 GetProjectionMatrix();
 
 private:
-	void UpdateProjectionMatrix();
+    void UpdateProjectionMatrix();
 
-	lm::mat4 view;
+    lm::FMat4 view;
 
-	lm::mat4 projectionMatrix;
-	float currentFov = 90;
-	float currentNear = 0.1f;
-	float currentFar = 1000;
-	float currentRatio;
+    lm::FMat4 projectionMatrix;
+    float currentFov = 90;
+    float currentNear = 0.1f;
+    float currentFar = 1000;
+    float currentRatio;
 };
