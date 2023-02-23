@@ -12,6 +12,8 @@ public:
     static EditorCamera& GetEditorCamera();
 
     void Run();
+    void SwapFrames();
+
 private:
     static inline Window window;
     static  inline  EditorCamera editorCamera;

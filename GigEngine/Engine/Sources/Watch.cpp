@@ -1,31 +1,33 @@
 #include "Watch.h"
-#include <iostream>
 
-unsigned short Time::FPS::GetFPS()
+float Time::FPS::GetFPS()
 {
 	return fps;
+}
+
+float Time::FPS::GetAverageFPS()
+{
+	return averageFps;
 }
 
 void Time::FPS::UpdateFPS()
 {
 	if (currentTime - lastFPSUpdate < FPSUpdateDelay) return;
 
-	fps = static_cast<unsigned short>(1000 / deltaTime);
+	fps = static_cast<float>(1000 / deltaTime);
 	lastFPSUpdate = currentTime;
 
-	const unsigned short fp = fps;
+	const float fp = fps;
 	fpsQueue.push(fp);
 
 	UpdateAverageFPS();
-
-	std::cout << fps << std::endl; //TEMP
 }
 
 void Time::FPS::UpdateAverageFPS()
 {
-	FixedQueue<unsigned short, 10> queueCopy = fpsQueue;
+	FixedQueue<float, 10> queueCopy = fpsQueue;
 
-	const auto QueueSize = static_cast<unsigned short>(queueCopy.size());
+	const auto QueueSize = static_cast<float>(queueCopy.size());
 
 	for (unsigned short i = 0; i < QueueSize; i++)
 	{
@@ -34,8 +36,6 @@ void Time::FPS::UpdateAverageFPS()
 	}
 
 	averageFps /= QueueSize;
-
-	std::cout << "Average FPS from last 10 seconds : " << averageFps << std::endl;
 }
 
 void Time::FPS::SetFPSUpdateDelay(const double& newDelay)

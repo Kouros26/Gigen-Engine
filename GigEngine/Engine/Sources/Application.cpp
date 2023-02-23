@@ -15,27 +15,10 @@ GLint viewPosLocation;
 Application::Application()
 {
     InitOpenGl();
-    window.Init();
+    window.Init(3,3);
     editorCamera.SetRatio(window.GetRatio());
     InitGlad();
-}
 
-Application::~Application()
-{
-}
-
-Window& Application::GetWindow()
-{
-    return window;
-}
-
-EditorCamera& Application::GetEditorCamera()
-{
-    return editorCamera;
-}
-
-void Application::Run()
-{
     //to remove =====================================================
     VertexShader mainVertex("Resources/Shaders/vert.vert");
     FragmentShader mainFragment("Resources/Shaders/frag.frag");
@@ -56,15 +39,33 @@ void Application::Run()
     //==================================================================
 
     glEnable(GL_DEPTH_TEST);
+}
 
-    while (!window.ShouldClose())
-    {
-        glfwPollEvents();
-        window.ProcessInput();
-        Time::UpdateDeltaTime();
-        Draw();
-        glfwSwapBuffers(window.GetGLFWWindow());
-    }
+Application::~Application()
+{
+}
+
+Window& Application::GetWindow()
+{
+    return window;
+}
+
+EditorCamera& Application::GetEditorCamera()
+{
+    return editorCamera;
+}
+
+void Application::Run()
+{
+    glfwPollEvents();
+    window.ProcessInput();
+    Time::UpdateDeltaTime();
+    Draw();
+}
+
+void Application::SwapFrames()
+{
+    glfwSwapBuffers(window.GetGLFWWindow());
 }
 
 void Application::InitOpenGl()

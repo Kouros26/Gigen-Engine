@@ -3,10 +3,10 @@
 #include "Application.h"
 #include <iostream>
 
-void Window::Init()
+void Window::Init(int major, int minor)
 {
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
@@ -16,9 +16,9 @@ void Window::Init()
 	width = mode.width;
 	height = mode.height;
 
-	window = glfwCreateWindow(width, height, APPLICATION_NAME, nullptr, nullptr);
+	window = glfwCreateWindow(width, height, APPLICATION_NAME, MyMonitor, nullptr);
 
-	if (window == NULL)
+	if (window == nullptr)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -31,6 +31,11 @@ void Window::Init()
 	glfwMakeContextCurrent(window);
 	glfwSetKeyCallback(window, KeyCallback);
 	glfwSetMouseButtonCallback(window, MouseButtonCallback);
+
+	version = "#version ";
+	version += std::to_string(major);
+	version += std::to_string(minor);
+	version += '0';
 }
 
 void Window::ProcessInput() const
@@ -38,9 +43,7 @@ void Window::ProcessInput() const
 	Inputs::UpdateMousePosition(window);
 
 	if (Inputs::GetKey(ESCAPE))
-	{
 		glfwSetWindowShouldClose(window, true);
-	}
 }
 
 void Window::KeyCallback(GLFWwindow* /*window*/, int key, int /*scancode*/, int action, int /*mods*/)
@@ -57,7 +60,7 @@ void Window::FrameBufferResizeCallback(GLFWwindow* pWindow, int width, int heigh
 {
 	glViewport(0, 0, width, height);
 
-	Window* window = static_cast<Window*>(glfwGetWindowUserPointer(pWindow));
+	const auto window = static_cast<Window*>(glfwGetWindowUserPointer(pWindow));
 	window->width = width;
 	window->height = height;
 	Application::GetEditorCamera().SetRatio(window->GetRatio());
@@ -76,7 +79,7 @@ unsigned int Window::GetHeight() const
 float Window::GetRatio() const
 {
 	if (height == 0) return 1;
-	return (float)width / (float)height;
+	return static_cast<float>(width) / static_cast<float>(height);
 }
 
 bool Window::ShouldClose() const
@@ -87,4 +90,9 @@ bool Window::ShouldClose() const
 GLFWwindow* Window::GetGLFWWindow() const
 {
 	return window;
+}
+
+std::string& Window::GetGLSLVersion()
+{
+	return version;
 }

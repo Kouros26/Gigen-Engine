@@ -80,7 +80,7 @@ void EditorCamera::Look()
         const float Rx = static_cast<float>(Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity) * Time::GetTimeScale());
 
         transform.AddRotation(lm::FVec3(Rx, Ry, 0));
-        
+
         //here lock max look angle
     }
 

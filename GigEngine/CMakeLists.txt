@@ -82,6 +82,7 @@ target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${THIRD_PARTY_PROJECT})
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE glfw)
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE assimp)
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${LIBMATHS_LIBRARY})
+target_include_directories(${PROJECT_EDITOR} PRIVATE ${ENGINE_INCLUDE_FOLDER})
 
 set_target_properties(${MAIN_PROJECT_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
 target_compile_options(${MAIN_PROJECT_NAME} PRIVATE /W4 /WX)
