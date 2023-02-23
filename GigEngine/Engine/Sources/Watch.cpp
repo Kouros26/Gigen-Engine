@@ -36,15 +36,15 @@ void Time::FPS::UpdateFPS()
 
 void Time::FPS::ToggleVSync(const bool input)
 {
-	int result;
+	//int result;
 
-	if (input)
-		result = 1;
+	//if (input)
+	//	result = 1;
 
-	else
-		result = 0;
+	//else
+	//	result = 0;
 
-	Window::ToggleVSync(result);
+	Window::ToggleVSync(input);
 }
 
 void Time::FPS::UpdateAverageFPS()

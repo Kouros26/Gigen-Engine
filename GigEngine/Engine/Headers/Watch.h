@@ -18,7 +18,7 @@ public:
 
 		static inline float fps = 0;
 		static inline float averageFps = 0;
-		static inline float FPSUpdateDelay = 1.0f;
+		static inline float FPSUpdateDelay = 0.5f;
 		static inline float lastFPSUpdate = 0.0f;
 
 		static void UpdateAverageFPS();

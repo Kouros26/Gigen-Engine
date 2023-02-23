@@ -25,7 +25,7 @@ void FPSDisplay::Draw()
 void FPSDisplay::FPSDelay()
 {
 	ImGui::Text("Average FPS : %.2f", Time::FPS::GetAverageFPS());
-	ImGui::SliderFloat("FPS Update delay", &delay, 0, 20, "%.1f");
+	ImGui::SliderFloat("FPS Update delay", &delay, 0.01f, 2, "%.1f");
 
 	if (delay != lastDelay)
 		Time::FPS::SetFPSUpdateDelay(delay);
