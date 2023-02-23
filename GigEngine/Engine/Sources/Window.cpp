@@ -16,7 +16,7 @@ void Window::Init(int major, int minor)
 	width = mode.width;
 	height = mode.height;
 
-	window = glfwCreateWindow(width, height, APPLICATION_NAME, MyMonitor, nullptr);
+	window = glfwCreateWindow(width, height, APPLICATION_NAME, nullptr, nullptr);
 
 	if (window == nullptr)
 	{
@@ -31,6 +31,7 @@ void Window::Init(int major, int minor)
 	glfwMakeContextCurrent(window);
 	glfwSetKeyCallback(window, KeyCallback);
 	glfwSetMouseButtonCallback(window, MouseButtonCallback);
+	ToggleVSync(1);
 
 	version = "#version ";
 	version += std::to_string(major);
@@ -64,6 +65,11 @@ void Window::FrameBufferResizeCallback(GLFWwindow* pWindow, int width, int heigh
 	window->width = width;
 	window->height = height;
 	Application::GetEditorCamera().SetRatio(window->GetRatio());
+}
+
+void Window::ToggleVSync(int input)
+{
+	glfwSwapInterval(input);
 }
 
 unsigned int Window::GetWidth() const

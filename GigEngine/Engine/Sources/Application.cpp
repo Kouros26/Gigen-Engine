@@ -61,6 +61,7 @@ void Application::Run()
     window.ProcessInput();
     Time::UpdateDeltaTime();
     Draw();
+    std::cout << Time::GetDeltaTime() << std::endl;
 }
 
 void Application::SwapFrames()

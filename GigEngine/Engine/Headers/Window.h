@@ -12,10 +12,11 @@ public:
 	static void KeyCallback(GLFWwindow*, int key, int, int action, int);
 	static void MouseButtonCallback(GLFWwindow*, int button, int action, int);
 	static void FrameBufferResizeCallback(GLFWwindow* pWindow, int width, int height);
+	static void ToggleVSync(int input);
 
-	unsigned int GetWidth() const;
-	unsigned int GetHeight() const;
-	float GetRatio() const;
+	[[nodiscard]] unsigned int GetWidth() const;
+	[[nodiscard]] unsigned int GetHeight() const;
+	[[nodiscard]] float GetRatio() const;
 
 	[[nodiscard]] bool ShouldClose() const;
 	[[nodiscard]] GLFWwindow* GetGLFWWindow() const;
