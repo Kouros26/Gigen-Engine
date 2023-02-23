@@ -1,5 +1,7 @@
 #include "GameObject.h"
 #include "Component.h"
+#include "Model.h"
+#include "ResourceManager.h"
 
 unsigned int GameObject::gameObjectCounter = 0;
 
@@ -28,19 +30,19 @@ GameObject::~GameObject()
 	}
 }
 
-void GameObject::Update()
-{
-	UpdateComponents();
-	UpdateRender();
-}
-
 std::string GameObject::GetName()
 {
 	return name;
 }
 
-void GameObject::UpdateRender()
+void GameObject::setModel(std::string const& filePath)
 {
+	model = ResourceManager::Get<Model>(filePath);
+}
+
+void GameObject::UpdateRender() const
+{
+	if (model) model->Draw();
 }
 
 void GameObject::UpdateComponents() const

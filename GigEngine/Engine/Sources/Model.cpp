@@ -2,20 +2,19 @@
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 
-Model::Model(GameObject* gameObject, std::string filePath)
-	:Component(gameObject)
+Model::Model(std::string const& filePath)
+	:IResource(filePath)
 {
 	loadModel(filePath);
 }
 
 Model::~Model()
 {
-	//to remove into ressource manager
 	for (const auto& mesh : meshes)
 		delete mesh;
 }
 
-void Model::Update()
+void Model::Draw()
 {
 	for (int i = 0; i < meshes.size(); i++)
 	{

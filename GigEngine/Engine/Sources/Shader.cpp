@@ -5,11 +5,12 @@
 #include <sstream>
 #include <fstream>
 
-Shader::Shader(std::string const& filename, int shaderType)
+Shader::Shader(std::string const& filePath, int shaderType)
+	:IResource(filePath)
 {
-	std::string str = readFile(filename);
+	std::string str = readFile(filePath);
 	if (str == "") {
-		std::cout << "no fragment file at path " << filename << std::endl;
+		std::cout << "no fragment file at path " << filePath << std::endl;
 		return;
 	}
 	shaderId = glCreateShader(shaderType);
@@ -23,19 +24,19 @@ Shader::Shader(std::string const& filename, int shaderType)
 	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
 	if (success == GL_FALSE) {
 		glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
-		std::cout << "error compiling fragment : " << filename << std::endl;
+		std::cout << "error compiling fragment : " << filePath << std::endl;
 		std::cout << infoLog << std::endl;
 		return;
 	}
 }
 
-VertexShader::VertexShader(std::string const& filename)
-	:Shader(filename, GL_VERTEX_SHADER)
+VertexShader::VertexShader(std::string const& filePath)
+	:Shader(filePath, GL_VERTEX_SHADER)
 {
 }
 
-FragmentShader::FragmentShader(std::string const& filename)
-	: Shader(filename, GL_FRAGMENT_SHADER)
+FragmentShader::FragmentShader(std::string const& filePath)
+	: Shader(filePath, GL_FRAGMENT_SHADER)
 {
 }
 
@@ -47,15 +48,15 @@ ShaderProgram::~ShaderProgram()
 {
 }
 
-bool ShaderProgram::Link(VertexShader& vertex, FragmentShader& fragment)
+bool ShaderProgram::Link(VertexShader* vertex, FragmentShader* fragment)
 {
 	if (shaderProgram == GL_FALSE)
 		shaderProgram = glCreateProgram();
 
-	if (vertex.shaderId == GL_FALSE || fragment.shaderId == GL_FALSE) return false;
+	if (vertex->shaderId == GL_FALSE || fragment->shaderId == GL_FALSE) return false;
 
-	glAttachShader(shaderProgram, vertex.shaderId);
-	glAttachShader(shaderProgram, fragment.shaderId);
+	glAttachShader(shaderProgram, vertex->shaderId);
+	glAttachShader(shaderProgram, fragment->shaderId);
 	glLinkProgram(shaderProgram);
 
 	GLint success = GL_TRUE;
@@ -71,11 +72,12 @@ bool ShaderProgram::Link(VertexShader& vertex, FragmentShader& fragment)
 		return false;
 	}
 
-	glDeleteShader(vertex.shaderId);
-	glDeleteShader(fragment.shaderId);
+	//whyy delete the shader here ? maybe can use them for another shaderProgram ?
+	glDeleteShader(vertex->shaderId);
+	glDeleteShader(fragment->shaderId);
 
-	vertex.shaderId = GL_FALSE;
-	fragment.shaderId = GL_FALSE;
+	vertex->shaderId = GL_FALSE;
+	fragment->shaderId = GL_FALSE;
 
 	return true;
 }

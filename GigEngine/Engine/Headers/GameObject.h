@@ -9,9 +9,12 @@ public:
 	GameObject(std::string name);
 	~GameObject();
 
-	virtual void Update();
+	void UpdateRender() const;
+	void UpdateComponents() const;
 
 	std::string GetName();
+
+	void setModel(std::string const& filePath);
 
 	void AddComponent(class Component* newComponent);
 
@@ -37,9 +40,7 @@ private:
 	unsigned int id;
 
 	std::vector<class Component*> components;
-
-	void UpdateRender();
-	void UpdateComponents() const;
+	class Model* model;
 
 	//use so every gameObject has a different id
 	static unsigned int gameObjectCounter;

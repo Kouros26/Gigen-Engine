@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Model.h"
 #include "GameObjectManager.h"
+#include "ResourceManager.h"
 #include <iostream>
 
 //to remove when resource manager
@@ -20,8 +21,8 @@ Application::Application()
 	InitGlad();
 
 	//to remove =====================================================
-	VertexShader mainVertex("Resources/Shaders/vert.vert");
-	FragmentShader mainFragment("Resources/Shaders/frag.frag");
+	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/vert.vert");
+	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/frag.frag");
 
 	mainShader.Link(mainVertex, mainFragment);
 
@@ -30,11 +31,9 @@ Application::Application()
 	viewPosLocation = glGetUniformLocation(mainShader.GetId(), "viewPos");
 
 	GameObject* base = new GameObject();
-	Model* model = new Model(base, "Resources/Models/sponza.obj");
-	base->transform.SetScale(lm::FVec3(0.01f));
-	base->AddComponent(model);
-	testComponent* test = new testComponent(base);
-	base->AddComponent(test);
+	base->transform.SetScale(lm::FVec3(0.1f));
+	base->setModel("Resources/Models/sponza.obj");
+	base->AddNewComponent<testComponent>();
 	GameObjectManager::AddGameObject(base);
 	//==================================================================
 
@@ -100,7 +99,6 @@ void Application::ClearWindow()
 {
 	glClearColor(0.2f, 0.2f, 0.2f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//test
 }
 
 void Application::UpdateGameObjects()
@@ -111,8 +109,9 @@ void Application::UpdateGameObjects()
 
 		if (object)
 		{
+			object->UpdateComponents();
 			glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, lm::FMat4::ToArray(object->transform.GetMatrix()));
-			object->Update();
+			object->UpdateRender();
 		}
 	}
 }

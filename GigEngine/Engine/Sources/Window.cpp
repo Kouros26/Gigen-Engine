@@ -16,7 +16,8 @@ void Window::Init(int major, int minor)
 	width = mode.width;
 	height = mode.height;
 
-	window = glfwCreateWindow(width, height, APPLICATION_NAME, MyMonitor, nullptr);
+	//if I put my monitor here, can't debug
+	window = glfwCreateWindow(width, height, APPLICATION_NAME, nullptr, nullptr);
 
 	if (window == nullptr)
 	{

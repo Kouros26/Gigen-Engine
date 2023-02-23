@@ -8,23 +8,23 @@
 constexpr int VERTEX_SIZE = 8; //8 is 3 pos + 3 normal + 2 texture
 constexpr int FACE_SIZE = 3; //triangle
 
-class Mesh : public IResource
+class Mesh
 {
 public:
-    Mesh(unsigned int verticesSize, unsigned int indicesSize);
-    ~Mesh();
+	Mesh(unsigned int verticesSize, unsigned int indicesSize);
+	~Mesh();
 
-    void Draw();
-    void setUpBuffers();
+	void Draw();
+	void setUpBuffers();
 
-    float* vertices = nullptr;
-    unsigned int* indices = nullptr;
+	float* vertices = nullptr;
+	unsigned int* indices = nullptr;
 
 private:
-    unsigned int verticesSize = 0;
-    unsigned int indicesSize = 0;
+	unsigned int verticesSize = 0;
+	unsigned int indicesSize = 0;
 
-    GLuint VBO = GL_FALSE;
-    GLuint VAO = GL_FALSE;
-    GLuint EBO = GL_FALSE;
+	GLuint VBO = GL_FALSE;
+	GLuint VAO = GL_FALSE;
+	GLuint EBO = GL_FALSE;
 };
