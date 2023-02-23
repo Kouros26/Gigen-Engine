@@ -3,10 +3,10 @@
 #include "Application.h"
 #include <iostream>
 
-void Window::Init(int major, int minor)
+void Window::Init()
 {
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, versionMajor);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, versionMinor);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
@@ -34,8 +34,8 @@ void Window::Init(int major, int minor)
 	ToggleVSync(1);
 
 	version = "#version ";
-	version += std::to_string(major);
-	version += std::to_string(minor);
+	version += std::to_string(versionMajor);
+	version += std::to_string(versionMinor);
 	version += '0';
 }
 

@@ -15,7 +15,7 @@ GLint viewPosLocation;
 Application::Application()
 {
     InitOpenGl();
-    window.Init(3,3);
+    window.Init();
     editorCamera.SetRatio(window.GetRatio());
     InitGlad();
 

@@ -6,7 +6,7 @@
 class Window
 {
 public:
-	void Init(int major, int minor);
+	void Init();
 	void ProcessInput() const;
 
 	static void KeyCallback(GLFWwindow*, int key, int, int action, int);
@@ -28,6 +28,8 @@ private:
 
 	GLFWwindow* window = nullptr;
 	std::string version;
+	const int versionMajor = 3;
+	const int versionMinor = 3;
 
 	unsigned int width = 0;
 	unsigned int height = 0;
