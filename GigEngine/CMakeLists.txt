@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
 set(CMAKE_FOLDER_OLD ${CMAKE_FOLDER})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+set(CMAKE_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
+
 set( THIRD_PARTY_PROJECT
    Editor
    Engine
@@ -43,6 +45,8 @@ set(CMAKE_FOLDER ${CMAKE_FOLDER_OLD})
 set( THIRD_PARTY_INCLUDE
 ${glfw_SOURCE_DIR}
 ${assimp_SOURCE_DIR}
+stb_image
+IMGUI
 )
 
 include_directories(${MAIN_PROJECT_NAME} PRIVATE ${glfw_SOURCE_DIR}/include)
@@ -82,7 +86,7 @@ target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${THIRD_PARTY_PROJECT})
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE glfw)
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE assimp)
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${LIBMATHS_LIBRARY})
-target_include_directories(${PROJECT_EDITOR} PRIVATE ${ENGINE_INCLUDE_FOLDER})
+
 
 set_target_properties(${MAIN_PROJECT_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
 target_compile_options(${MAIN_PROJECT_NAME} PRIVATE /W4 /WX)
@@ -106,3 +110,14 @@ file(GLOB_RECURSE TARGET_SHADER_FILES #any name for extentions --> choice
 #Add raw file to main with filter
 source_group(Shaders FILES ${TARGET_SHADER_FILES})
 target_sources(${MAIN_PROJECT_NAME} PRIVATE ${TARGET_SHADER_FILES})
+
+# IMGUI
+set(CMAKE_FOLDER_OLD ${CMAKE_FOLDER})
+set(CMAKE_FOLDER "${CMAKE_FOLDER_OLD}/vendor/ImGui")
+
+file(GLOB_RECURSE IMGUI_SOURCES ${DEPENDS_DIR}/IMGUI/*.cpp ${DEPENDS_DIR}/IMGUI/*.h)
+add_library(ImGui STATIC ${IMGUI_SOURCES})
+target_include_directories(ImGui PUBLIC ${DEPENDS_DIR}/IMGUI)
+target_include_directories(ImGui PUBLIC ${glfw_SOURCE_DIR}/include)
+
+set(CMAKE_FOLDER ${CMAKE_FOLDER_OLD})
