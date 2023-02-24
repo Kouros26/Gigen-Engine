@@ -292,6 +292,28 @@ TEST_CASE("Vec4", "[.all][vector][Vec4]")
 
             CHECK_VECTOR4(projection, projectionGlm);
         }
+
+        SECTION("Clamp")
+        {
+            lm::FVec4 clamped = lm::FVec4::Clamp(base, other, other * 2.f);
+            glm::vec4 clampedGlm = glm::clamp(baseGlm, otherGlm, otherGlm * 2.f);
+
+            CHECK_VECTOR4(clamped, clampedGlm);
+        }
+
+        SECTION("IsZero")
+        {
+            bool isZero = base.IsZero();
+
+            CHECK(isZero == false);
+            CHECK(lm::FVec4::Zero.IsZero() == true);
+        }
+
+        SECTION("IsUnit")
+        {
+            CHECK(base.IsUnit() == false);
+            CHECK(lm::FVec4::Forward.IsUnit() == true);
+        }
     }
     SECTION("Extra")
     {

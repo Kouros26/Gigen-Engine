@@ -83,46 +83,60 @@ TEST_CASE("Vector2", "[.all][vector][Vector2]")
         lm::FVec2 vec2{ x2, y2 };
         glm::vec2 vec2Glm{ x2, y2 };
 
-        // addition
-        vec += vec2;
-        vecGlm += vec2Glm;
-        CHECK_VECTOR2(vec, vecGlm);
+        SECTION("Addition")
+        {
+            vec += vec2;
+            vecGlm += vec2Glm;
+            CHECK_VECTOR2(vec, vecGlm);
+            vec = vec + vec2;
+            vecGlm = vecGlm + vec2Glm;
+            CHECK_VECTOR2(vec, vecGlm);
+        }
 
-        vec = vec + vec2;
-        vecGlm = vecGlm + vec2Glm;
-        CHECK_VECTOR2(vec, vecGlm);
+        SECTION("Subtraction")
+        {
+            vec -= vec2;
+            vecGlm -= vec2Glm;
+            CHECK_VECTOR2(vec, vecGlm);
 
-        // subtraction
-        vec -= vec2;
-        vecGlm -= vec2Glm;
-        CHECK_VECTOR2(vec, vecGlm);
+            vec = vec - vec2;
+            vecGlm = vecGlm - vec2Glm;
+            CHECK_VECTOR2(vec, vecGlm);
+        }
+        SECTION("Multiplication")
+        {
+            vec *= vec2;
+            vecGlm *= vec2Glm;
+            CHECK_VECTOR2(vec, vecGlm);
 
-        vec = vec - vec2;
-        vecGlm = vecGlm - vec2Glm;
-        CHECK_VECTOR2(vec, vecGlm);
+            vec = vec * vec2;
+            vecGlm = vecGlm * vec2Glm;
+            CHECK_VECTOR2(vec, vecGlm);
+        }
 
-        // multiplication
-        vec *= vec2;
-        vecGlm *= vec2Glm;
-        CHECK_VECTOR2(vec, vecGlm);
+        SECTION("Division")
+        {
+            vec /= vec2;
+            vecGlm /= vec2Glm;
+            CHECK_VECTOR2(vec, vecGlm);
 
-        vec = vec * vec2;
-        vecGlm = vecGlm * vec2Glm;
-        CHECK_VECTOR2(vec, vecGlm);
+            vec = vec / vec2;
+            vecGlm = vecGlm / vec2Glm;
+            CHECK_VECTOR2(vec, vecGlm);
+        }
+        SECTION("Scalar multiplication")
+        {
+            SECTION("Unary minus")
+            {
+                vec = -vec;
+                vecGlm = -vecGlm;
+                CHECK_VECTOR2(vec, vecGlm);
+            }
 
-        // division
-        vec /= vec2;
-        vecGlm /= vec2Glm;
-        CHECK_VECTOR2(vec, vecGlm);
-
-        vec = vec / vec2;
-        vecGlm = vecGlm / vec2Glm;
-        CHECK_VECTOR2(vec, vecGlm);
-
-        // unary minus
-        vec = -vec;
-        vecGlm = -vecGlm;
-        CHECK_VECTOR2(vec, vecGlm);
+            lm::FVec2 mult = lm::FVec2::Multiply(vec, 2.5f);
+            glm::vec2 multGlm = glm::vec2(vecGlm * 2.5f);
+            CHECK_VECTOR2(mult, multGlm);
+        }
     }
 
     SECTION("Comparison")

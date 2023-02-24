@@ -194,6 +194,22 @@ TEST_CASE("Vector3", "[.all][vector][Vector3]")
 
                 CHECK_VECTOR3(product, productGlm);
             }
+
+            {
+                lm::FVec3 productAssignment = big;
+                productAssignment *= 2.f;
+
+                glm::vec3 productAssignmentGlm = bigGlm;
+                productAssignmentGlm *= 2.f;
+
+                CHECK_VECTOR3(productAssignment, productAssignmentGlm);
+
+                productAssignment = big * 2.f;
+
+                productAssignmentGlm = bigGlm * 2.f;
+
+                CHECK_VECTOR3(productAssignment, productAssignmentGlm);
+            }
         }
 
         SECTION("Division")
@@ -299,6 +315,54 @@ TEST_CASE("Vector3", "[.all][vector][Vector3]")
             glm::vec3 reflectGlm = glm::reflect(baseGlm, glm::normalize(otherGlm));
 
             CHECK_VECTOR3(reflect, reflectGlm);
+        }
+
+        SECTION("Refract")
+        {
+            lm::FVec3 refract = FVec3::Refract(base, FVec3::Normalize(other), .5f);
+
+            glm::vec3 refractGlm = glm::refract(baseGlm, glm::normalize(otherGlm), .5f);
+
+            CHECK_VECTOR3(refract, refractGlm);
+        }
+
+        SECTION("Angle")
+        {
+            float angle = FVec3::AngleBetween(base, other);
+
+            float angleGlm = glm::angle(glm::normalize(baseGlm), glm::normalize(otherGlm));
+
+            CHECK(angle == Catch::Approx(angleGlm));
+        }
+
+        SECTION("Lerp")
+        {
+            lm::FVec3 lerp = FVec3::Lerp(base, other, .5f);
+
+            glm::vec3 lerpGlm = glm::lerp(baseGlm, otherGlm, .5f);
+
+            CHECK_VECTOR3(lerp, lerpGlm);
+        }
+
+        SECTION("Clamp")
+        {
+            lm::FVec3 clamp = FVec3::Clamp(base, other, other * 2.f);
+
+            glm::vec3 clampGlm = glm::clamp(baseGlm, otherGlm, otherGlm * 2.f);
+
+            CHECK_VECTOR3(clamp, clampGlm);
+        }
+
+        SECTION("IsZero")
+        {
+            CHECK_FALSE(base.IsZero());
+            CHECK(lm::FVec3::Zero.IsZero() == true);
+        }
+
+        SECTION("IsUnit")
+        {
+            CHECK_FALSE(base.IsUnit());
+            CHECK(lm::FVec3(1.f, 0.f, 0.f).IsUnit() == true);
         }
     }
 
