@@ -8,6 +8,7 @@ set(CMAKE_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
 set( THIRD_PARTY_PROJECT
    Editor
    Engine
+
 )
 
 
@@ -63,6 +64,8 @@ foreach( include_i ${THIRD_PARTY_INCLUDE})
 include_directories(${MAIN_PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/${include_i}/${INCLUDE_FOLDER})
 endforeach( include_i )
 
+
+add_subdirectory(MathsTest)
 
 
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${MAIN_PROJECT_NAME}/${SOURCE_FOLDER})
