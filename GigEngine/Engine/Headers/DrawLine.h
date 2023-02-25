@@ -6,7 +6,7 @@
 class Line
 {
 public:
-	Line(lm::FVec3 start, lm::FVec3 end, lm::FVec3 color);
+	Line(const lm::FVec3& start, const lm::FVec3& end, const lm::FVec3& color);
 	~Line();
 
 	GLuint GetVAO();
@@ -27,7 +27,7 @@ public:
 	~Lines();
 
 	static void Init();
-	static void AddLine(lm::FVec3 start, lm::FVec3 end, lm::FVec3 color = lm::FVec3(1, 0, 0));
+	static void AddLine(const lm::FVec3& start, const lm::FVec3& end, const lm::FVec3& color = lm::FVec3(1, 0, 0));
 	static void DrawLines();
 	static void Clear();
 private:

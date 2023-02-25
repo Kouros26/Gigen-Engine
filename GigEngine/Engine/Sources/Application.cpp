@@ -43,6 +43,8 @@ Application::Application()
 	Lines::AddLine(lm::FVec3(0, 0, 10), lm::FVec3(0, -10, 0));
 	Lines::AddLine(lm::FVec3(1, 0, -10), lm::FVec3(0, 10, 3));
 	//==================================================================
+
+	glEnable(GL_DEPTH_TEST);
 }
 
 Application::~Application()
@@ -107,11 +109,7 @@ void Application::Draw()
 	{
 		editorCamera.Update();
 		UpdateUniforms();
-
-		glEnable(GL_DEPTH_TEST);
 		UpdateGameObjects();
-
-		glDisable(GL_DEPTH_TEST);
 		Lines::DrawLines();
 	}
 }

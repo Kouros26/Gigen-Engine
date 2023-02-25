@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "ResourceManager.h"
 
-Line::Line(lm::FVec3 start, lm::FVec3 end, lm::FVec3 color)
+Line::Line(const lm::FVec3& start, const lm::FVec3& end, const lm::FVec3& color)
 {
 	vertices[0] = start.x;
 	vertices[1] = start.y;
@@ -65,7 +65,7 @@ void Lines::Init()
 	colorLocation = glGetUniformLocation(shaderProgram.GetId(), "color");
 }
 
-void Lines::AddLine(lm::FVec3 start, lm::FVec3 end, lm::FVec3 color)
+void Lines::AddLine(const lm::FVec3& start, const lm::FVec3& end, const lm::FVec3& color)
 {
 	lines.push_back(new Line(start, end, color));
 }
@@ -91,8 +91,7 @@ void Lines::Clear()
 {
 	for (int i = 0; i < lines.size(); i++)
 	{
-		if (lines[i])
-			delete lines[i];
+		delete lines[i];
 	}
 	lines.clear();
 }
