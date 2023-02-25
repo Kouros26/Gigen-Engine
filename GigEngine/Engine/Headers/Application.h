@@ -16,6 +16,7 @@ public:
 
 	void Run();
 	void SwapFrames();
+	//
 
 private:
 	static inline Window window;
