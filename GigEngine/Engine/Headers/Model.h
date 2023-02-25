@@ -1,6 +1,8 @@
 #pragma once
+#include "IResource.h"
 #include "Component.h"
-#include "ModelResource.h"
+#include "Mesh.h"
+#include <assimp/scene.h>
 
 class Model : public IResource
 {

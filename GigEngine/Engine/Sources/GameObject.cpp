@@ -42,7 +42,8 @@ void GameObject::setModel(std::string const& filePath)
 
 void GameObject::UpdateRender() const
 {
-	if (model) model->Draw();
+	if (model)
+		model->Draw();
 }
 
 void GameObject::UpdateComponents() const
