@@ -5,6 +5,7 @@
 FPSDisplay::FPSDisplay()
 {
 	InterfaceManager::AddEditorElement(this);
+	delay = Time::FPS::GetFPSUpdateDelay();
 }
 
 FPSDisplay::~FPSDisplay()
@@ -13,15 +14,38 @@ FPSDisplay::~FPSDisplay()
 void FPSDisplay::Draw()
 {
 	ImGui::Begin("FPS Counter");
+
+	FPSDelay();
+	VSync();
+	FPSGraph();
+
+	ImGui::End();
+}
+
+void FPSDisplay::FPSDelay()
+{
 	ImGui::Text("Average FPS : %.2f", Time::FPS::GetAverageFPS());
-	static float lastDelay;
-	static float delay;
-	ImGui::SliderFloat("FPS Update delay", &delay, 0, 20);
+	ImGui::SliderFloat("FPS Update delay", &delay, 0.01f, 2, "%.1f");
 
 	if (delay != lastDelay)
 		Time::FPS::SetFPSUpdateDelay(delay);
 
 	lastDelay = delay;
+}
 
-	ImGui::End();
+void FPSDisplay::VSync()
+{
+	ImGui::Checkbox("VSync", &vSync);
+
+	if (vSync != lastVSync)
+		Time::FPS::ToggleVSync(vSync);
+
+	lastVSync = vSync;
+}
+
+void FPSDisplay::FPSGraph() const
+{
+	ImGui::PlotLines("FPS ", Time::FPS::GetFPSArray(), 10);
+	ImGui::SameLine();
+	ImGui::Text("%.2f", Time::FPS::GetFPS());
 }

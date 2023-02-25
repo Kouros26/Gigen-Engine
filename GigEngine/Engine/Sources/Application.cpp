@@ -15,10 +15,10 @@ GLint viewPosLocation;
 
 Application::Application()
 {
-	InitOpenGl();
-	window.Init(3, 3);
-	editorCamera.SetRatio(window.GetRatio());
-	InitGlad();
+    InitOpenGl();
+    window.Init();
+    editorCamera.SetRatio(window.GetRatio());
+    InitGlad();
 
 	//to remove =====================================================
 	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/vert.vert");
