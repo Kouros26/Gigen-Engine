@@ -10,6 +10,9 @@ Mesh::~Mesh()
 {
 	delete[] vertices;
 	delete[] indices;
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 }
 
 void Mesh::Draw()

@@ -11,12 +11,18 @@ public:
 	static Window& GetWindow();
 	static EditorCamera& GetEditorCamera();
 
+	static lm::FMat4& GetViewProj();
+	static lm::FVec3& GetViewPos();
+
 	void Run();
 	void SwapFrames();
 
 private:
 	static inline Window window;
-	static  inline  EditorCamera editorCamera;
+	static inline EditorCamera editorCamera;
+
+	static inline lm::FMat4 viewProj;
+	static inline lm::FVec3 viewPos;
 
 	bool isEditor = true;
 

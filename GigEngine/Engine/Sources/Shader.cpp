@@ -46,6 +46,7 @@ ShaderProgram::ShaderProgram()
 
 ShaderProgram::~ShaderProgram()
 {
+	glDeleteProgram(shaderProgram);
 }
 
 bool ShaderProgram::Link(VertexShader* vertex, FragmentShader* fragment)

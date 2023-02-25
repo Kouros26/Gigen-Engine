@@ -5,6 +5,7 @@
 #include "Model.h"
 #include "GameObjectManager.h"
 #include "ResourceManager.h"
+#include "DrawLine.h"
 #include <iostream>
 
 //to remove when resource manager
@@ -15,10 +16,11 @@ GLint viewPosLocation;
 
 Application::Application()
 {
-    InitOpenGl();
-    window.Init();
-    editorCamera.SetRatio(window.GetRatio());
-    InitGlad();
+	InitOpenGl();
+	window.Init();
+	editorCamera.SetRatio(window.GetRatio());
+	InitGlad();
+	Lines::Init();
 
 	//to remove =====================================================
 	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/vert.vert");
@@ -31,17 +33,21 @@ Application::Application()
 	viewPosLocation = glGetUniformLocation(mainShader.GetId(), "viewPos");
 
 	GameObject* base = new GameObject();
-	base->transform.SetScale(lm::FVec3(0.1f));
+	base->transform.SetScale(lm::FVec3(0.01f));
 	base->setModel("Resources/Models/sponza.obj");
 	base->AddNewComponent<testComponent>();
 	GameObjectManager::AddGameObject(base);
-	//==================================================================
 
-	glEnable(GL_DEPTH_TEST);
+	Lines::AddLine(lm::FVec3(1, 0, 0), lm::FVec3(0, 10, 0));
+	Lines::AddLine(lm::FVec3(10, 0, 0), lm::FVec3(0, 5, 0));
+	Lines::AddLine(lm::FVec3(0, 0, 10), lm::FVec3(0, -10, 0));
+	Lines::AddLine(lm::FVec3(1, 0, -10), lm::FVec3(0, 10, 3));
+	//==================================================================
 }
 
 Application::~Application()
 {
+	Lines::Clear();
 }
 
 Window& Application::GetWindow()
@@ -52,6 +58,16 @@ Window& Application::GetWindow()
 EditorCamera& Application::GetEditorCamera()
 {
 	return editorCamera;
+}
+
+lm::FMat4& Application::GetViewProj()
+{
+	return viewProj;
+}
+
+lm::FVec3& Application::GetViewPos()
+{
+	return viewPos;
 }
 
 void Application::Run()
@@ -91,7 +107,12 @@ void Application::Draw()
 	{
 		editorCamera.Update();
 		UpdateUniforms();
+
+		glEnable(GL_DEPTH_TEST);
 		UpdateGameObjects();
+
+		glDisable(GL_DEPTH_TEST);
+		Lines::DrawLines();
 	}
 }
 
@@ -120,8 +141,8 @@ void Application::UpdateUniforms()
 {
 	mainShader.Use();
 
-	lm::FMat4 viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
-	lm::FVec3 viewPos = editorCamera.transform.GetPosition();
+	viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
+	viewPos = editorCamera.transform.GetPosition();
 
 	glUniformMatrix4fv(viewProjLocation, 1, GL_FALSE, lm::FMat4::ToArray(viewProj));
 	glUniform3f(viewPosLocation, viewPos.x, viewPos.y, viewPos.z);
