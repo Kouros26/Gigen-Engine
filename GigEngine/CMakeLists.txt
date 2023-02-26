@@ -35,7 +35,8 @@ FetchContent_MakeAvailable(assimp)
 
 FetchContent_Declare(
     LibMath
-    GIT_REPOSITORY https://github.com/Angel-2180/LibMaths.git)
+    GIT_REPOSITORY https://github.com/Angel-2180/LibMaths.git
+	GIT_TAG debug)
 
 set(CMAKE_FOLDER "${CMAKE_FOLDER_OLD}/vendor/lm")
 FetchContent_MakeAvailable(LibMath)
