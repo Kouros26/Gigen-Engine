@@ -33,8 +33,12 @@ struct Mouse
 	double mouseOffsetX;
 	double mouseOffsetY;
 
+	double wheelOffsetY;
+
 	bool rightClick;
 	bool leftClick;
+
+	bool wheelClick;
 };
 
 class Inputs
@@ -51,6 +55,7 @@ public:
 	static void UpdateMousePosition(GLFWwindow* window);
 
 	static void UpdateMouseButton(int button, int action);
+	static void UpdateMouseWheelOffset(double offset);
 
 private:
 	inline static Mouse mouse;
@@ -94,4 +99,12 @@ inline void Inputs::UpdateMouseButton(int button, int action)
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT)
 		mouse.rightClick = action;
+
+	if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+		mouse.wheelClick = action;
+}
+
+inline void Inputs::UpdateMouseWheelOffset(double offset)
+{
+	mouse.wheelOffsetY = offset;
 }

@@ -31,6 +31,7 @@ void Window::Init()
 	glfwSetFramebufferSizeCallback(window, FrameBufferResizeCallback);
 	glfwMakeContextCurrent(window);
 	glfwSetKeyCallback(window, KeyCallback);
+	glfwSetScrollCallback(window, scrollCallback);
 	glfwSetMouseButtonCallback(window, MouseButtonCallback);
 	ToggleVSync(1);
 
@@ -66,6 +67,11 @@ void Window::FrameBufferResizeCallback(GLFWwindow* pWindow, int width, int heigh
 	window->width = width;
 	window->height = height;
 	Application::GetEditorCamera().SetRatio(window->GetRatio());
+}
+
+void Window::scrollCallback(GLFWwindow* /*window*/, double /*xoffset*/, double yoffset)
+{
+	Inputs::UpdateMouseWheelOffset(yoffset);
 }
 
 void Window::ToggleVSync(int input)

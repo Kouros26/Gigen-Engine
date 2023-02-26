@@ -69,6 +69,17 @@ void EditorCamera::Move()
 	{
 		transform.AddPosition(transform.GetRight() * scaleSpeed);
 	}
+
+	if (Inputs::GetMouse().wheelClick)
+	{
+		transform.AddPosition(transform.GetRight() * Inputs::GetMouse().mouseOffsetX);
+		transform.AddPosition(transform.GetUp() * Inputs::GetMouse().mouseOffsetY);
+	}
+	if (Inputs::GetMouse().wheelOffsetY != 0)
+	{
+		transform.AddPosition(transform.GetFront() * speed * Inputs::GetMouse().wheelOffsetY);
+		Inputs::UpdateMouseWheelOffset(0);
+	}
 }
 
 void EditorCamera::Look()
