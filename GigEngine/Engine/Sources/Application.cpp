@@ -35,16 +35,16 @@ Application::Application()
 	GameObject* base = new GameObject();
 	base->transform.SetScale(lm::FVec3(0.01f));
 	base->setModel("Resources/Models/sponza.obj");
-	base->AddNewComponent<testComponent>();
+	//base->AddNewComponent<testComponent>();
 	GameObjectManager::AddGameObject(base);
+	Lines::SetFocusedObjectTransform(&base->transform);
 
-	Lines::AddLine(lm::FVec3(1, 0, 0), lm::FVec3(0, 10, 0));
-	Lines::AddLine(lm::FVec3(10, 0, 0), lm::FVec3(0, 5, 0));
-	Lines::AddLine(lm::FVec3(0, 0, 10), lm::FVec3(0, -10, 0));
-	Lines::AddLine(lm::FVec3(1, 0, -10), lm::FVec3(0, 10, 3));
+	Lines::DrawLine(lm::FVec3(1, 0, 5), lm::FVec3(1, 11, 5), lm::FVec3(0, 0, 1), 5);
+	Lines::DrawLine(lm::FVec3(2, 0, 5), lm::FVec3(2, 12, 5), lm::FVec3(0, 1, 1), 6);
+	Lines::DrawLine(lm::FVec3(3, 0, 5), lm::FVec3(3, 13, 5), lm::FVec3(1, 1, 1), 7);
+	Lines::DrawLine(lm::FVec3(4, 0, 5), lm::FVec3(4, 14, 5), lm::FVec3(1, 0, 1), 8);
+	Lines::DrawLine(lm::FVec3(5, 0, 5), lm::FVec3(5, 15, 5), lm::FVec3(1, 1, 0), 9);
 	//==================================================================
-
-	glEnable(GL_DEPTH_TEST);
 }
 
 Application::~Application()
@@ -109,6 +109,8 @@ void Application::Draw()
 	{
 		editorCamera.Update();
 		UpdateUniforms();
+
+		glEnable(GL_DEPTH_TEST);
 		UpdateGameObjects();
 		Lines::DrawLines();
 	}

@@ -73,11 +73,11 @@ void EditorCamera::Move()
 	if (Inputs::GetMouse().wheelClick)
 	{
 		transform.AddPosition(transform.GetRight() * Inputs::GetMouse().mouseOffsetX);
-		transform.AddPosition(transform.GetUp() * Inputs::GetMouse().mouseOffsetY);
+		transform.AddPosition(transform.GetUp() * -Inputs::GetMouse().mouseOffsetY);
 	}
 	if (Inputs::GetMouse().wheelOffsetY != 0)
 	{
-		transform.AddPosition(transform.GetFront() * speed * Inputs::GetMouse().wheelOffsetY);
+		transform.AddPosition(transform.GetFront() * Inputs::GetMouse().wheelOffsetY);
 		Inputs::UpdateMouseWheelOffset(0);
 	}
 }
@@ -87,10 +87,10 @@ void EditorCamera::Look()
 	if (Inputs::GetMouse().rightClick == 1)
 	{
 		glfwSetInputMode(Application::GetWindow().GetGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		const float Ry = static_cast<float>(Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity) * Time::GetTimeScale());
-		const float Rx = static_cast<float>(Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity) * Time::GetTimeScale());
+		const float Ry = static_cast<float>(-Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity) * Time::GetTimeScale());
+		const float Rx = static_cast<float>(-Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity) * Time::GetTimeScale());
 
-		transform.AddRotation(lm::FVec3(Rx, Ry, 0));
+		transform.AddRotation(lm::FVec3(Rx * transform.GetRight().x, Ry, Rx * transform.GetRight().z));
 
 		//here lock max look angle
 	}

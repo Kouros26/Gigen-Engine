@@ -1,16 +1,18 @@
 #pragma once
 #include "Shader.h"
-#include "Vec3/FVec3.hpp"
+#include "Transform.h"
 #include <vector>
 
 class Line
 {
 public:
-	Line(const lm::FVec3& start, const lm::FVec3& end, const lm::FVec3& color);
+	Line() = default;
+	Line(const lm::FVec3 start, const lm::FVec3 end, const lm::FVec3 color, float timer);
 	~Line();
 
 	GLuint GetVAO();
 	float* GetColor();
+	float timer = 0;
 
 private:
 	float vertices[6];
@@ -23,16 +25,24 @@ private:
 class Lines
 {
 public:
-	Lines();
-	~Lines();
-
 	static void Init();
-	static void AddLine(const lm::FVec3& start, const lm::FVec3& end, const lm::FVec3& color = lm::FVec3(1, 0, 0));
+	static void DrawLine(const lm::FVec3& start, const lm::FVec3& end, const lm::FVec3& color = lm::FVec3(1, 0, 0), float timer = 5.0f);
+	static void SetFocusedObjectTransform(Transform* transform);
 	static void DrawLines();
 	static void Clear();
+
 private:
+	static void DrawDebugLines();
+	static void DrawGuizmoLines();
+	static void CreateGuizmo(Transform* t);
+	static void CreateTranslatedEditorTransform();
+
+	static inline Transform worldTransform;
+	static inline Transform* focusedObjectTransform = nullptr;
+
 	static inline ShaderProgram shaderProgram;
-	static inline std::vector<Line*> lines;
+	static inline std::vector<Line*> debugLines;
+	static inline std::vector<Line*> guizmoLines;
 
 	static inline GLint MVPLocation;
 	static inline GLint colorLocation;

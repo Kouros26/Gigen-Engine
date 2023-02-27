@@ -40,7 +40,7 @@ private:
 	unsigned int id;
 
 	std::vector<class Component*> components;
-	class Model* model;
+	class Model* model = nullptr;
 
 	//use so every gameObject has a different id
 	static unsigned int gameObjectCounter;

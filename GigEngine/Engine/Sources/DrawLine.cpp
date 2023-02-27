@@ -1,8 +1,10 @@
 #include "DrawLine.h"
+#include "Watch.h"
 #include "Application.h"
 #include "ResourceManager.h"
 
-Line::Line(const lm::FVec3& start, const lm::FVec3& end, const lm::FVec3& color)
+Line::Line(const lm::FVec3 start, const lm::FVec3 end, const lm::FVec3 color, float timer)
+	:timer(timer)
 {
 	vertices[0] = start.x;
 	vertices[1] = start.y;
@@ -46,14 +48,6 @@ float* Line::GetColor()
 	return color;
 }
 
-Lines::Lines()
-{
-}
-
-Lines::~Lines()
-{
-}
-
 void Lines::Init()
 {
 	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/vertLine.vert");
@@ -65,9 +59,14 @@ void Lines::Init()
 	colorLocation = glGetUniformLocation(shaderProgram.GetId(), "color");
 }
 
-void Lines::AddLine(const lm::FVec3& start, const lm::FVec3& end, const lm::FVec3& color)
+void Lines::DrawLine(const lm::FVec3& start, const lm::FVec3& end, const lm::FVec3& color, float timer)
 {
-	lines.push_back(new Line(start, end, color));
+	debugLines.push_back(new Line(start, end, color, timer));
+}
+
+void Lines::SetFocusedObjectTransform(Transform* transform)
+{
+	focusedObjectTransform = transform;
 }
 
 void Lines::DrawLines()
@@ -75,13 +74,29 @@ void Lines::DrawLines()
 	shaderProgram.Use();
 	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, lm::FMat4::ToArray(Application::GetViewProj()));
 
-	for (int i = 0; i < lines.size(); i++)
-	{
-		if (lines[i])
-		{
-			glUniform3fv(colorLocation, 1, lines[i]->GetColor());
+	DrawDebugLines();
+	glDisable(GL_DEPTH_TEST);
+	DrawGuizmoLines();
+	glEnable(GL_DEPTH_TEST);
+}
 
-			glBindVertexArray(lines[i]->GetVAO());
+void Lines::DrawDebugLines()
+{
+	for (int i = 0; i < debugLines.size(); i++)
+	{
+		if (debugLines[i])
+		{
+			debugLines[i]->timer -= Time::GetDeltaTime();
+			if (debugLines[i]->timer < 0)
+			{
+				delete debugLines[i];
+				debugLines.erase(debugLines.begin() + i);
+				continue;
+			}
+
+			glUniform3fv(colorLocation, 1, debugLines[i]->GetColor());
+
+			glBindVertexArray(debugLines[i]->GetVAO());
 			glDrawArrays(GL_LINES, 0, 2);
 		}
 	}
@@ -89,9 +104,53 @@ void Lines::DrawLines()
 
 void Lines::Clear()
 {
-	for (int i = 0; i < lines.size(); i++)
+	for (int i = 0; i < debugLines.size(); i++)
 	{
-		delete lines[i];
+		delete debugLines[i];
 	}
-	lines.clear();
+	debugLines.clear();
+}
+
+void Lines::DrawGuizmoLines()
+{
+	CreateTranslatedEditorTransform();
+	CreateGuizmo(&worldTransform);
+	CreateGuizmo(focusedObjectTransform);
+
+	for (int i = 0; i < guizmoLines.size(); i++)
+	{
+		if (guizmoLines[i])
+		{
+			glUniform3fv(colorLocation, 1, guizmoLines[i]->GetColor());
+
+			glBindVertexArray(guizmoLines[i]->GetVAO());
+			glDrawArrays(GL_LINES, 0, 2);
+		}
+	}
+
+	for (int i = 0; i < guizmoLines.size(); i++)
+	{
+		delete guizmoLines[i];
+	}
+	guizmoLines.clear();
+}
+
+void Lines::CreateGuizmo(Transform* t)
+{
+	if (!t) return;
+
+	lm::FVec3 pos(t->GetPosition());
+	guizmoLines.push_back(new Line(pos, pos + t->GetRight(), lm::FVec3(1, 0, 0), 0));
+	guizmoLines.push_back(new Line(pos, pos + t->GetUp(), lm::FVec3(0, 1, 0), 0));
+	guizmoLines.push_back(new Line(pos, pos + t->GetFront(), lm::FVec3(0, 0, 1), 0));
+}
+
+void Lines::CreateTranslatedEditorTransform()
+{
+	lm::FVec3 pos = Application::GetEditorCamera().transform.GetPosition();
+	pos += 10 * Application::GetEditorCamera().transform.GetFront();
+	pos += 7 * Application::GetEditorCamera().transform.GetRight();
+	pos += 7 * Application::GetEditorCamera().transform.GetUp();
+
+	worldTransform.SetPosition(pos);
 }
