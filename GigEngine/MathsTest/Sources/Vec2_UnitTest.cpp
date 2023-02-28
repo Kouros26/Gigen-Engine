@@ -25,7 +25,7 @@ TEST_CASE("Vector2", "[.all][vector][Vector2]")
 
         // destructor
         {
-            lm::FVec2 temp;
+            lm::FVec2 temp; (void)temp;
         }
 
         // basic constructor
