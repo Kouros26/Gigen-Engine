@@ -7,7 +7,9 @@ class GameObject
 public:
 	GameObject();
 	GameObject(std::string name);
-	~GameObject();
+	virtual ~GameObject();
+
+	void Destroy();
 
 	void UpdateRender() const;
 	void UpdateComponents() const;

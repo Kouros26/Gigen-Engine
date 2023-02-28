@@ -1,7 +1,12 @@
 #pragma once
-#include "Camera.h"
+#include <vector>
+#include <string>
 
-//class Model;
+class GameObject;
+class Camera;
+class DirLight;
+class SpotLight;
+class PointLight;
 
 class GameObjectManager
 {
@@ -13,14 +18,21 @@ public:
 	static GameObject* GetGameObject(int i);
 	static void Cleanup();
 	static void AddGameObject(GameObject* object);
+	static void Remove(GameObject* object);
 	static std::vector<GameObject*> FindObjectsByName(std::string name);
 	static Camera* GetCurrentCamera();
 	static void SetCurrentCamera(Camera* camera);
-	//static void InitSkyBox(Model* model);
-	//static Model* GetSkyBox();
+
+	static void SendLightsToShader();
+	static int GetDirLightSize();
+	static int GetPointLightSize();
+	static int GetSpotLightSize();
 
 private:
 	inline static Camera* currentCamera;
-	//inline static Model* SkyBox;
 	inline static std::vector<GameObject*> gameObjects;
+
+	inline static std::vector<DirLight*> dirLights;
+	inline static std::vector<SpotLight*> spotLights;
+	inline static std::vector<PointLight*> pointLights;
 };

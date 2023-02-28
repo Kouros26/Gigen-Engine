@@ -17,7 +17,7 @@ void Transform::SetPosition(lm::FVec3 pos)
 void Transform::SetRotation(lm::FVec3 rot)
 {
 	rotation = rot;
-	ClampRotation();
+	LimitRotation();
 	hasChanged = true;
 }
 

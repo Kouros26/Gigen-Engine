@@ -40,6 +40,7 @@ public:
 	[[nodiscard]] static double GetDeltaTime();
 	[[nodiscard]] static double GetTimeScale();
 	[[nodiscard]] static double GetUnscaledDeltaTime();
+	[[nodiscard]] static double GetCurrentTime();
 
 	static void SetTimeScale(const double& newTimeScale);
 };

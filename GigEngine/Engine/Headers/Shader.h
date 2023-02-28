@@ -2,6 +2,8 @@
 #include "IResource.h"
 #include <glad/glad.h>
 #include <string>
+#include "Mat4/FMat4.hpp"
+#include "Vec3/FVec3.hpp"
 
 class ShaderProgram
 {
@@ -12,6 +14,12 @@ public:
 	void Use();
 
 	GLuint GetId();
+
+	void SetVec3(lm::FVec3& value, const char* name);
+	void SetMat4(lm::FMat4& value, const char* name);
+	void SetBool(bool& value, const char* name);
+	void SetInt(int& value, const char* name);
+	void SetFloat(float& value, const char* name);
 
 private:
 	GLuint shaderProgram = GL_FALSE;

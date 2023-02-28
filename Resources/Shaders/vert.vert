@@ -11,12 +11,10 @@ out vec3 fragViewPos;
 
 uniform mat4 model;
 uniform mat4 viewProj;
-uniform vec3 viewPos;
 
 void main() {
     gl_Position = viewProj * model * vec4(inPosition, 1.0);
     fragNormal =  mat3(transpose(inverse(model))) * inNormal;
     fragTexCoord = inTexCoord;
     fragPos = vec3(model * vec4(inPosition, 1.0));
-    fragViewPos = viewPos;
 }

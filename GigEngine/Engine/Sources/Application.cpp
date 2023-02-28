@@ -1,18 +1,12 @@
 #include "Application.h"
 #include "Inputs.h"
 #include "Watch.h"
-#include "Shader.h"
 #include "Model.h"
 #include "GameObjectManager.h"
 #include "ResourceManager.h"
 #include "DrawLine.h"
+#include "Light.h"
 #include <iostream>
-
-//to remove when resource manager
-ShaderProgram mainShader;
-GLint viewProjLocation;
-GLint ModelLocation;
-GLint viewPosLocation;
 
 Application::Application()
 {
@@ -21,23 +15,21 @@ Application::Application()
 	editorCamera.SetRatio(window.GetRatio());
 	InitGlad();
 	Lines::Init();
+	InitMainShader();
 
 	//to remove =====================================================
-	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/vert.vert");
-	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/frag.frag");
-
-	mainShader.Link(mainVertex, mainFragment);
-
-	viewProjLocation = glGetUniformLocation(mainShader.GetId(), "viewProj");
-	ModelLocation = glGetUniformLocation(mainShader.GetId(), "model");
-	viewPosLocation = glGetUniformLocation(mainShader.GetId(), "viewPos");
-
 	GameObject* base = new GameObject();
 	base->transform.SetScale(lm::FVec3(0.01f));
 	base->setModel("Resources/Models/sponza.obj");
-	//base->AddNewComponent<testComponent>();
+	base->AddNewComponent<TestComponent>();
 	GameObjectManager::AddGameObject(base);
 	Lines::SetFocusedObjectTransform(&base->transform);
+
+	DirLight* dirlight = new DirLight(0.1f, 0.2f, 0.3f, lm::FVec3(1,0,0));
+	GameObjectManager::AddGameObject(dirlight);
+
+	//SpotLight* spotlight = new SpotLight(0.1f, 0.2f, 0.3f, 0.2f, 0.2f, 0.2f, 45, 90, lm::FVec3(0, 0, 1));
+	//GameObjectManager::AddGameObject(spotlight);
 
 	Lines::DrawLine(lm::FVec3(1, 0, 5), lm::FVec3(1, 11, 5), lm::FVec3(0, 0, 1), 5);
 	Lines::DrawLine(lm::FVec3(2, 0, 5), lm::FVec3(2, 12, 5), lm::FVec3(0, 1, 1), 6);
@@ -61,6 +53,11 @@ Window& Application::GetWindow()
 EditorCamera& Application::GetEditorCamera()
 {
 	return editorCamera;
+}
+
+ShaderProgram& Application::GetMainShader()
+{
+	return mainShader;
 }
 
 lm::FMat4& Application::GetViewProj()
@@ -102,6 +99,23 @@ void Application::InitGlad()
 	}
 }
 
+void Application::InitMainShader()
+{
+	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/vert.vert");
+	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/frag.frag");
+
+	if (!mainShader.Link(mainVertex, mainFragment))
+		std::cout << "Error linking main shader" << std::endl;
+
+	ModelLocation = glGetUniformLocation(mainShader.GetId(), "model");
+	viewProjLocation = glGetUniformLocation(mainShader.GetId(), "viewProj");
+	viewPosLocation = glGetUniformLocation(mainShader.GetId(), "viewPos");
+
+	nbDirLightLocation = glGetUniformLocation(mainShader.GetId(), "nbDirLight");
+	nbPointLightLocation = glGetUniformLocation(mainShader.GetId(), "nbPointLight");
+	nbSpotLightLocation = glGetUniformLocation(mainShader.GetId(), "nbSpotLight");
+}
+
 void Application::Draw()
 {
 	ClearWindow();
@@ -109,11 +123,14 @@ void Application::Draw()
 	if (isEditor)
 	{
 		editorCamera.Update();
-		UpdateUniforms();
 
+		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
+		UpdateUniforms(); //then send the global uniforms
+		UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
+		
 		glEnable(GL_DEPTH_TEST);
-		UpdateGameObjects();
-		Lines::DrawLines();
+		UpdateGameObjectRender(); //render model if they have one
+		Lines::DrawLines(); //render debug lines or guizmos
 	}
 }
 
@@ -123,19 +140,33 @@ void Application::ClearWindow()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Application::UpdateGameObjects()
+void Application::UpdateGameObjectComponent()
+{
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
+	{
+		GameObject* object = GameObjectManager::GetGameObject(i);
+		object->UpdateComponents();
+	}
+}
+
+void Application::UpdateGameObjectRender()
 {
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		GameObject* object = GameObjectManager::GetGameObject(i);
 
-		if (object)
-		{
-			object->UpdateComponents();
-			glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, lm::FMat4::ToArray(object->transform.GetMatrix()));
-			object->UpdateRender();
-		}
+		glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, lm::FMat4::ToArray(object->transform.GetMatrix()));
+		object->UpdateRender();
 	}
+}
+
+void Application::UpdateLights()
+{
+	glUniform1i(nbDirLightLocation, GameObjectManager::GetDirLightSize());
+	glUniform1i(nbPointLightLocation, GameObjectManager::GetPointLightSize());
+	glUniform1i(nbSpotLightLocation, GameObjectManager::GetSpotLightSize());
+
+	GameObjectManager::SendLightsToShader();
 }
 
 void Application::UpdateUniforms()

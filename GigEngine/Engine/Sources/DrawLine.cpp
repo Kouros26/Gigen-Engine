@@ -53,7 +53,8 @@ void Lines::Init()
 	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/vertLine.vert");
 	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/fragLine.frag");
 
-	shaderProgram.Link(mainVertex, mainFragment);
+	if (!shaderProgram.Link(mainVertex, mainFragment))
+		std::cout << "Error linking drawLine shader" << std::endl;
 
 	MVPLocation = glGetUniformLocation(shaderProgram.GetId(), "MVP");
 	colorLocation = glGetUniformLocation(shaderProgram.GetId(), "color");

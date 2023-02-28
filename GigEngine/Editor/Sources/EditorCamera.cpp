@@ -5,6 +5,7 @@
 
 EditorCamera::EditorCamera()
 {
+
 }
 
 EditorCamera::~EditorCamera()
@@ -72,7 +73,7 @@ void EditorCamera::Move()
 
 	if (Inputs::GetMouse().wheelClick)
 	{
-		transform.AddPosition(GetRight() * Inputs::GetMouse().mouseOffsetX);
+		transform.AddPosition(-GetRight() * Inputs::GetMouse().mouseOffsetX);
 		transform.AddPosition(GetUp() * -Inputs::GetMouse().mouseOffsetY);
 	}
 	if (Inputs::GetMouse().wheelOffsetY != 0)
@@ -90,7 +91,7 @@ void EditorCamera::Look()
 		const float Ry = static_cast<float>(-Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity));
 		const float Rx = static_cast<float>(-Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity) );
 
-		transform.AddRotation(lm::FVec3(-Rx, Ry, 0));
+		transform.AddRotation(lm::FVec3(Rx, -Ry, 0));
 
 		lm::FVec3 rot = transform.GetRotation();
 		if (rot.x > maxLookAngle)

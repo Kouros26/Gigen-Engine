@@ -98,6 +98,11 @@ double Time::GetUnscaledDeltaTime()
 	return unscaledDeltaTime;
 }
 
+double Time::GetCurrentTime()
+{
+	return currentTime;
+}
+
 void Time::SetTimeScale(const double& newTimeScale)
 {
 	timeScale = newTimeScale;

@@ -14,12 +14,13 @@ protected:
 	GameObject* gameObject;
 };
 
-class testComponent : public Component
+class TestComponent : public Component
 {
 public:
-	testComponent(GameObject* gameObject) : Component(gameObject) {};
+	TestComponent(GameObject* gameObject) : Component(gameObject) {};
 
 	virtual void Update() override {
-		gameObject->transform.AddRotation(lm::FVec3(5) * Time::GetDeltaTime());
+		gameObject->transform.SetPosition(lm::FVec3(1) * sin(Time::GetCurrentTime()));
+		gameObject->transform.AddRotation(lm::FVec3(0,10,0) * Time::GetDeltaTime());
 	};
 };

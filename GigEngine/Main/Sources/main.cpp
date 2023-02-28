@@ -11,7 +11,7 @@ int main()
 	while (!window.ShouldClose())
 	{
 		interface.BeginFrame();
-		app.Run();
+		app.Run(); 
 		interface.Draw();
 		app.SwapFrames();
 	}
