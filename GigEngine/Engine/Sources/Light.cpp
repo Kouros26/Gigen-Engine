@@ -3,8 +3,11 @@
 #include <string>
 
 DirLight::DirLight(float ambient, float diffuse, float specular, lm::FVec3 color)
-	:ambient(ambient), diffuse(diffuse), specular(specular), color(color)
+	:ambient(ambient), diffuse(diffuse), specular(specular)
 {
+	this->color[0] = color.x;
+	this->color[1] = color.y;
+	this->color[2] = color.z;
 }
 
 void DirLight::SendToShader(const int& pos, const std::string& shaderName)
@@ -12,7 +15,10 @@ void DirLight::SendToShader(const int& pos, const std::string& shaderName)
 	std::string str = shaderName + "[" + std::to_string(pos) + "].";
 	std::string temp = str;
 
-	lm::FVec3 direction = transform.GetFront();
+	lm::FVec3 dir = transform.GetFront();
+	direction[0] = dir.x;
+	direction[1] = dir.y;
+	direction[2] = dir.z;
 
 	ShaderProgram& shader = Application::GetMainShader();
 	shader.SetVec3(direction, (str.append("direction")).c_str());
@@ -38,7 +44,10 @@ void PointLight::SendToShader(const int& pos, const std::string& shaderName)
 	std::string str = shaderName + "[" + std::to_string(pos) + "].";
 	std::string temp = str;
 
-	lm::FVec3 position = transform.GetPosition();
+	lm::FVec3 posi = transform.GetPosition();
+	position[0] = posi.x;
+	position[1] = posi.y;
+	position[2] = posi.z;
 
 	ShaderProgram& shader = Application::GetMainShader();
 	shader.SetVec3(position, (str.append("position")).c_str());

@@ -34,17 +34,17 @@ void GameObjectManager::AddGameObject(GameObject* object)
 	if (std::find(gameObjects.begin(), gameObjects.end(), object) == gameObjects.end())
 		gameObjects.push_back(object);
 
-	PointLight* point = dynamic_cast<PointLight*>(object);
-	if (point) 
-	{
-		pointLights.push_back(point);
-		return;
-	}
-
 	SpotLight* spot = dynamic_cast<SpotLight*>(object);
 	if (spot)
 	{
 		spotLights.push_back(spot);
+		return;
+	}
+
+	PointLight* point = dynamic_cast<PointLight*>(object);
+	if (point)
+	{
+		pointLights.push_back(point);
 		return;
 	}
 
@@ -58,7 +58,7 @@ void GameObjectManager::AddGameObject(GameObject* object)
 void GameObjectManager::Remove(GameObject* object)
 {
 	auto it = std::find(gameObjects.begin(), gameObjects.end(), object);
-	
+
 	if (it != gameObjects.end())
 		gameObjects.erase(it);
 

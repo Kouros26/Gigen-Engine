@@ -14,23 +14,26 @@ public:
 	virtual void SendToShader(const int& pos, const std::string& shaderName);
 
 private:
-	lm::FVec3 color;
+	float direction[3];
+	float color[3];
 
 	float ambient;
 	float diffuse;
 	float specular;
 };
 
-class PointLight : public DirLight 
+class PointLight : public DirLight
 {
 public:
-	PointLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f, 
+	PointLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
 		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
 		lm::FVec3 color = lm::FVec3(1));
 
 	virtual void SendToShader(const int& pos, const std::string& shaderName) override;
 
 private:
+	float position[3];
+
 	float constant;
 	float linear;
 	float quadratic;
@@ -46,7 +49,7 @@ public:
 
 	virtual void SendToShader(const int& pos, const std::string& shaderName) override;
 
-private :
+private:
 	float cutOff;
 	float outerCutOff;
 };

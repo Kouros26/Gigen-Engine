@@ -92,8 +92,8 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     diffuse  *= intensity;
     specular *= intensity;
 
-    float distance    = length(light.position - fragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+    float dist    = length(light.position - fragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
@@ -103,8 +103,8 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
     vec3 lightDir = normalize(light.position - fragPos);
-    float distance = length(light.position - fragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
+    float dist = length(light.position - fragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
     float diffuse = (max(dot(lightDir, normal), 0.0) * light.diffuse * attenuation);
     vec3 haflwaydir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(viewDir, haflwaydir), 0.0), SHINYNESS);

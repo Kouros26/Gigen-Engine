@@ -87,28 +87,37 @@ GLuint ShaderProgram::GetId()
 	return shaderProgram;
 }
 
-void ShaderProgram::SetVec3(lm::FVec3& value, const char* name)
+GLuint ShaderProgram::GetUniform(const char* name)
 {
-	float f[3]{ value.x, value.y, value.z };
-	glUniform3fv(glGetUniformLocation(shaderProgram, name), 1, f);
+	GLuint result = glGetUniformLocation(shaderProgram, name);
+
+	if (result == -1)
+		std::cout << name << " not found in uniform" << std::endl;
+
+	return result;
+}
+
+void ShaderProgram::SetVec3(float vec[3], const char* name)
+{
+	glUniform3fv(GetUniform(name), 1, vec);
 }
 
 void ShaderProgram::SetMat4(lm::FMat4& value, const char* name)
 {
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name), 1, GL_FALSE, lm::FMat4::ToArray(value));
+	glUniformMatrix4fv(GetUniform(name), 1, GL_FALSE, lm::FMat4::ToArray(value));
 }
 
 void ShaderProgram::SetBool(bool& value, const char* name)
 {
-	glUniform1i(glGetUniformLocation(shaderProgram, name), (int)value);
+	glUniform1i(GetUniform(name), (int)value);
 }
 
 void ShaderProgram::SetInt(int& value, const char* name)
 {
-	glUniform1i(glGetUniformLocation(shaderProgram, name), value);
+	glUniform1i(GetUniform(name), value);
 }
 
 void ShaderProgram::SetFloat(float& value, const char* name)
 {
-	glUniform1f(glGetUniformLocation(shaderProgram, name), value);
+	glUniform1f(GetUniform(name), value);
 }

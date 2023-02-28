@@ -25,10 +25,21 @@ Application::Application()
 	GameObjectManager::AddGameObject(base);
 	Lines::SetFocusedObjectTransform(&base->transform);
 
-	DirLight* dirlight = new DirLight(0.1f, 0.2f, 0.3f, lm::FVec3(1,0,0));
+	DirLight* dirlight = new DirLight(0.1f, 0.2f, 0.3f, lm::FVec3(1, 0.5f, 0));
+	dirlight->transform.SetRotation(lm::FVec3(45, 20, 0));
 	GameObjectManager::AddGameObject(dirlight);
 
-	//SpotLight* spotlight = new SpotLight(0.1f, 0.2f, 0.3f, 0.2f, 0.2f, 0.2f, 45, 90, lm::FVec3(0, 0, 1));
+	DirLight* dirlight2 = new DirLight(0.1f, 0.2f, 0.3f, lm::FVec3(0, 0.5f, 1));
+	dirlight2->transform.SetRotation(lm::FVec3(-45, -20, 0));
+	GameObjectManager::AddGameObject(dirlight2);
+
+	//PointLight* pointlight = new PointLight(0.1f, 0.2f, 0.3f, 0.02f, 0.01f, 0.01f, lm::FVec3(0, 1, 0));
+	//pointlight->transform.SetPosition(lm::FVec3(10, 0, 15));
+	//GameObjectManager::AddGameObject(pointlight);
+
+	//SpotLight* spotlight = new SpotLight(0.1f, 0.2f, 0.3f, 0.02f, 0.01f, 0.01f, 10, 20, lm::FVec3(0, 0, 1));
+	//spotlight->transform.SetRotation(lm::FVec3(90, 0, 0));
+	//spotlight->transform.SetPosition(lm::FVec3(0, 20, 0));
 	//GameObjectManager::AddGameObject(spotlight);
 
 	Lines::DrawLine(lm::FVec3(1, 0, 5), lm::FVec3(1, 11, 5), lm::FVec3(0, 0, 1), 5);
@@ -107,13 +118,13 @@ void Application::InitMainShader()
 	if (!mainShader.Link(mainVertex, mainFragment))
 		std::cout << "Error linking main shader" << std::endl;
 
-	ModelLocation = glGetUniformLocation(mainShader.GetId(), "model");
-	viewProjLocation = glGetUniformLocation(mainShader.GetId(), "viewProj");
-	viewPosLocation = glGetUniformLocation(mainShader.GetId(), "viewPos");
+	ModelLocation = mainShader.GetUniform("model");
+	viewProjLocation = mainShader.GetUniform("viewProj");
+	viewPosLocation = mainShader.GetUniform("viewPos");
 
-	nbDirLightLocation = glGetUniformLocation(mainShader.GetId(), "nbDirLight");
-	nbPointLightLocation = glGetUniformLocation(mainShader.GetId(), "nbPointLight");
-	nbSpotLightLocation = glGetUniformLocation(mainShader.GetId(), "nbSpotLight");
+	nbDirLightLocation = mainShader.GetUniform("nbDirLight");
+	nbPointLightLocation = mainShader.GetUniform("nbPointLight");
+	nbSpotLightLocation = mainShader.GetUniform("nbSpotLight");
 }
 
 void Application::Draw()
@@ -127,7 +138,7 @@ void Application::Draw()
 		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
 		UpdateUniforms(); //then send the global uniforms
 		UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
-		
+
 		glEnable(GL_DEPTH_TEST);
 		UpdateGameObjectRender(); //render model if they have one
 		Lines::DrawLines(); //render debug lines or guizmos
