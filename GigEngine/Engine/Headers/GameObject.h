@@ -73,11 +73,8 @@ inline std::vector<T*> GameObject::GetComponents()
 	std::vector<T*> comps;
 	for (int i = 0; i < components.size(); i++)
 	{
-		T* comp = dynamic_cast<T*>(components[i]);
-		if (comp)
-		{
+		if (T* comp = dynamic_cast<T*>(components[i]))
 			comps.push_back(comp);
-		}
 	}
 	return comps;
 }
@@ -87,8 +84,7 @@ inline void GameObject::RemoveComponents()
 {
 	for (int i = 0; i < components.size(); i++)
 	{
-		T* comp = dynamic_cast<T*>(components[i]);
-		if (comp)
+		if (T* comp = dynamic_cast<T*>(components[i]))
 		{
 			delete comp;
 			components.erase(components.begin() + i);

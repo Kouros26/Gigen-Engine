@@ -4,10 +4,10 @@
 class IResource
 {
 public:
-	IResource(std::string const& filePath) : filePath(filePath) {};
+	IResource(const std::string& filePath) : filePath(filePath) {};
 	virtual ~IResource() = default;
 
-	const std::string& GetFilePath() const { return filePath; };
+	[[nodiscard]] const std::string& GetFilePath() const { return filePath; };
 
 protected:
 	std::string filePath;

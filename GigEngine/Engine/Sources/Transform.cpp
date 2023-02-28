@@ -8,20 +8,20 @@ Transform::~Transform()
 {
 }
 
-void Transform::SetPosition(lm::FVec3 pos)
+void Transform::SetPosition(const lm::FVec3& pos)
 {
 	position = pos;
 	hasChanged = true;
 }
 
-void Transform::SetRotation(lm::FVec3 rot)
+void Transform::SetRotation(const lm::FVec3& rot)
 {
 	rotation = rot;
-	ClampRotation();
+	LimitRotation();
 	hasChanged = true;
 }
 
-void Transform::SetScale(lm::FVec3 scl)
+void Transform::SetScale(const lm::FVec3& scl)
 {
 	scale = scl;
 	hasChanged = true;
@@ -42,7 +42,7 @@ lm::FVec3 Transform::GetRotation() const
 	return rotation;
 }
 
-void Transform::AddPosition(lm::FVec3 pos)
+void Transform::AddPosition(const lm::FVec3& pos)
 {
 	position += pos;
 	hasChanged = true;
@@ -51,7 +51,7 @@ void Transform::AddPosition(lm::FVec3 pos)
 lm::FVec3 Transform::GetFront()
 {
 	const lm::FVec4 temp = GetMatrix()[2];
-	lm::FVec3 forward(temp[0], temp[1], temp[2]);
+	const lm::FVec3 forward(temp[0], temp[1], temp[2]);
 
 	return lm::FVec3::Normalize(forward);
 }
@@ -59,7 +59,7 @@ lm::FVec3 Transform::GetFront()
 lm::FVec3 Transform::GetRight()
 {
 	const lm::FVec4 temp = GetMatrix()[0];
-	lm::FVec3 right(temp[0], temp[1], temp[2]);
+	const lm::FVec3 right(temp[0], temp[1], temp[2]);
 
 	return lm::FVec3::Normalize(right);
 }
@@ -80,14 +80,14 @@ lm::FMat4 Transform::GetMatrix()
 	return matrix;
 }
 
-void Transform::AddRotation(lm::FVec3 rot)
+void Transform::AddRotation(const lm::FVec3& rot)
 {
 	rotation += rot;
 	LimitRotation();
 	hasChanged = true;
 }
 
-void Transform::AddScale(lm::FVec3 scl)
+void Transform::AddScale(const lm::FVec3& scl)
 {
 	scale += scl;
 	hasChanged = true;
@@ -103,13 +103,7 @@ void Transform::LimitRotation()
 {
 	for (int i = 0; i < 3; i++)
 	{
-		while (rotation[i] < -360)
-		{
-			rotation[i] += 360;
-		}
-		while (rotation[i] > 360)
-		{
-			rotation[i] -= 360;
-		}
+		if (rotation[i] > 360 || rotation[i] < -360)
+			rotation[i] = std::fmod(rotation[i], 360);
 	}
 }

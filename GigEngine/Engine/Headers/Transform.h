@@ -8,17 +8,17 @@ public:
 	Transform();
 	~Transform();
 
-	void SetPosition(lm::FVec3 pos);
-	void SetRotation(lm::FVec3 rot);
-	void SetScale(lm::FVec3 scl);
+	void SetPosition(const lm::FVec3& pos);
+	void SetRotation(const lm::FVec3& rot);
+	void SetScale(const lm::FVec3& scl);
 
-	lm::FVec3 GetPosition() const;
-	lm::FVec3 GetScale() const;
-	lm::FVec3 GetRotation() const;
+	[[nodiscard]] lm::FVec3 GetPosition() const;
+	[[nodiscard]] lm::FVec3 GetScale() const;
+	[[nodiscard]] lm::FVec3 GetRotation() const;
 
-	void AddScale(lm::FVec3 scl);
-	void AddRotation(lm::FVec3 rot);
-	void AddPosition(lm::FVec3 pos);
+	void AddScale(const lm::FVec3& scl);
+	void AddRotation(const lm::FVec3& rot);
+	void AddPosition(const lm::FVec3& pos);
 
 	lm::FVec3 GetFront();
 	lm::FVec3 GetUp();
