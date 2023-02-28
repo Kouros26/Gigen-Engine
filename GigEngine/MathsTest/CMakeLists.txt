@@ -98,7 +98,7 @@ target_link_libraries(${TARGET_NAME} PRIVATE ${LIBMATHS_LIBRARY})
 if(MSVC)
 set_target_properties(${TARGET_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration) )
 
-target_compile_options(${TARGET_NAME} PRIVATE /W4)
+target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
 target_link_options(${TARGET_NAME} PRIVATE /FORCE:UNRESOLVED)
 else()
 message(WARNING "This CMakeLists.txt only run on Windows")
