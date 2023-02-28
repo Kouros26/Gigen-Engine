@@ -50,6 +50,7 @@ Application::Application()
 Application::~Application()
 {
 	Lines::Clear();
+	GameObjectManager::Cleanup();
 }
 
 Window& Application::GetWindow()

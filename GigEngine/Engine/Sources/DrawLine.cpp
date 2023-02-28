@@ -91,6 +91,7 @@ void Lines::DrawDebugLines()
 			{
 				delete debugLines[i];
 				debugLines.erase(debugLines.begin() + i);
+				i--;
 				continue;
 			}
 
@@ -147,10 +148,11 @@ void Lines::CreateGuizmo(Transform* t)
 
 void Lines::CreateTranslatedEditorTransform()
 {
+	//this must change, but ok for now
 	lm::FVec3 pos = Application::GetEditorCamera().transform.GetPosition();
-	pos += 10 * Application::GetEditorCamera().transform.GetFront();
-	pos += 7 * Application::GetEditorCamera().transform.GetRight();
-	pos += 7 * Application::GetEditorCamera().transform.GetUp();
+	pos += 10 * Application::GetEditorCamera().GetFront();
+	pos -= 10 * Application::GetEditorCamera().GetRight();
+	pos += 8 * Application::GetEditorCamera().GetUp();
 
 	worldTransform.SetPosition(pos);
 }

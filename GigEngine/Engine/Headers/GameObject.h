@@ -43,7 +43,7 @@ private:
 	class Model* model = nullptr;
 
 	//use so every gameObject has a different id
-	static unsigned int gameObjectCounter;
+	static unsigned int gameObjectIndex;
 };
 
 template<class T>
@@ -58,7 +58,7 @@ inline T* GameObject::GetComponent()
 {
 	for (int i = 0; i < components.size(); i++)
 	{
-		T* comp = static_cast<T*>(components[i]);
+		T* comp = dynamic_cast<T*>(components[i]);
 		if (comp)
 		{
 			return comp;

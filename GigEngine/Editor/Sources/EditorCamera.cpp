@@ -55,29 +55,29 @@ void EditorCamera::Move()
 
 	if (Inputs::GetKey(UP) || Inputs::GetKey('W'))
 	{
-		transform.AddPosition(transform.GetFront() * scaleSpeed);
+		transform.AddPosition(GetFront() * scaleSpeed);
 	}
 	if (Inputs::GetKey(DOWN) || Inputs::GetKey('S'))
 	{
-		transform.AddPosition(transform.GetFront() * -scaleSpeed);
+		transform.AddPosition(GetFront() * -scaleSpeed);
 	}
 	if (Inputs::GetKey(LEFT) || Inputs::GetKey('A'))
 	{
-		transform.AddPosition(transform.GetRight() * -scaleSpeed);
+		transform.AddPosition(-GetRight() * -scaleSpeed);
 	}
 	if (Inputs::GetKey(RIGHT) || Inputs::GetKey('D'))
 	{
-		transform.AddPosition(transform.GetRight() * scaleSpeed);
+		transform.AddPosition(-GetRight() * scaleSpeed);
 	}
 
 	if (Inputs::GetMouse().wheelClick)
 	{
-		transform.AddPosition(transform.GetRight() * Inputs::GetMouse().mouseOffsetX);
-		transform.AddPosition(transform.GetUp() * -Inputs::GetMouse().mouseOffsetY);
+		transform.AddPosition(GetRight() * Inputs::GetMouse().mouseOffsetX);
+		transform.AddPosition(GetUp() * -Inputs::GetMouse().mouseOffsetY);
 	}
 	if (Inputs::GetMouse().wheelOffsetY != 0)
 	{
-		transform.AddPosition(transform.GetFront() * Inputs::GetMouse().wheelOffsetY);
+		transform.AddPosition(GetFront() * Inputs::GetMouse().wheelOffsetY);
 		Inputs::UpdateMouseWheelOffset(0);
 	}
 }
@@ -87,12 +87,17 @@ void EditorCamera::Look()
 	if (Inputs::GetMouse().rightClick == 1)
 	{
 		glfwSetInputMode(Application::GetWindow().GetGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		const float Ry = static_cast<float>(-Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity) * Time::GetTimeScale());
-		const float Rx = static_cast<float>(-Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity) * Time::GetTimeScale());
+		const float Ry = static_cast<float>(-Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity));
+		const float Rx = static_cast<float>(-Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity) );
 
-		transform.AddRotation(lm::FVec3(Rx * transform.GetRight().x, Ry, Rx * transform.GetRight().z));
+		transform.AddRotation(lm::FVec3(-Rx, Ry, 0));
 
-		//here lock max look angle
+		lm::FVec3 rot = transform.GetRotation();
+		if (rot.x > maxLookAngle)
+			transform.SetRotation(lm::FVec3(maxLookAngle, rot.y, rot.z));
+
+		if (rot.x < -maxLookAngle)
+			transform.SetRotation(lm::FVec3(-maxLookAngle, rot.y, rot.z));
 	}
 
 	else if (Inputs::GetMouse().rightClick == 0)

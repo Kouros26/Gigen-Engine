@@ -9,10 +9,6 @@ public:
 	void Init();
 	void ProcessInput() const;
 
-	static void KeyCallback(GLFWwindow*, int key, int, int action, int);
-	static void MouseButtonCallback(GLFWwindow*, int button, int action, int);
-	static void FrameBufferResizeCallback(GLFWwindow* pWindow, int width, int height);
-	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 	static void ToggleVSync(int input);
 
 	[[nodiscard]] unsigned int GetWidth() const;
@@ -34,4 +30,9 @@ private:
 
 	unsigned int width = 0;
 	unsigned int height = 0;
+
+	static void KeyCallback(GLFWwindow*, int key, int, int action, int);
+	static void MouseButtonCallback(GLFWwindow*, int button, int action, int);
+	static void FrameBufferResizeCallback(GLFWwindow* pWindow, int width, int height);
+	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 };

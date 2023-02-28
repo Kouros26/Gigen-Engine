@@ -4,7 +4,7 @@ class Displayable
 {
 public:
 
-	virtual ~Displayable();
+	virtual ~Displayable()= default;
 
 	virtual void Draw() = 0;
 };

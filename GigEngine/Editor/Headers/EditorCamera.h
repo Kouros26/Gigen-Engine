@@ -19,7 +19,7 @@ private:
 	float speedMax = 50;
 	float sensitivity = 2;
 
-	float maxLookAngle = 80;
+	const float maxLookAngle = 89;
 
 	bool pressLeftShift = false;
 	bool pressRightShift = false;

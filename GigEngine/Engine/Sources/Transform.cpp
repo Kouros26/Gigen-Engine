@@ -50,7 +50,7 @@ void Transform::AddPosition(lm::FVec3 pos)
 
 lm::FVec3 Transform::GetFront()
 {
-	lm::FVec4 temp = GetMatrix()[2];
+	const lm::FVec4 temp = GetMatrix()[2];
 	lm::FVec3 forward(temp[0], temp[1], temp[2]);
 
 	return lm::FVec3::Normalize(forward);
@@ -58,7 +58,7 @@ lm::FVec3 Transform::GetFront()
 
 lm::FVec3 Transform::GetRight()
 {
-	lm::FVec4 temp = GetMatrix()[0];
+	const lm::FVec4 temp = GetMatrix()[0];
 	lm::FVec3 right(temp[0], temp[1], temp[2]);
 
 	return lm::FVec3::Normalize(right);
@@ -66,7 +66,7 @@ lm::FVec3 Transform::GetRight()
 
 lm::FVec3 Transform::GetUp()
 {
-	lm::FVec4 temp = GetMatrix()[1];
+	const lm::FVec4 temp = GetMatrix()[1];
 	lm::FVec3 up(temp[0], temp[1], temp[2]);
 
 	return lm::FVec3::Normalize(up);
@@ -83,7 +83,7 @@ lm::FMat4 Transform::GetMatrix()
 void Transform::AddRotation(lm::FVec3 rot)
 {
 	rotation += rot;
-	ClampRotation();
+	LimitRotation();
 	hasChanged = true;
 }
 
@@ -99,12 +99,11 @@ void Transform::UpdateMatrix()
 	hasChanged = false;
 }
 
-//rename this function, clamp not good
-void Transform::ClampRotation()
+void Transform::LimitRotation()
 {
 	for (int i = 0; i < 3; i++)
 	{
-		while (rotation[i] < 0)
+		while (rotation[i] < -360)
 		{
 			rotation[i] += 360;
 		}

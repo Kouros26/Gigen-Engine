@@ -8,7 +8,6 @@ public:
     ~Camera();
 
     lm::FMat4 CreateViewMatrix();
-    lm::FMat4 GetViewMatrix() const;
 
     void SetFov(float fov);
     void SetNear(float near);
@@ -16,10 +15,12 @@ public:
     void SetRatio(float ratio);
     lm::FMat4 GetProjectionMatrix();
 
+    lm::FVec3 GetFront();
+    lm::FVec3 GetUp();
+    lm::FVec3 GetRight();
+
 private:
     void UpdateProjectionMatrix();
-
-    lm::FMat4 view;
 
     lm::FMat4 projectionMatrix;
     float currentFov = 90;

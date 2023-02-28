@@ -3,12 +3,12 @@
 #include "Model.h"
 #include "ResourceManager.h"
 
-unsigned int GameObject::gameObjectCounter = 0;
+unsigned int GameObject::gameObjectIndex = 0;
 
 GameObject::GameObject()
 {
-	gameObjectCounter++;
-	id = gameObjectCounter;
+	gameObjectIndex++;
+	id = gameObjectIndex;
 
 	name = "GameObject " + id;
 }
@@ -17,7 +17,7 @@ GameObject::GameObject(std::string name)
 	:GameObject()
 {
 	if (!name.empty()) {
-		name = name;
+		this->name = name;
 	}
 }
 
