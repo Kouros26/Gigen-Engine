@@ -64,8 +64,7 @@ TEST_CASE("Mat4", "[.all][matrice][Mat4]")
 
 		//from pos and quat
 		lm::FMat4 fromPosQuat{ lm::FVec3{ 2.5f, .5f, 2.f }, lm::FQuat{ 1.f, 2.f, 3.f, 4.f } };
-		lm::FMat4 test{ lm::FQuat::ToRotateMat3(lm::FQuat{ 1.f, 2.f, 3.f, 4.f }) };
-		glm::mat4 fromPosQuatGlm{ glm::toMat4(glm::normalize(glm::quat{1.f, 2.f, 3.f, 4.f})) };
+		glm::mat4 fromPosQuatGlm{ glm::mat4_cast(glm::normalize(glm::quat{1.f, 2.f, 3.f, 4.f})) };
 		fromPosQuatGlm = glm::translate(fromPosQuatGlm, glm::vec3{ 2.5f, .5f, 2.f });
 		CHECK_MAT4(fromPosQuat, fromPosQuatGlm);
 
@@ -216,8 +215,8 @@ TEST_CASE("Mat4", "[.all][matrice][Mat4]")
 
 		SECTION("IsOrthogonal")
 		{
-			lm::FMat4 ortho{ 0.6f, 0.4f, 0.5f, 0.3f, -0.4f, 0.8f, -0.3f, 0.4f, -0.5f, -0.3f, 0.6f, 0.5f, 0.3f, -0.4f, -0.5f, 0.8f };
-			glm::mat4 orthoGlm{ 0.6f, 0.4f, 0.5f, 0.3f, -0.4f, 0.8f, -0.3f, 0.4f, -0.5f, -0.3f, 0.6f, 0.5f, 0.3f, -0.4f, -0.5f, 0.8f };
+			lm::FMat4 ortho{ FVec4(0,0,0,1), FVec4(0,0,1,0), FVec4(1,0,0,0), FVec4(0,1,0,0) };
+			glm::mat4 orthoGlm{ glm::vec4(0,0,0,1), glm::vec4(0,0,1,0), glm::vec4(1,0,0,0), glm::vec4(0,1,0,0) };
 			CHECK(ortho.IsOrthogonal());
 			SECTION("Inverse from ortho")
 			{
@@ -262,11 +261,20 @@ TEST_CASE("Mat4", "[.all][matrice][Mat4]")
 				glm::mat4 rotateMat2Glm = glm::eulerAngleYXZ(0.5f, 0.6f, 0.7f);
 				CHECK_MAT4(rotateMat2, rotateMat2Glm);
 
-				FMat4 rotateMat3 = FMat4::RotationEuler(rot);
-				glm::mat4 rotateMat3Glm = glm::eulerAngleXYZ(0.5f, 0.6f, 0.7f);
+				SECTION("XYZEuler")
+				{
+					FMat4 rotateMat3 = FMat4::RotationEuler(rot);
+					glm::mat4 rotateMat3Glm = glm::eulerAngleXYZ(0.5f, 0.6f, 0.7f);
 
-				FMat4 rotateMAt4 = FMat4::YXZRotation(rot);
-				glm::mat4 rotateMat4Glm = glm::eulerAngleYXZ(0.5f, 0.6f, 0.7f);
+					CHECK_MAT4(rotateMat3, rotateMat3Glm);
+				}
+				SECTION("YXZEuler")
+				{
+					FMat4 rotateMAt4 = FMat4::YXZRotation(rot);
+					glm::mat4 rotateMat4Glm = glm::eulerAngleYXZ(0.5f, 0.6f, 0.7f);
+
+					CHECK_MAT4(rotateMAt4, rotateMat4Glm);
+				}
 			}
 			SECTION("RotationX")
 			{
@@ -345,7 +353,7 @@ TEST_CASE("Mat4", "[.all][matrice][Mat4]")
 		SECTION("To Matrix 4")
 		{
 			FMat4 mat4 = FMat4::ToMat4(FMat3(5));
-			glm::mat4 mat4Glm = glm::mat4(5);
+			glm::mat4 mat4Glm = glm::mat3(5);
 			CHECK_MAT4(mat4, mat4Glm);
 		}
 		SECTION("Transform")
@@ -355,7 +363,8 @@ TEST_CASE("Mat4", "[.all][matrice][Mat4]")
 			mat4 = FMat4::Transform(vec3, vec3, vec3);
 			glm::mat4 mat4Glm = glm::mat4(1);
 			glm::vec3 vec3Glm = glm::vec3(1, 2, 3);
-			mat4Glm = glm::translate(mat4Glm, vec3Glm) * glm::rotate(mat4Glm, glm::radians(1.f), vec3Glm) * glm::scale(mat4Glm, vec3Glm);
+			// transform  = translate * zRot * xRot * yRot * Scale;
+			mat4Glm = glm::translate(mat4Glm, vec3Glm) * glm::rotate(glm::mat4(1.f), glm::radians(3.f), glm::vec3(0.f, 0.f, 1.f)) * glm::rotate(glm::mat4(1.f), glm::radians(1.f), glm::vec3(1.f, 0.f, 0.f)) * glm::rotate(glm::mat4(1.f), glm::radians(2.f), glm::vec3(0.f, 1.f, 0.f)) * glm::scale(mat4Glm, vec3Glm);
 			CHECK_MAT4(mat4, mat4Glm);
 		}
 	}
