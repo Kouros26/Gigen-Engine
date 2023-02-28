@@ -29,6 +29,7 @@ public:
 private:
 	void UpdateMatrix();
 	void LimitRotation();
+	//
 
 	lm::FVec3 scale = lm::FVec3(1);
 	lm::FVec3 position;
