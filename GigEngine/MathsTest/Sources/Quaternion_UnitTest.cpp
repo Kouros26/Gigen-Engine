@@ -30,6 +30,11 @@ CHECK(mat[2][0] == Catch::Approx(matGlm[2][0])); \
 CHECK(mat[2][1] == Catch::Approx(matGlm[2][1])); \
 CHECK(mat[2][2] == Catch::Approx(matGlm[2][2]))
 
+#define CHECK_VECTOR3(Vec, VecGlm)\
+ CHECK(Vec.x == Catch::Approx(VecGlm.x));\
+ CHECK(Vec.y == Catch::Approx(VecGlm.y));\
+ CHECK(Vec.z == Catch::Approx(VecGlm.z))
+
 TEST_CASE("Quaternion", "[.all][Quaternion]")
 {
     SECTION("Instantiation")
@@ -455,6 +460,14 @@ TEST_CASE("Quaternion", "[.all][Quaternion]")
             glm::quat nlerpGlm = glm::normalize(glm::mix(baseGlm, otherGlm, .5f));
 
             CHECK_QUAT(nlerp, nlerpGlm);
+        }
+        SECTION("FromEuler")
+        {
+            lm::FQuat euler = FQuat::FromEuler(45.f, 45.f, 45.f);
+
+            glm::quat eulerGlm = glm::quat(glm::vec3(glm::radians(45.f), glm::radians(45.f), glm::radians(45.f)));
+
+            CHECK_QUAT(euler, eulerGlm);
         }
     }
 
