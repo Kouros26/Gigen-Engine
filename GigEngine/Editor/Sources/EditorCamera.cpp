@@ -3,6 +3,8 @@
 #include "Inputs.h"
 #include "Watch.h"
 #include <Quaternion/FQuat.hpp>
+#include <Mat3/FMat3.hpp>
+#include <Mat4/FMat4.hpp>
 
 EditorCamera::EditorCamera()
 {
@@ -85,20 +87,33 @@ void EditorCamera::Look()
         const float Ry = static_cast<float>(Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity));
         const float Rx = static_cast<float>(Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity));
 
-        transform.AddRotation(lm::FQuat::FromEuler(-Rx, Ry, 0.f));
-
+        lm::FQuat rotX(lm::FVec3(1, 0, 0), -Rx);
+        rotX *= lm::FQuat(lm::FVec3(0, 1, 0), Ry);
         const lm::FQuat rot = transform.GetRotation();
+
+        rotX = lm::FQuat::Normalize(rotX);
+
+        transform.AddRotation(rotX);
 
         if (rot.x > maxLookAngle)
         {
-            transform.SetRotation(lm::FQuat::FromEuler(maxLookAngle, rot.y, rot.z));
+            rotX = lm::FQuat(lm::FVec3(1, 0, 0), maxLookAngle);
+            rotX *= lm::FQuat(lm::FVec3(0, 1, 0), rot.y);
+            rotX *= lm::FQuat(lm::FVec3(0, 0, 1), rot.z);
+
+            rotX = lm::FQuat::Normalize(rotX);
+            transform.SetRotation(rotX);
         }
 
         if (rot.x < -maxLookAngle)
         {
-            transform.SetRotation(lm::FQuat::FromEuler(-maxLookAngle, rot.y, rot.z));
+            rotX = lm::FQuat(lm::FVec3(1, 0, 0), -maxLookAngle);
+            rotX *= lm::FQuat(lm::FVec3(0, 1, 0), rot.y);
+            rotX *= lm::FQuat(lm::FVec3(0, 0, 1), rot.z);
+
+            rotX = lm::FQuat::Normalize(rotX);
+            transform.SetRotation(rotX);
         }
-        std::cout << transform.GetRotation() << std::endl;
     }
 
     else if (Inputs::GetMouse().rightClick == 0)
