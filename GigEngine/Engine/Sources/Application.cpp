@@ -18,35 +18,36 @@ Application::Application()
 	InitMainShader();
 
 	//to remove =====================================================
-	GameObject* base = new GameObject();
-	base->transform.SetScale(lm::FVec3(0.01f));
-	base->setModel("Resources/Models/sponza.obj");
-  	base->AddNewComponent<TestComponent>();
-	GameObjectManager::AddGameObject(base);
-	Lines::SetFocusedObjectTransform(&base->transform);
+	GameObject* chest = new GameObject();
+	chest->setModel("Resources/Models/chest.obj");
+	chest->AddNewComponent<TestComponent>();
+	chest->transform.SetPosition(lm::FVec3(5, 0, 10));
+	GameObjectManager::AddGameObject(chest);
 
-	DirLight* dirlight = new DirLight(0.1f, 0.2f, 0.3f, lm::FVec3(1, 0.5f, 0));
+	GameObject* car = new GameObject();
+	car->setModel("Resources/Models/Car.fbx");
+	car->AddNewComponent<TestComponent>();
+	car->transform.SetPosition(lm::FVec3(-5, 0, 10));
+	GameObjectManager::AddGameObject(car);
+	Lines::SetFocusedObjectTransform(&car->transform);
+
+	DirLight* dirlight = new DirLight(0.05f, 0.2f, 0.5f, lm::FVec3(1, 0, 1));
 	dirlight->transform.SetRotation(lm::FVec3(45, 20, 0));
 	GameObjectManager::AddGameObject(dirlight);
 
-	//DirLight* dirlight2 = new DirLight(0.1f, 0.2f, 0.3f, lm::FVec3(0, 0.5f, 1));
-	//dirlight2->transform.SetRotation(lm::FVec3(-45, -20, 0));
-	//GameObjectManager::AddGameObject(dirlight2);
+	DirLight* dirlight2 = new DirLight(0.1f, 0.2f, 0.3f, lm::FVec3(0, 0, 1));
+	dirlight2->transform.SetRotation(lm::FVec3(-45, -20, 0));
+	GameObjectManager::AddGameObject(dirlight2);
 
 	PointLight* pointlight = new PointLight(0.1f, 0.2f, 0.3f, 0.02f, 0.01f, 0.01f, lm::FVec3(0, 1, 0));
-	pointlight->transform.SetPosition(lm::FVec3(10, 0, 15));
+	pointlight->transform.SetPosition(lm::FVec3(0, 0, 10));
 	GameObjectManager::AddGameObject(pointlight);
 
-	//SpotLight* spotlight = new SpotLight(0.1f, 0.2f, 0.3f, 0.02f, 0.01f, 0.01f, 10, 20, lm::FVec3(0, 0, 1));
-	//spotlight->transform.SetRotation(lm::FVec3(90, 0, 0));
-	//spotlight->transform.SetPosition(lm::FVec3(0, 20, 0));
-	//GameObjectManager::AddGameObject(spotlight);
+	SpotLight* spotlight = new SpotLight(0.1f, 0.2f, 0.3f, 0.02f, 0.01f, 0.01f, 10, 20, lm::FVec3(1, 0, 0));
+	spotlight->transform.SetRotation(lm::FVec3(90, 0, 0));
+	spotlight->transform.SetPosition(lm::FVec3(-5, 5, 10));
+	GameObjectManager::AddGameObject(spotlight);
 
-	Lines::DrawLine(lm::FVec3(1, 0, 5), lm::FVec3(1, 11, 5), lm::FVec3(0, 0, 1), 5);
-	Lines::DrawLine(lm::FVec3(2, 0, 5), lm::FVec3(2, 12, 5), lm::FVec3(0, 1, 1), 6);
-	Lines::DrawLine(lm::FVec3(3, 0, 5), lm::FVec3(3, 13, 5), lm::FVec3(1, 1, 1), 7);
-	Lines::DrawLine(lm::FVec3(4, 0, 5), lm::FVec3(4, 14, 5), lm::FVec3(1, 0, 1), 8);
-	Lines::DrawLine(lm::FVec3(5, 0, 5), lm::FVec3(5, 15, 5), lm::FVec3(1, 1, 0), 9);
 	//==================================================================
 }
 
@@ -142,6 +143,7 @@ void Application::Draw()
 		glEnable(GL_DEPTH_TEST);
 		UpdateGameObjectRender(); //render model if they have one
 		mainShader.UnUse(); //stop using the main shader
+
 		Lines::DrawLines(); //render debug lines or guizmos
 	}
 }

@@ -52,11 +52,11 @@ void PointLight::SendToShader(const int& pos, const std::string& shaderName)
 	ShaderProgram& shader = Application::GetMainShader();
 	shader.SetVec3(position, (str.append("position")).c_str());
 	str = temp;
-	shader.SetFloat(constant, (str.append("ambient")).c_str());
+	shader.SetFloat(constant, (str.append("constant")).c_str());
 	str = temp;
-	shader.SetFloat(linear, (str.append("diffuse")).c_str());
+	shader.SetFloat(linear, (str.append("linear")).c_str());
 	str = temp;
-	shader.SetFloat(quadratic, (str.append("specular")).c_str());
+	shader.SetFloat(quadratic, (str.append("quadratic")).c_str());
 }
 
 SpotLight::SpotLight(float ambient, float diffuse, float specular, float constant, float linear, float quadratic, float cutOff, float outerCutOff, lm::FVec3 color)
