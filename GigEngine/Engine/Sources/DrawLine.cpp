@@ -79,6 +79,7 @@ void Lines::DrawLines()
 	glDisable(GL_DEPTH_TEST);
 	DrawGuizmoLines();
 	glEnable(GL_DEPTH_TEST);
+	shaderProgram.UnUse();
 }
 
 void Lines::DrawDebugLines()

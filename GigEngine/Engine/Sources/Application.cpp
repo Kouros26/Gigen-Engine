@@ -21,7 +21,7 @@ Application::Application()
 	GameObject* base = new GameObject();
 	base->transform.SetScale(lm::FVec3(0.01f));
 	base->setModel("Resources/Models/sponza.obj");
-	base->AddNewComponent<TestComponent>();
+  	base->AddNewComponent<TestComponent>();
 	GameObjectManager::AddGameObject(base);
 	Lines::SetFocusedObjectTransform(&base->transform);
 
@@ -29,13 +29,13 @@ Application::Application()
 	dirlight->transform.SetRotation(lm::FVec3(45, 20, 0));
 	GameObjectManager::AddGameObject(dirlight);
 
-	DirLight* dirlight2 = new DirLight(0.1f, 0.2f, 0.3f, lm::FVec3(0, 0.5f, 1));
-	dirlight2->transform.SetRotation(lm::FVec3(-45, -20, 0));
-	GameObjectManager::AddGameObject(dirlight2);
+	//DirLight* dirlight2 = new DirLight(0.1f, 0.2f, 0.3f, lm::FVec3(0, 0.5f, 1));
+	//dirlight2->transform.SetRotation(lm::FVec3(-45, -20, 0));
+	//GameObjectManager::AddGameObject(dirlight2);
 
-	//PointLight* pointlight = new PointLight(0.1f, 0.2f, 0.3f, 0.02f, 0.01f, 0.01f, lm::FVec3(0, 1, 0));
-	//pointlight->transform.SetPosition(lm::FVec3(10, 0, 15));
-	//GameObjectManager::AddGameObject(pointlight);
+	PointLight* pointlight = new PointLight(0.1f, 0.2f, 0.3f, 0.02f, 0.01f, 0.01f, lm::FVec3(0, 1, 0));
+	pointlight->transform.SetPosition(lm::FVec3(10, 0, 15));
+	GameObjectManager::AddGameObject(pointlight);
 
 	//SpotLight* spotlight = new SpotLight(0.1f, 0.2f, 0.3f, 0.02f, 0.01f, 0.01f, 10, 20, lm::FVec3(0, 0, 1));
 	//spotlight->transform.SetRotation(lm::FVec3(90, 0, 0));
@@ -112,8 +112,8 @@ void Application::InitGlad()
 
 void Application::InitMainShader()
 {
-	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/vert.vert");
-	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/frag.frag");
+	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/core_vert.vert");
+	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/core_frag.frag");
 
 	if (!mainShader.Link(mainVertex, mainFragment))
 		std::cout << "Error linking main shader" << std::endl;
@@ -133,14 +133,15 @@ void Application::Draw()
 
 	if (isEditor)
 	{
+		mainShader.Use(); //start using the main shader
 		editorCamera.Update();
-
 		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
 		UpdateUniforms(); //then send the global uniforms
 		UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
 
 		glEnable(GL_DEPTH_TEST);
 		UpdateGameObjectRender(); //render model if they have one
+		mainShader.UnUse(); //stop using the main shader
 		Lines::DrawLines(); //render debug lines or guizmos
 	}
 }

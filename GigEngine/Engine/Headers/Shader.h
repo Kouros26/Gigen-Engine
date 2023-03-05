@@ -12,6 +12,7 @@ public:
 	~ShaderProgram();
 	bool Link(class VertexShader* vertex, class FragmentShader* fragment);
 	void Use();
+	void UnUse();
 
 	GLuint GetId();
 	GLuint GetUniform(const char* name);
