@@ -8,6 +8,7 @@ public:
 	Component(GameObject* gameObject);
 	virtual ~Component();
 
+	virtual void Start();
 	virtual void Update();
 
 protected:
@@ -20,7 +21,7 @@ public:
 	TestComponent(GameObject* gameObject) : Component(gameObject) {};
 
 	virtual void Update() override {
-		//gameObject->transform.SetPosition(lm::FVec3(2) * sin(Time::GetCurrentTime()));
+		gameObject->transform.SetPosition(lm::FVec3(2) * sin(Time::GetCurrentTime()));
 		gameObject->transform.AddRotation(lm::FVec3(10) * Time::GetDeltaTime());
 	};
 };

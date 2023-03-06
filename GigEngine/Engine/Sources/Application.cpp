@@ -35,18 +35,23 @@ Application::Application()
 	dirlight->transform.SetRotation(lm::FVec3(45, 20, 0));
 	GameObjectManager::AddGameObject(dirlight);
 
-	DirLight* dirlight2 = new DirLight(0.1f, 0.2f, 0.3f, lm::FVec3(0, 0, 1));
+	DirLight* dirlight2 = new DirLight(0.05f, 0.2f, 0.3f, lm::FVec3(0, 0, 1));
 	dirlight2->transform.SetRotation(lm::FVec3(-45, -20, 0));
 	GameObjectManager::AddGameObject(dirlight2);
 
-	PointLight* pointlight = new PointLight(0.1f, 0.2f, 0.3f, 0.02f, 0.01f, 0.01f, lm::FVec3(0, 1, 0));
-	pointlight->transform.SetPosition(lm::FVec3(0, 0, 10));
+	PointLight* pointlight = new PointLight(0.05f, 0.2f, 0.3f, 0.01f, 0.01f, 0.01f, lm::FVec3(0, 1, 1));
+	pointlight->transform.SetPosition(lm::FVec3(10, 0, 10));
 	GameObjectManager::AddGameObject(pointlight);
 
-	SpotLight* spotlight = new SpotLight(0.1f, 0.2f, 0.3f, 0.02f, 0.01f, 0.01f, 10, 20, lm::FVec3(1, 0, 0));
+	SpotLight* spotlight = new SpotLight(0.05f, 0.2f, 0.5f, 0.01f, 0.01f, 0.01f, 25, 50, lm::FVec3(1, 0, 0));
 	spotlight->transform.SetRotation(lm::FVec3(90, 0, 0));
-	spotlight->transform.SetPosition(lm::FVec3(-5, 5, 10));
+	spotlight->transform.SetPosition(lm::FVec3(-5, 10, 10));
 	GameObjectManager::AddGameObject(spotlight);
+
+	SpotLight* spotlight2 = new SpotLight(0.1f, 0.1f, 0.2f, 0.01f, 0.01f, 0.01f, 25, 50, lm::FVec3(0, 1, 0));
+	spotlight2->transform.SetRotation(lm::FVec3(-90, 0, 0));
+	spotlight2->transform.SetPosition(lm::FVec3(-5, -10, 10));
+	GameObjectManager::AddGameObject(spotlight2);
 
 	//==================================================================
 }

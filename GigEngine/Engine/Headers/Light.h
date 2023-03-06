@@ -6,6 +6,21 @@ const std::string dirLightShaderName = "dirLights";
 const std::string pointLightShaderName = "pointLights";
 const std::string spotLightShaderName = "spotLights";
 
+const std::string colorShaderName = "color";
+const std::string directionShaderName = "direction";
+const std::string positionShaderName = "position";
+
+const std::string ambientShaderName = "ambient";
+const std::string diffuseShaderName = "diffuse";
+const std::string specularShaderName = "specular";
+
+const std::string constantShaderName = "constant";
+const std::string linearShaderName = "linear";
+const std::string quadraticShaderName = "quadratic";
+
+const std::string cutOffShaderName = "cutOff";
+const std::string outerCutOffShaderName = "outerCutOff";
+
 class DirLight : public GameObject
 {
 public:

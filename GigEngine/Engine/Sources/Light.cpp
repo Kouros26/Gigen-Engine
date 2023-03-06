@@ -21,15 +21,15 @@ void DirLight::SendToShader(const int& pos, const std::string& shaderName)
 	direction[2] = dir.z;
 
 	ShaderProgram& shader = Application::GetMainShader();
-	shader.SetVec3(direction, (str.append("direction")).c_str());
+	shader.SetVec3(direction, (str.append(directionShaderName)).c_str());
 	str = temp;
-	shader.SetVec3(color, (str.append("color")).c_str());
+	shader.SetVec3(color, (str.append(colorShaderName)).c_str());
 	str = temp;
-	shader.SetFloat(ambient, (str.append("ambient")).c_str());
+	shader.SetFloat(ambient, (str.append(ambientShaderName)).c_str());
 	str = temp;
-	shader.SetFloat(diffuse, (str.append("diffuse")).c_str());
+	shader.SetFloat(diffuse, (str.append(diffuseShaderName)).c_str());
 	str = temp;
-	shader.SetFloat(specular, (str.append("specular")).c_str());
+	shader.SetFloat(specular, (str.append(specularShaderName)).c_str());
 }
 
 PointLight::PointLight(float ambient, float diffuse, float specular, float constant, float linear, float quadratic, lm::FVec3 color)
@@ -50,13 +50,13 @@ void PointLight::SendToShader(const int& pos, const std::string& shaderName)
 	position[2] = posi.z;
 
 	ShaderProgram& shader = Application::GetMainShader();
-	shader.SetVec3(position, (str.append("position")).c_str());
+	shader.SetVec3(position, (str.append(positionShaderName)).c_str());
 	str = temp;
-	shader.SetFloat(constant, (str.append("constant")).c_str());
+	shader.SetFloat(constant, (str.append(constantShaderName)).c_str());
 	str = temp;
-	shader.SetFloat(linear, (str.append("linear")).c_str());
+	shader.SetFloat(linear, (str.append(linearShaderName)).c_str());
 	str = temp;
-	shader.SetFloat(quadratic, (str.append("quadratic")).c_str());
+	shader.SetFloat(quadratic, (str.append(quadraticShaderName)).c_str());
 }
 
 SpotLight::SpotLight(float ambient, float diffuse, float specular, float constant, float linear, float quadratic, float cutOff, float outerCutOff, lm::FVec3 color)
@@ -72,7 +72,7 @@ void SpotLight::SendToShader(const int& pos, const std::string& shaderName)
 	std::string temp = str;
 
 	ShaderProgram& shader = Application::GetMainShader();
-	shader.SetFloat(cutOff, (str.append("cutOff")).c_str());
+	shader.SetFloat(cutOff, (str.append(cutOffShaderName)).c_str());
 	str = temp;
-	shader.SetFloat(outerCutOff, (str.append("outerCutOff")).c_str());
+	shader.SetFloat(outerCutOff, (str.append(outerCutOffShaderName)).c_str());
 }
