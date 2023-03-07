@@ -87,9 +87,11 @@ void EditorCamera::Look()
         const float Ry = static_cast<float>(Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity));
         const float Rx = static_cast<float>(Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity));
 
-        lm::FQuat rotX(lm::FVec3(1, 0, 0), -Rx);
-        rotX *= lm::FQuat(lm::FVec3(0, 1, 0), Ry);
         const lm::FQuat rot = transform.GetRotation();
+        lm::FQuat rotX(GetRight(), -Rx);
+        rotX *= lm::FQuat(GetUp(), Ry);
+
+        std::cout << transform.GetFront() << std::endl;
 
         rotX = lm::FQuat::Normalize(rotX);
 
