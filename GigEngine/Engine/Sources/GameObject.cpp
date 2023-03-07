@@ -61,8 +61,3 @@ void GameObject::UpdateComponents() const
 		component->Update();
 	}
 }
-
-void GameObject::AddComponent(Component* newComponent)
-{
-	components.push_back(newComponent);
-}

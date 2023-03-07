@@ -20,13 +20,13 @@ Application::Application()
 	//to remove =====================================================
 	GameObject* chest = new GameObject();
 	chest->setModel("Resources/Models/chest.obj");
-	chest->AddNewComponent<TestComponent>();
+	chest->AddComponent<TestComponent>();
 	chest->transform.SetPosition(lm::FVec3(5, 0, 10));
 	GameObjectManager::AddGameObject(chest);
 
 	GameObject* car = new GameObject();
 	car->setModel("Resources/Models/Car.fbx");
-	car->AddNewComponent<TestComponent>();
+	car->AddComponent<TestComponent>();
 	car->transform.SetPosition(lm::FVec3(-5, 0, 10));
 	GameObjectManager::AddGameObject(car);
 	Lines::SetFocusedObjectTransform(&car->transform);
