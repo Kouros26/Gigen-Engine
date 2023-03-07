@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "Vec3/FVec3.hpp"
 
 class GameObject;
 class Camera;
@@ -17,9 +18,29 @@ public:
 	static unsigned int GetSize();
 	static GameObject* GetGameObject(int i);
 	static void Cleanup();
-	static void AddGameObject(GameObject* object);
+
+	static GameObject* CreateGameObject();
+
+	static GameObject* CreateSpotLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
+		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
+		float cutOff = 45, float outerCutOff = 90,
+		lm::FVec3 color = lm::FVec3(1));
+
+	static GameObject* CreatePointLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
+		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
+		lm::FVec3 color = lm::FVec3(1));
+
+	static GameObject* CreateDirLigth(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
+		lm::FVec3 color = lm::FVec3(1));
+
+	static GameObject* CreateCamera();
+
 	static void Remove(GameObject* object);
+
 	static std::vector<GameObject*> FindObjectsByName(std::string name);
+	static GameObject* FindObjectByName(std::string name);
+	static GameObject* FindObjectById(int id);
+
 	static Camera* GetCurrentCamera();
 	static void SetCurrentCamera(Camera* camera);
 
@@ -29,6 +50,8 @@ public:
 	static int GetSpotLightSize();
 
 private:
+	static GameObject* AddGameObject(GameObject* object);
+
 	inline static Camera* currentCamera;
 	inline static std::vector<GameObject*> gameObjects;
 

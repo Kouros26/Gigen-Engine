@@ -43,6 +43,11 @@ std::string GameObject::GetName()
 	return name;
 }
 
+unsigned int GameObject::GetId()
+{
+	return id;
+}
+
 void GameObject::setModel(std::string const& filePath)
 {
 	model = ResourceManager::Get<Model>(filePath);

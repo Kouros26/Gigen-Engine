@@ -15,6 +15,7 @@ public:
 	void UpdateComponents() const;
 
 	std::string GetName();
+	unsigned int GetId();
 
 	void setModel(std::string const& filePath);
 

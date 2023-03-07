@@ -29,30 +29,48 @@ void GameObjectManager::Cleanup()
 	}
 }
 
-void GameObjectManager::AddGameObject(GameObject* object)
+GameObject* GameObjectManager::CreateGameObject()
 {
-	if (std::find(gameObjects.begin(), gameObjects.end(), object) == gameObjects.end())
-		gameObjects.push_back(object);
+	GameObject* object = new GameObject();
 
-	SpotLight* spot = dynamic_cast<SpotLight*>(object);
-	if (spot)
-	{
-		spotLights.push_back(spot);
-		return;
-	}
+	return AddGameObject(object);
+}
 
-	PointLight* point = dynamic_cast<PointLight*>(object);
-	if (point)
-	{
-		pointLights.push_back(point);
-		return;
-	}
+GameObject* GameObjectManager::CreateSpotLight(float ambient, float diffuse, float specular,
+	float constant, float linear, float quadratic,
+	float cutOff, float outerCutOff,
+	lm::FVec3 color)
+{
+	SpotLight* object = new SpotLight(ambient, diffuse, specular, constant, linear, quadratic, cutOff, outerCutOff, color);
+	spotLights.push_back(object);
 
-	DirLight* dir = dynamic_cast<DirLight*>(object);
-	if (dir)
-	{
-		dirLights.push_back(dir);
-	}
+	return AddGameObject(object);
+}
+
+GameObject* GameObjectManager::CreatePointLight(float ambient, float diffuse, float specular,
+	float constant, float linear, float quadratic,
+	lm::FVec3 color)
+{
+	PointLight* object = new PointLight(ambient, diffuse, specular, constant, linear, quadratic, color);
+	pointLights.push_back(object);
+
+	return AddGameObject(object);
+}
+
+GameObject* GameObjectManager::CreateDirLigth(float ambient, float diffuse, float specular,
+	lm::FVec3 color)
+{
+	DirLight* object = new DirLight(ambient, diffuse, specular, color);
+	dirLights.push_back(object);
+
+	return AddGameObject(object);
+}
+
+GameObject* GameObjectManager::CreateCamera()
+{
+	Camera* object = new Camera();
+
+	return AddGameObject(object);
 }
 
 void GameObjectManager::Remove(GameObject* object)
@@ -105,6 +123,30 @@ std::vector<GameObject*> GameObjectManager::FindObjectsByName(std::string name)
 	return namedObjects;
 }
 
+GameObject* GameObjectManager::FindObjectByName(std::string name)
+{
+	for (int i = 0; i < gameObjects.size(); i++)
+	{
+		if (gameObjects[i]->GetName() == name)
+		{
+			return gameObjects[i];
+		}
+	}
+	return nullptr;
+}
+
+GameObject* GameObjectManager::FindObjectById(int id)
+{
+	for (int i = 0; i < gameObjects.size(); i++)
+	{
+		if (gameObjects[i]->GetId() == id)
+		{
+			return gameObjects[i];
+		}
+	}
+	return nullptr;
+}
+
 Camera* GameObjectManager::GetCurrentCamera()
 {
 	return currentCamera;
@@ -144,4 +186,10 @@ int GameObjectManager::GetPointLightSize()
 int GameObjectManager::GetSpotLightSize()
 {
 	return spotLights.size();
+}
+
+GameObject* GameObjectManager::AddGameObject(GameObject* object)
+{
+	gameObjects.push_back(object);
+	return object;
 }
