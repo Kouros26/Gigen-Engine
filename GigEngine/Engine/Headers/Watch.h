@@ -1,5 +1,7 @@
 #pragma once
-#include "FixedQueue.h"
+#include <vector>
+
+const int MAX_FPS_VECTOR_SIZE = 10;
 
 class Time
 {
@@ -13,15 +15,13 @@ public:
 
 	class FPS
 	{
-		static inline FixedQueue<float, 10> fpsQueue;
-		static inline float fpsArray[10];
+		static inline std::vector<float> fpsVec;
 
 		static inline float fps = 0;
 		static inline float averageFps = 0;
+		static inline float fpsAddition = 0;
 		static inline float FPSUpdateDelay = 0.5f;
 		static inline float lastFPSUpdate = 0.0f;
-
-		static void UpdateAverageFPS();
 
 	public:
 		static void UpdateFPS();
@@ -31,8 +31,7 @@ public:
 		static float GetFPSUpdateDelay();
 		[[nodiscard]] static float GetFPS();
 		static float GetAverageFPS();
-		static FixedQueue<float, 10>& GetFPSQueue();
-		static float* GetFPSArray();
+		static std::vector<float>& GetFPSVec();
 	};
 
 	static void UpdateDeltaTime();
