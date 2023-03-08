@@ -2,24 +2,26 @@
 #include "GameObject.h"
 #include "Vec3/FVec3.hpp"
 
-const std::string dirLightShaderName = "dirLights";
-const std::string pointLightShaderName = "pointLights";
-const std::string spotLightShaderName = "spotLights";
+const int g_nbMaxLight = 50;
 
-const std::string colorShaderName = "color";
-const std::string directionShaderName = "direction";
-const std::string positionShaderName = "position";
+const char* const g_dirLightShaderName = "dirLights";
+const char* const g_pointLightShaderName = "pointLights";
+const char* const g_spotLightShaderName = "spotLights";
 
-const std::string ambientShaderName = "ambient";
-const std::string diffuseShaderName = "diffuse";
-const std::string specularShaderName = "specular";
+const char* const g_colorShaderName = "color";
+const char* const g_directionShaderName = "direction";
+const char* const g_positionShaderName = "position";
 
-const std::string constantShaderName = "constant";
-const std::string linearShaderName = "linear";
-const std::string quadraticShaderName = "quadratic";
+const char* const g_ambientShaderName = "ambient";
+const char* const g_diffuseShaderName = "diffuse";
+const char* const g_specularShaderName = "specular";
 
-const std::string cutOffShaderName = "cutOff";
-const std::string outerCutOffShaderName = "outerCutOff";
+const char* const g_constantShaderName = "constant";
+const char* const g_linearShaderName = "linear";
+const char* const g_quadraticShaderName = "quadratic";
+
+const char* const g_cutOffShaderName = "cutOff";
+const char* const g_outerCutOffShaderName = "outerCutOff";
 
 class DirLight : public GameObject
 {

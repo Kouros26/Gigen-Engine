@@ -41,6 +41,9 @@ GameObject* GameObjectManager::CreateSpotLight(float ambient, float diffuse, flo
 	float cutOff, float outerCutOff,
 	lm::FVec3 color)
 {
+	if (spotLights.size() >= g_nbMaxLight)
+		return nullptr;
+
 	SpotLight* object = new SpotLight(ambient, diffuse, specular, constant, linear, quadratic, cutOff, outerCutOff, color);
 	spotLights.push_back(object);
 
@@ -51,6 +54,9 @@ GameObject* GameObjectManager::CreatePointLight(float ambient, float diffuse, fl
 	float constant, float linear, float quadratic,
 	lm::FVec3 color)
 {
+	if (pointLights.size() >= g_nbMaxLight)
+		return nullptr;
+
 	PointLight* object = new PointLight(ambient, diffuse, specular, constant, linear, quadratic, color);
 	pointLights.push_back(object);
 
@@ -60,6 +66,9 @@ GameObject* GameObjectManager::CreatePointLight(float ambient, float diffuse, fl
 GameObject* GameObjectManager::CreateDirLigth(float ambient, float diffuse, float specular,
 	lm::FVec3 color)
 {
+	if (dirLights.size() >= g_nbMaxLight)
+		return nullptr;
+
 	DirLight* object = new DirLight(ambient, diffuse, specular, color);
 	dirLights.push_back(object);
 
@@ -161,15 +170,15 @@ void GameObjectManager::SendLightsToShader()
 {
 	for (int i = 0; i < dirLights.size(); i++)
 	{
-		dirLights[i]->SendToShader(i, dirLightShaderName);
+		dirLights[i]->SendToShader(i, g_dirLightShaderName);
 	}
 	for (int i = 0; i < pointLights.size(); i++)
 	{
-		pointLights[i]->SendToShader(i, pointLightShaderName);
+		pointLights[i]->SendToShader(i, g_pointLightShaderName);
 	}
 	for (int i = 0; i < spotLights.size(); i++)
 	{
-		spotLights[i]->SendToShader(i, spotLightShaderName);
+		spotLights[i]->SendToShader(i, g_spotLightShaderName);
 	}
 }
 
