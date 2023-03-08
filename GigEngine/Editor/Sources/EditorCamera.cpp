@@ -87,32 +87,38 @@ void EditorCamera::Look()
 		const float Ry = static_cast<float>(Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity));
 		const float Rx = static_cast<float>(Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity));
 
-		const lm::FQuat rot = transform.GetRotation();
-		lm::FQuat rotX(GetRight(), -Rx);
-		rotX *= lm::FQuat(GetUp(), Ry);
+		const lm::FVec3 rot = transform.GetRotation();
 
-		rotX = lm::FQuat::Normalize(rotX);
+		lm::FQuat Rot = lm::FQuat(-Rx, Ry, 0);
 
-		transform.AddRotation(rotX);
+		lm::FQuat RotX(GetRight(), -Rx);
+		lm::FQuat RotY(GetUp(), Ry);
+		lm::FQuat newRot = RotX * RotY;
+		newRot = newRot * Rot * lm::FQuat::Conjugate(newRot);
+		lm::FVec3 vecRot(newRot.x, newRot.y, newRot.z);
+
+		transform.AddRotation(vecRot);
 
 		if (rot.x > maxLookAngle)
 		{
-			rotX = lm::FQuat(GetRight(), maxLookAngle);
-			rotX *= lm::FQuat(GetUp(), rot.y);
-			rotX *= lm::FQuat(GetFront(), rot.z);
-
-			rotX = lm::FQuat::Normalize(rotX);
-			transform.SetRotation(rotX);
+			RotX = { GetRight(), maxLookAngle };
+			RotY = { GetUp(), rot.y };
+			lm::FQuat RotZ(GetFront(), rot.z);
+			newRot = RotX * RotY * RotZ;
+			newRot = newRot * Rot * lm::FQuat::Conjugate(newRot);
+			vecRot = { newRot.x, newRot.y, newRot.z };
+			transform.SetRotation(vecRot);
 		}
 
 		if (rot.x < -maxLookAngle)
 		{
-			rotX = lm::FQuat(GetRight(), -maxLookAngle);
-			rotX *= lm::FQuat(GetUp(), rot.y);
-			rotX *= lm::FQuat(GetFront(), rot.z);
-
-			rotX = lm::FQuat::Normalize(rotX);
-			transform.SetRotation(rotX);
+			RotX = { GetRight(), -maxLookAngle };
+			RotY = { GetUp(), rot.y };
+			lm::FQuat RotZ(GetFront(), rot.z);
+			newRot = RotX * RotY * RotZ;
+			newRot = newRot * Rot * lm::FQuat::Conjugate(newRot);
+			vecRot = { newRot.x, newRot.y, newRot.z };
+			transform.SetRotation(vecRot);
 		}
 	}
 
