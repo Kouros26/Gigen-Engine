@@ -5,7 +5,6 @@
 
 EditorCamera::EditorCamera()
 {
-
 }
 
 EditorCamera::~EditorCamera()
@@ -83,9 +82,9 @@ void EditorCamera::Look()
 	{
 		glfwSetInputMode(Application::GetWindow().GetGLFWWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		const float Ry = static_cast<float>(Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity));
-		const float Rx = static_cast<float>(Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity) );
+		const float Rx = static_cast<float>(Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity));
 
-		transform.AddRotation(lm::FVec3(Rx, -Ry, 0));
+		transform.AddRotation(lm::FVec3(-Rx, Ry, 0));
 
 		const lm::FVec3 rot = transform.GetRotation();
 
