@@ -73,13 +73,6 @@ bool ShaderProgram::Link(VertexShader* vertex, FragmentShader* fragment)
 		return false;
 	}
 
-	//whyy delete the shader here ? maybe can use them for another shaderProgram ?
-	glDeleteShader(vertex->shaderId);
-	glDeleteShader(fragment->shaderId);
-
-	vertex->shaderId = GL_FALSE;
-	fragment->shaderId = GL_FALSE;
-
 	return true;
 }
 
@@ -89,7 +82,47 @@ void ShaderProgram::Use()
 		glUseProgram(shaderProgram);
 }
 
+void ShaderProgram::UnUse()
+{
+	glUseProgram(0);
+}
+
 GLuint ShaderProgram::GetId()
 {
 	return shaderProgram;
+}
+
+GLuint ShaderProgram::GetUniform(const char* name)
+{
+	GLuint result = glGetUniformLocation(shaderProgram, name);
+
+	if (result == -1)
+		std::cout << name << " not found in uniform" << std::endl;
+
+	return result;
+}
+
+void ShaderProgram::SetVec3(float vec[3], const char* name)
+{
+	glUniform3fv(GetUniform(name), 1, vec);
+}
+
+void ShaderProgram::SetMat4(lm::FMat4& value, const char* name)
+{
+	glUniformMatrix4fv(GetUniform(name), 1, GL_FALSE, lm::FMat4::ToArray(value));
+}
+
+void ShaderProgram::SetBool(bool& value, const char* name)
+{
+	glUniform1i(GetUniform(name), (int)value);
+}
+
+void ShaderProgram::SetInt(int& value, const char* name)
+{
+	glUniform1i(GetUniform(name), value);
+}
+
+void ShaderProgram::SetFloat(float& value, const char* name)
+{
+	glUniform1f(GetUniform(name), value);
 }

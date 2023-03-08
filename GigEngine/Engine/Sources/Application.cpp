@@ -1,18 +1,12 @@
 #include "Application.h"
 #include "Inputs.h"
 #include "Watch.h"
-#include "Shader.h"
 #include "Model.h"
 #include "GameObjectManager.h"
 #include "ResourceManager.h"
 #include "DrawLine.h"
+#include "Light.h"
 #include <iostream>
-
-//to remove when resource manager
-ShaderProgram mainShader;
-GLint viewProjLocation;
-GLint ModelLocation;
-GLint viewPosLocation;
 
 Application::Application()
 {
@@ -21,29 +15,38 @@ Application::Application()
 	editorCamera.SetRatio(window.GetRatio());
 	InitGlad();
 	Lines::Init();
+	InitMainShader();
 
 	//to remove =====================================================
-	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/vert.vert");
-	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/frag.frag");
 
-	mainShader.Link(mainVertex, mainFragment);
+	GameObject* chest = GameObjectManager::CreateGameObject();
+	chest->setModel("Resources/Models/chest.obj");
+	chest->AddComponent<TestComponent>();
+	chest->transform.SetPosition(lm::FVec3(5, 0, 10));
 
-	viewProjLocation = glGetUniformLocation(mainShader.GetId(), "viewProj");
-	ModelLocation = glGetUniformLocation(mainShader.GetId(), "model");
-	viewPosLocation = glGetUniformLocation(mainShader.GetId(), "viewPos");
+	GameObject* car = GameObjectManager::CreateGameObject();
+	car->setModel("Resources/Models/Car.fbx");
+	car->AddComponent<TestComponent>();
+	car->transform.SetPosition(lm::FVec3(-5, 0, 10));
+	Lines::SetFocusedObjectTransform(&car->transform);
 
-	GameObject* base = new GameObject();
-	base->transform.SetScale(lm::FVec3(0.01f));
-	base->setModel("Resources/Models/sponza.obj");
-	//base->AddNewComponent<testComponent>();
-	GameObjectManager::AddGameObject(base);
-	Lines::SetFocusedObjectTransform(&base->transform);
+	GameObject* dirlight = GameObjectManager::CreateDirLigth(0.05f, 0.2f, 0.5f, lm::FVec3(1, 0, 1));
+	dirlight->transform.SetRotation(lm::FVec3(45, 20, 0));
 
-	Lines::DrawLine(lm::FVec3(1, 0, 5), lm::FVec3(1, 11, 5), lm::FVec3(0, 0, 1), 5);
-	Lines::DrawLine(lm::FVec3(2, 0, 5), lm::FVec3(2, 12, 5), lm::FVec3(0, 1, 1), 6);
-	Lines::DrawLine(lm::FVec3(3, 0, 5), lm::FVec3(3, 13, 5), lm::FVec3(1, 1, 1), 7);
-	Lines::DrawLine(lm::FVec3(4, 0, 5), lm::FVec3(4, 14, 5), lm::FVec3(1, 0, 1), 8);
-	Lines::DrawLine(lm::FVec3(5, 0, 5), lm::FVec3(5, 15, 5), lm::FVec3(1, 1, 0), 9);
+	GameObject* dirlight2 = GameObjectManager::CreateDirLigth(0.05f, 0.2f, 0.3f, lm::FVec3(0, 0, 1));
+	dirlight2->transform.SetRotation(lm::FVec3(-45, -20, 0));
+
+	GameObject* pointlight = GameObjectManager::CreatePointLight(0.05f, 0.2f, 0.3f, 0.01f, 0.01f, 0.01f, lm::FVec3(0, 1, 1));
+	pointlight->transform.SetPosition(lm::FVec3(10, 0, 10));
+
+	GameObject* spotlight = GameObjectManager::CreateSpotLight(0.05f, 0.2f, 0.5f, 0.01f, 0.01f, 0.01f, 25, 50, lm::FVec3(1, 0, 0));
+	spotlight->transform.SetRotation(lm::FVec3(90, 0, 0));
+	spotlight->transform.SetPosition(lm::FVec3(-5, 10, 10));
+
+	GameObject* spotlight2 = GameObjectManager::CreateSpotLight(0.1f, 0.1f, 0.2f, 0.01f, 0.01f, 0.01f, 25, 50, lm::FVec3(0, 1, 0));
+	spotlight2->transform.SetRotation(lm::FVec3(-90, 0, 0));
+	spotlight2->transform.SetPosition(lm::FVec3(-5, -10, 10));
+
 	//==================================================================
 }
 
@@ -61,6 +64,11 @@ Window& Application::GetWindow()
 EditorCamera& Application::GetEditorCamera()
 {
 	return editorCamera;
+}
+
+ShaderProgram& Application::GetMainShader()
+{
+	return mainShader;
 }
 
 lm::FMat4& Application::GetViewProj()
@@ -102,18 +110,40 @@ void Application::InitGlad()
 	}
 }
 
+void Application::InitMainShader()
+{
+	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/core_vert.vert");
+	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/core_frag.frag");
+
+	if (!mainShader.Link(mainVertex, mainFragment))
+		std::cout << "Error linking main shader" << std::endl;
+
+	ModelLocation = mainShader.GetUniform("model");
+	viewProjLocation = mainShader.GetUniform("viewProj");
+	viewPosLocation = mainShader.GetUniform("viewPos");
+
+	nbDirLightLocation = mainShader.GetUniform("nbDirLight");
+	nbPointLightLocation = mainShader.GetUniform("nbPointLight");
+	nbSpotLightLocation = mainShader.GetUniform("nbSpotLight");
+}
+
 void Application::Draw()
 {
 	ClearWindow();
 
 	if (isEditor)
 	{
+		mainShader.Use(); //start using the main shader
 		editorCamera.Update();
-		UpdateUniforms();
+		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
+		UpdateUniforms(); //then send the global uniforms
+		UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
 
 		glEnable(GL_DEPTH_TEST);
-		UpdateGameObjects();
-		Lines::DrawLines();
+		UpdateGameObjectRender(); //render model if they have one
+		mainShader.UnUse(); //stop using the main shader
+
+		Lines::DrawLines(); //render debug lines or guizmos
 	}
 }
 
@@ -123,19 +153,33 @@ void Application::ClearWindow()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Application::UpdateGameObjects()
+void Application::UpdateGameObjectComponent()
+{
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
+	{
+		GameObject* object = GameObjectManager::GetGameObject(i);
+		object->UpdateComponents();
+	}
+}
+
+void Application::UpdateGameObjectRender()
 {
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		GameObject* object = GameObjectManager::GetGameObject(i);
 
-		if (object)
-		{
-			object->UpdateComponents();
-			glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, lm::FMat4::ToArray(object->transform.GetMatrix()));
-			object->UpdateRender();
-		}
+		glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, lm::FMat4::ToArray(object->transform.GetMatrix()));
+		object->UpdateRender();
 	}
+}
+
+void Application::UpdateLights()
+{
+	glUniform1i(nbDirLightLocation, GameObjectManager::GetDirLightSize());
+	glUniform1i(nbPointLightLocation, GameObjectManager::GetPointLightSize());
+	glUniform1i(nbSpotLightLocation, GameObjectManager::GetSpotLightSize());
+
+	GameObjectManager::SendLightsToShader();
 }
 
 void Application::UpdateUniforms()

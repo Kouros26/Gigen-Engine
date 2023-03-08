@@ -11,14 +11,9 @@ float Time::FPS::GetAverageFPS()
 	return averageFps;
 }
 
-FixedQueue<float, 10>& Time::FPS::GetFPSQueue()
+std::vector<float>& Time::FPS::GetFPSVec()
 {
-	return fpsQueue;
-}
-
-float* Time::FPS::GetFPSArray()
-{
-	return fpsArray;
+	return fpsVec;
 }
 
 void Time::FPS::UpdateFPS()
@@ -28,10 +23,17 @@ void Time::FPS::UpdateFPS()
 	fps = static_cast<float>(1 / deltaTime);
 	lastFPSUpdate = currentTime;
 
-	const float fp = fps;
-	fpsQueue.push(fp);
+	fpsVec.push_back(fps);
 
-	UpdateAverageFPS();
+	int size = fpsVec.size();
+	if (size > MAX_FPS_VECTOR_SIZE)
+	{
+		fpsAddition -= fpsVec[0];
+		fpsVec.erase(fpsVec.begin());
+	}
+
+	fpsAddition += fps;
+	averageFps = fpsAddition / size;
 }
 
 void Time::FPS::ToggleVSync(const bool input)
@@ -45,22 +47,6 @@ void Time::FPS::ToggleVSync(const bool input)
 	//	result = 0;
 
 	Window::ToggleVSync(input);
-}
-
-void Time::FPS::UpdateAverageFPS()
-{
-	FixedQueue<float, 10> queueCopy = fpsQueue;
-
-	const auto QueueSize = static_cast<float>(queueCopy.size());
-
-	for (int i = 0; i < QueueSize; i++)
-	{
-		averageFps += queueCopy.front();
-		fpsArray[i] = queueCopy.front();
-		queueCopy.pop();
-	}
-
-	averageFps /= QueueSize;
 }
 
 void Time::FPS::SetFPSUpdateDelay(const float newDelay)
@@ -96,6 +82,11 @@ double Time::GetTimeScale()
 double Time::GetUnscaledDeltaTime()
 {
 	return unscaledDeltaTime;
+}
+
+double Time::GetCurrentTime()
+{
+	return currentTime;
 }
 
 void Time::SetTimeScale(const double& newTimeScale)

@@ -1,4 +1,5 @@
 #pragma once
+#include "Shader.h"
 #include "Window.h"
 #include "EditorCamera.h"
 
@@ -10,6 +11,7 @@ public:
 
 	static Window& GetWindow();
 	static EditorCamera& GetEditorCamera();
+	static ShaderProgram& GetMainShader();
 
 	static lm::FMat4& GetViewProj();
 	static lm::FVec3& GetViewPos();
@@ -26,10 +28,22 @@ private:
 
 	bool isEditor = true;
 
+	//main shader
+	static inline ShaderProgram mainShader;
+	GLint viewProjLocation;
+	GLint ModelLocation;
+	GLint viewPosLocation;
+	GLint nbDirLightLocation;
+	GLint nbPointLightLocation;
+	GLint nbSpotLightLocation;
+
 	void InitOpenGl();
 	void InitGlad();
+	void InitMainShader();
 	void Draw();
 	void ClearWindow();
-	void UpdateGameObjects();
+	void UpdateGameObjectComponent();
+	void UpdateGameObjectRender();
+	void UpdateLights();
 	void UpdateUniforms();
 };

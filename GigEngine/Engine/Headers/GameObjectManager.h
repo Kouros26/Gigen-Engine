@@ -1,7 +1,13 @@
 #pragma once
-#include "Camera.h"
+#include <vector>
+#include <string>
+#include "Vec3/FVec3.hpp"
 
-//class Model;
+class GameObject;
+class Camera;
+class DirLight;
+class SpotLight;
+class PointLight;
 
 class GameObjectManager
 {
@@ -12,15 +18,44 @@ public:
 	static unsigned int GetSize();
 	static GameObject* GetGameObject(int i);
 	static void Cleanup();
-	static void AddGameObject(GameObject* object);
+
+	static GameObject* CreateGameObject();
+
+	static GameObject* CreateSpotLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
+		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
+		float cutOff = 45, float outerCutOff = 90,
+		lm::FVec3 color = lm::FVec3(1));
+
+	static GameObject* CreatePointLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
+		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
+		lm::FVec3 color = lm::FVec3(1));
+
+	static GameObject* CreateDirLigth(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
+		lm::FVec3 color = lm::FVec3(1));
+
+	static GameObject* CreateCamera();
+
+	static void Remove(GameObject* object);
+
 	static std::vector<GameObject*> FindObjectsByName(std::string name);
+	static GameObject* FindObjectByName(std::string name);
+	static GameObject* FindObjectById(int id);
+
 	static Camera* GetCurrentCamera();
 	static void SetCurrentCamera(Camera* camera);
-	//static void InitSkyBox(Model* model);
-	//static Model* GetSkyBox();
+
+	static void SendLightsToShader();
+	static int GetDirLightSize();
+	static int GetPointLightSize();
+	static int GetSpotLightSize();
 
 private:
+	static GameObject* AddGameObject(GameObject* object);
+
 	inline static Camera* currentCamera;
-	//inline static Model* SkyBox;
 	inline static std::vector<GameObject*> gameObjects;
+
+	inline static std::vector<DirLight*> dirLights;
+	inline static std::vector<SpotLight*> spotLights;
+	inline static std::vector<PointLight*> pointLights;
 };

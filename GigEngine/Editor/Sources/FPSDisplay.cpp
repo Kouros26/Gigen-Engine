@@ -45,7 +45,7 @@ void FPSDisplay::VSync()
 
 void FPSDisplay::FPSGraph() const
 {
-	ImGui::PlotLines("FPS ", Time::FPS::GetFPSArray(), 10);
+	//ImGui::PlotLines("FPS ", Time::FPS::GetFPSVec().data(), 10);
 	ImGui::SameLine();
 	ImGui::Text("%.2f", Time::FPS::GetFPS());
 }

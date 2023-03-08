@@ -7,20 +7,21 @@ class GameObject
 public:
 	GameObject();
 	GameObject(std::string name);
-	~GameObject();
+	virtual ~GameObject();
+
+	void Destroy();
 
 	void UpdateRender() const;
 	void UpdateComponents() const;
 
 	std::string GetName();
+	unsigned int GetId();
 
 	void setModel(std::string const& filePath);
 
-	void AddComponent(class Component* newComponent);
-
 	//create New component of type and return the new Component
 	template<class T>
-	T* AddNewComponent();
+	T* AddComponent();
 
 	//return first component of type
 	template<class T>
@@ -47,9 +48,9 @@ private:
 };
 
 template<class T>
-inline T* GameObject::AddNewComponent() {
+inline T* GameObject::AddComponent() {
 	T* newComp = new T(this);
-	AddComponent(newComp);
+	components.push_back(newComp);
 	return newComp;
 }
 

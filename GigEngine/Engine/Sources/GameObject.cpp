@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "Model.h"
 #include "ResourceManager.h"
+#include "GameObjectManager.h"
 
 unsigned int GameObject::gameObjectIndex = 0;
 
@@ -28,11 +29,23 @@ GameObject::~GameObject()
 		if (components[i])
 			delete components[i];
 	}
+	model = nullptr;
+	GameObjectManager::Remove(this);
+}
+
+void GameObject::Destroy()
+{
+	this->~GameObject();
 }
 
 std::string GameObject::GetName()
 {
 	return name;
+}
+
+unsigned int GameObject::GetId()
+{
+	return id;
 }
 
 void GameObject::setModel(std::string const& filePath)
@@ -52,9 +65,4 @@ void GameObject::UpdateComponents() const
 	{
 		component->Update();
 	}
-}
-
-void GameObject::AddComponent(Component* newComponent)
-{
-	components.push_back(newComponent);
 }
