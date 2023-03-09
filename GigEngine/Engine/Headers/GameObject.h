@@ -1,20 +1,27 @@
 #pragma once
+#include <list>
+
 #include "Transform.h"
 #include <vector>
 
+class Model;
 class GameObject
 {
 public:
 	GameObject();
-	GameObject(std::string name);
+	GameObject(const std::string& name);
 	~GameObject();
 
 	void UpdateRender() const;
 	void UpdateComponents() const;
+	void UpdateHierarchy();
 
 	std::string GetName();
 
-	void setModel(std::string const& filePath);
+	void SetModel(const std::string& filePath);
+
+	void AddChild(GameObject* child);
+	void RemoveChild(GameObject* child);
 
 	void AddComponent(class Component* newComponent);
 
@@ -34,13 +41,20 @@ public:
 	template<class T>
 	void RemoveComponents();
 
-	Transform transform;
+	Transform& GetTransform();
+
 private:
+
 	std::string name;
 	unsigned int id;
 
-	std::vector<class Component*> components;
-	class Model* model = nullptr;
+	Transform transform;
+
+	GameObject* parent;
+	std::list<GameObject*> children;
+
+	std::vector<Component*> components;
+	Model* model = nullptr;
 
 	//use so every gameObject has a different id
 	static unsigned int gameObjectIndex;
