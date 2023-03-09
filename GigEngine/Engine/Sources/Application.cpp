@@ -33,11 +33,22 @@ Application::Application()
 	viewPosLocation = glGetUniformLocation(mainShader.GetId(), "viewPos");
 
 	GameObject* base = new GameObject();
-	base->transform.SetScale(lm::FVec3(0.01f));
-	base->setModel("Resources/Models/sponza.obj");
+	GameObject* first = new GameObject();
+	GameObject* second = new GameObject();
+	base->GetTransform().SetWorldScale(lm::FVec3(0.01f));
+	first->GetTransform().SetWorldScale({ 0.5f });
+	second->GetTransform().SetWorldScale({ 0.5f });
+	second->GetTransform().SetWorldPosition({ 0,1,0 });
+	base->SetModel("Resources/Models/sponza.obj");
+	first->SetModel("Resources/Models/chest.obj");
+	second->SetModel("Resources/Models/chest.obj");
+	first->AddChild(second);
+
 	//base->AddNewComponent<testComponent>();
 	GameObjectManager::AddGameObject(base);
-	Lines::SetFocusedObjectTransform(&base->transform);
+	GameObjectManager::AddGameObject(first);
+	GameObjectManager::AddGameObject(second);
+	Lines::SetFocusedObjectTransform(&base->GetTransform());
 
 	Lines::DrawLine(lm::FVec3(1, 0, 5), lm::FVec3(1, 11, 5), lm::FVec3(0, 0, 1), 5);
 	Lines::DrawLine(lm::FVec3(2, 0, 5), lm::FVec3(2, 12, 5), lm::FVec3(0, 1, 1), 6);
@@ -132,7 +143,7 @@ void Application::UpdateGameObjects()
 		if (object)
 		{
 			object->UpdateComponents();
-			glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, lm::FMat4::ToArray(object->transform.GetMatrix()));
+			glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, lm::FMat4::ToArray(object->GetTransform().GetMatrix()));
 			object->UpdateRender();
 		}
 	}
@@ -143,7 +154,7 @@ void Application::UpdateUniforms()
 	mainShader.Use();
 
 	viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
-	viewPos = editorCamera.transform.GetPosition();
+	viewPos = editorCamera.GetTransform().GetWorldPosition();
 
 	glUniformMatrix4fv(viewProjLocation, 1, GL_FALSE, lm::FMat4::ToArray(viewProj));
 	glUniform3f(viewPosLocation, viewPos.x, viewPos.y, viewPos.z);

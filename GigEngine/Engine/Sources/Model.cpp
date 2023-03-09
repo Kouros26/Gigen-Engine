@@ -14,12 +14,10 @@ Model::~Model()
 		delete mesh;
 }
 
-void Model::Draw()
+void Model::Draw() const
 {
-	for (int i = 0; i < meshes.size(); i++)
-	{
-		meshes[i]->Draw();
-	}
+	for (const auto& mesh : meshes)
+		mesh->Draw();
 }
 
 void Model::loadModel(const std::string& pPath)

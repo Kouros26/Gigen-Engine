@@ -10,7 +10,7 @@ public:
 	Model(std::string const& filePath);
 	~Model();
 
-	void Draw();
+	void Draw() const;
 
 private:
 	void loadModel(const std::string& pPath);
