@@ -92,17 +92,17 @@ void EditorCamera::Look()
         lm::FVec3 vecRot = { -Rx, Ry, 0 };
         transform.AddRotation(vecRot);
 
-        if (rot.x > maxLookAngle)
-        {
-            lm::FVec3 vecRot = { maxLookAngle, rot.y, rot.z };
-            transform.SetRotation(vecRot);
-        }
+        //if (rot.x > maxLookAngle)
+        //{
+        //    vecRot = { maxLookAngle, rot.y, rot.z };
+        //    transform.SetRotation(vecRot);
+        //}
 
-        if (rot.x < -maxLookAngle)
-        {
-            lm::FVec3 vecRot = { -maxLookAngle, rot.y, rot.z };
-            transform.SetRotation(vecRot);
-        }
+        //if (rot.x < -maxLookAngle)
+        //{
+        //    vecRot = { -maxLookAngle, rot.y, rot.z };
+        //    transform.SetRotation(vecRot);
+        //}
     }
 
     else if (Inputs::GetMouse().rightClick == 0)
