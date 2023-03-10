@@ -20,14 +20,14 @@ Application::Application()
 	//to remove =====================================================
 
 	GameObject* chest = GameObjectManager::CreateGameObject();
-	chest->setModel("Resources/Models/chest.obj");
-	chest->AddComponent<TestComponent>();
+	chest->setModel("Resources/Models/Basics/Plane.fbx");
+	chest->transform.SetScale(lm::FVec3(0.01f));
 	chest->transform.SetPosition(lm::FVec3(5, 0, 10));
 
 	GameObject* car = GameObjectManager::CreateGameObject();
-	car->setModel("Resources/Models/Car.fbx");
-	car->AddComponent<TestComponent>();
+	car->setModel("Resources/Models/Basics/Capsule.fbx");
 	car->transform.SetPosition(lm::FVec3(-5, 0, 10));
+	car->transform.SetScale(lm::FVec3(0.01f));
 	Lines::SetFocusedObjectTransform(&car->transform);
 
 	GameObject* dirlight = GameObjectManager::CreateDirLigth(0.05f, 0.2f, 0.5f, lm::FVec3(1));
