@@ -30,22 +30,22 @@ Application::Application()
 	car->transform.SetPosition(lm::FVec3(-5, 0, 10));
 	Lines::SetFocusedObjectTransform(&car->transform);
 
-	GameObject* dirlight = GameObjectManager::CreateDirLigth(0.05f, 0.2f, 0.5f, lm::FVec3(1, 0, 1));
+	GameObject* dirlight = GameObjectManager::CreateDirLigth(0.05f, 0.2f, 0.5f, lm::FVec3(1));
 	dirlight->transform.SetRotation(lm::FVec3(45, 20, 0));
 
-	GameObject* dirlight2 = GameObjectManager::CreateDirLigth(0.05f, 0.2f, 0.3f, lm::FVec3(0, 0, 1));
+	GameObject* dirlight2 = GameObjectManager::CreateDirLigth(0.05f, 0.2f, 0.3f, lm::FVec3(1));
 	dirlight2->transform.SetRotation(lm::FVec3(-45, -20, 0));
 
-	GameObject* pointlight = GameObjectManager::CreatePointLight(0.05f, 0.2f, 0.3f, 0.01f, 0.01f, 0.01f, lm::FVec3(0, 1, 1));
+	GameObject* pointlight = GameObjectManager::CreatePointLight(0.05f, 0.2f, 0.3f, 0.01f, 0.01f, 0.01f, lm::FVec3(1));
 	pointlight->transform.SetPosition(lm::FVec3(10, 0, 10));
 
-	GameObject* spotlight = GameObjectManager::CreateSpotLight(0.05f, 0.2f, 0.5f, 0.01f, 0.01f, 0.01f, 25, 50, lm::FVec3(1, 0, 0));
-	spotlight->transform.SetRotation(lm::FVec3(90, 0, 0));
-	spotlight->transform.SetPosition(lm::FVec3(-5, 10, 10));
+	//GameObject* spotlight = GameObjectManager::CreateSpotLight(0.05f, 0.2f, 0.5f, 0.01f, 0.01f, 0.01f, 25, 50, lm::FVec3(1));
+	//spotlight->transform.SetRotation(lm::FVec3(90, 0, 0));
+	//spotlight->transform.SetPosition(lm::FVec3(-5, 10, 10));
 
-	GameObject* spotlight2 = GameObjectManager::CreateSpotLight(0.1f, 0.1f, 0.2f, 0.01f, 0.01f, 0.01f, 25, 50, lm::FVec3(0, 1, 0));
-	spotlight2->transform.SetRotation(lm::FVec3(-90, 0, 0));
-	spotlight2->transform.SetPosition(lm::FVec3(-5, -10, 10));
+	//GameObject* spotlight2 = GameObjectManager::CreateSpotLight(0.1f, 0.1f, 0.2f, 0.01f, 0.01f, 0.01f, 25, 50, lm::FVec3(1));
+	//spotlight2->transform.SetRotation(lm::FVec3(-90, 0, 0));
+	//spotlight2->transform.SetPosition(lm::FVec3(-5, -10, 10));
 
 	//==================================================================
 }
