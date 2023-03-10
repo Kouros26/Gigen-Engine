@@ -21,7 +21,16 @@ public:
 	TestComponent(GameObject* gameObject) : Component(gameObject) {};
 
 	virtual void Update() override {
-		gameObject->transform.SetPosition(lm::FVec3(2) * sin(Time::GetCurrentTime()));
-		gameObject->transform.AddRotation(lm::FVec3(10) * Time::GetDeltaTime());
+		gameObject->GetTransform().AddPosition(lm::FVec3(0, 0.5f, 0.f) * Time::GetDeltaTime());
+	};
+};
+
+class testComponent2 : public Component
+{
+public:
+	testComponent2(GameObject* gameObject) : Component(gameObject) {};
+
+	virtual void Update() override {
+		gameObject->GetTransform().AddRotation(lm::FVec3(0, 0, 20.f) * Time::GetDeltaTime());
 	};
 };

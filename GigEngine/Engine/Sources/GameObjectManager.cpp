@@ -12,34 +12,54 @@ GameObjectManager::~GameObjectManager()
 
 unsigned int GameObjectManager::GetSize()
 {
-	return (unsigned int)gameObjects.size();
+	return static_cast<unsigned>(gameObjects.size());
 }
 
-GameObject* GameObjectManager::GetGameObject(int i)
+GameObject*& GameObjectManager::GetGameObject(int i)
 {
 	return gameObjects[i];
 }
 
 void GameObjectManager::Cleanup()
 {
-	for (size_t i = 0; i < gameObjects.size(); i++)
-	{
-		if (gameObjects[i])
-			delete gameObjects[i];
-	}
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
+		delete gameObjects[i];
 }
 
 GameObject* GameObjectManager::CreateGameObject()
 {
-	GameObject* object = new GameObject();
+	const auto object = new GameObject();
+
+	return AddGameObject(object);
+}
+
+GameObject* GameObjectManager::CreateGameObject(const std::string& name)
+{
+	const auto object = new GameObject(name);
+
+	return AddGameObject(object);
+}
+
+GameObject* GameObjectManager::CreateGameObject(const std::string& name, const lm::FVec3& position,
+	const lm::FVec3& rotation, const lm::FVec3& scale)
+{
+	const auto object = new GameObject(name, position, rotation, scale);
+
+	return AddGameObject(object);
+}
+
+GameObject* GameObjectManager::CreateGameObject(const lm::FVec3& position, const lm::FVec3& rotation,
+	const lm::FVec3& scale)
+{
+	const auto object = new GameObject(position, rotation, scale);
 
 	return AddGameObject(object);
 }
 
 GameObject* GameObjectManager::CreateSpotLight(float ambient, float diffuse, float specular,
-	float constant, float linear, float quadratic,
-	float cutOff, float outerCutOff,
-	lm::FVec3 color)
+                                               float constant, float linear, float quadratic,
+                                               float cutOff, float outerCutOff,
+                                               lm::FVec3 color)
 {
 	if (spotLights.size() >= g_nbMaxLight)
 		return nullptr;
@@ -63,7 +83,7 @@ GameObject* GameObjectManager::CreatePointLight(float ambient, float diffuse, fl
 	return AddGameObject(object);
 }
 
-GameObject* GameObjectManager::CreateDirLigth(float ambient, float diffuse, float specular,
+GameObject* GameObjectManager::CreateDirLight(float ambient, float diffuse, float specular,
 	lm::FVec3 color)
 {
 	if (dirLights.size() >= g_nbMaxLight)
@@ -122,13 +142,11 @@ void GameObjectManager::Remove(GameObject* object)
 std::vector<GameObject*> GameObjectManager::FindObjectsByName(std::string name)
 {
 	std::vector<GameObject*> namedObjects;
-	for (int i = 0; i < gameObjects.size(); i++)
-	{
-		if (gameObjects[i]->GetName() == name)
-		{
-			namedObjects.push_back(gameObjects[i]);
-		}
-	}
+
+	for (auto& gameObject : gameObjects)
+		if (gameObject->GetName() == name)
+			namedObjects.push_back(gameObject);
+
 	return namedObjects;
 }
 

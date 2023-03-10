@@ -16,10 +16,13 @@ public:
 	~GameObjectManager();
 
 	static unsigned int GetSize();
-	static GameObject* GetGameObject(int i);
+	static GameObject*& GetGameObject(int i);
 	static void Cleanup();
 
 	static GameObject* CreateGameObject();
+	static GameObject* CreateGameObject(const std::string& name);
+	static GameObject* CreateGameObject(const std::string& name, const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
+	static GameObject* CreateGameObject(const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
 
 	static GameObject* CreateSpotLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
 		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
@@ -30,7 +33,7 @@ public:
 		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
 		lm::FVec3 color = lm::FVec3(1));
 
-	static GameObject* CreateDirLigth(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
+	static GameObject* CreateDirLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
 		lm::FVec3 color = lm::FVec3(1));
 
 	static GameObject* CreateCamera();

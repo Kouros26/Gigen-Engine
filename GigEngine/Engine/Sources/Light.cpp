@@ -15,7 +15,7 @@ void DirLight::SendToShader(const int& pos, const std::string& shaderName)
 	std::string str = shaderName + "[" + std::to_string(pos) + "].";
 	std::string temp = str;
 
-	lm::FVec3 dir = transform.GetFront();
+	lm::FVec3 dir = GetTransform().GetFront();
 	direction[0] = dir.x;
 	direction[1] = dir.y;
 	direction[2] = dir.z;
@@ -44,7 +44,7 @@ void PointLight::SendToShader(const int& pos, const std::string& shaderName)
 	std::string str = shaderName + "[" + std::to_string(pos) + "].";
 	std::string temp = str;
 
-	lm::FVec3 posi = transform.GetPosition();
+	lm::FVec3 posi = GetTransform().GetWorldPosition();
 	position[0] = posi.x;
 	position[1] = posi.y;
 	position[2] = posi.z;

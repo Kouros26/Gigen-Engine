@@ -55,26 +55,26 @@ void EditorCamera::Move()
     const float scaleSpeed = speed * static_cast<float>(Time::GetDeltaTime());
 
     if (Inputs::GetKey(UP) || Inputs::GetKey('W'))
-        transform.AddPosition(GetFront() * scaleSpeed);
+        GetTransform().AddPosition(GetFront() * scaleSpeed);
 
     if (Inputs::GetKey(DOWN) || Inputs::GetKey('S'))
-        transform.AddPosition(GetFront() * -scaleSpeed);
+        GetTransform().AddPosition(GetFront() * -scaleSpeed);
 
     if (Inputs::GetKey(LEFT) || Inputs::GetKey('A'))
-        transform.AddPosition(-GetRight() * -scaleSpeed);
+        GetTransform().AddPosition(-GetRight() * -scaleSpeed);
 
     if (Inputs::GetKey(RIGHT) || Inputs::GetKey('D'))
-        transform.AddPosition(-GetRight() * scaleSpeed);
+        GetTransform().AddPosition(-GetRight() * scaleSpeed);
 
     if (Inputs::GetMouse().wheelClick)
     {
-        transform.AddPosition(GetRight() * Inputs::GetMouse().mouseOffsetX);
-        transform.AddPosition(GetUp() * -Inputs::GetMouse().mouseOffsetY);
+        GetTransform().AddPosition(GetRight() * Inputs::GetMouse().mouseOffsetX);
+        GetTransform().AddPosition(GetUp() * -Inputs::GetMouse().mouseOffsetY);
     }
 
     if (Inputs::GetMouse().wheelOffsetY != 0)
     {
-        transform.AddPosition(GetFront() * Inputs::GetMouse().wheelOffsetY);
+        GetTransform().AddPosition(GetFront() * Inputs::GetMouse().wheelOffsetY);
         Inputs::UpdateMouseWheelOffset(0);
     }
 }
@@ -87,10 +87,10 @@ void EditorCamera::Look()
         const float Ry = static_cast<float>(Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity));
         const float Rx = static_cast<float>(Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity));
 
-        const lm::FVec3 rot = transform.GetRotation();
+        const lm::FVec3 rot = GetTransform().GetWorldRotation();
 
-        lm::FVec3 vecRot = { -Rx, Ry, 0 };
-        transform.AddRotation(vecRot);
+        const lm::FVec3 vecRot = { -Rx, Ry, 0 };
+        GetTransform().AddRotation(vecRot);
 
         //if (rot.x > maxLookAngle)
         //{

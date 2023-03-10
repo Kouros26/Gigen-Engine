@@ -16,7 +16,7 @@ Camera::~Camera()
 
 lm::FMat4 Camera::CreateViewMatrix()
 {
-    return lm::FMat4::LookAt(transform.GetPosition(), transform.GetPosition() + GetFront(), GetUp());
+    return lm::FMat4::LookAt(GetTransform().GetWorldPosition(), GetTransform().GetWorldPosition() + GetFront(), GetUp());
 }
 
 void Camera::SetFov(float fov)
@@ -55,21 +55,21 @@ void Camera::UpdateProjectionMatrix()
 
 lm::FVec3 Camera::GetFront()
 {
-    lm::FMat4 inverse = lm::FMat4::Inverse(transform.GetMatrix());
-    lm::FVec3 front = inverse[2];
+    lm::FMat4 inverse = lm::FMat4::Inverse(GetTransform().GetMatrix());
+    const lm::FVec3 front = inverse[2];
     return lm::FVec3::Normalize(front);
 }
 
 lm::FVec3 Camera::GetUp()
 {
-    lm::FMat4 inverse = lm::FMat4::Inverse(transform.GetMatrix());
-    lm::FVec3 up = inverse[1];
+    lm::FMat4 inverse = lm::FMat4::Inverse(GetTransform().GetMatrix());
+    const lm::FVec3 up = inverse[1];
     return lm::FVec3::Normalize(up);
 }
 
 lm::FVec3 Camera::GetRight()
 {
-    lm::FMat4 inverse = lm::FMat4::Inverse(transform.GetMatrix());
-    lm::FVec3 right = inverse[0];
+    lm::FMat4 inverse = lm::FMat4::Inverse(GetTransform().GetMatrix());
+    const lm::FVec3 right = inverse[0];
     return lm::FVec3::Normalize(right);
 }

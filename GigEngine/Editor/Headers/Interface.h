@@ -1,5 +1,6 @@
 #pragma once
 #include "FPSDisplay.h"
+#include "GameObjectInspector.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -17,4 +18,5 @@ public:
 private:
 
 	FPSDisplay fps;
+	GameObjectInspector gameObjInspector;
 };

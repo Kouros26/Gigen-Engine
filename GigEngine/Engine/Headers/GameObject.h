@@ -1,23 +1,34 @@
 #pragma once
+#include <list>
+
 #include "Transform.h"
 #include <vector>
 
+class Model;
 class GameObject
 {
 public:
 	GameObject();
-	GameObject(std::string name);
+	GameObject(const std::string& name);
+	GameObject(const std::string& name, const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
+	GameObject(const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
 	virtual ~GameObject();
 
 	void Destroy();
 
 	void UpdateRender() const;
 	void UpdateComponents() const;
+	void UpdateHierarchy();
 
 	std::string GetName();
 	unsigned int GetId();
 
-	void setModel(std::string const& filePath);
+	void SetModel(const std::string& filePath);
+
+	void AddChild(GameObject* child);
+	void RemoveChild(GameObject* child);
+
+	void AddComponent(class Component* newComponent);
 
 	//create New component of type and return the new Component
 	template<class T>
@@ -35,13 +46,20 @@ public:
 	template<class T>
 	void RemoveComponents();
 
-	Transform transform;
+	Transform& GetTransform();
+
 private:
+
 	std::string name;
 	unsigned int id;
 
-	std::vector<class Component*> components;
-	class Model* model = nullptr;
+	Transform transform;
+
+	GameObject* parent = nullptr;
+	std::list<GameObject*> children{};
+
+	std::vector<Component*> components;
+	Model* model = nullptr;
 
 	//use so every gameObject has a different id
 	static unsigned int gameObjectIndex;
@@ -85,7 +103,7 @@ inline void GameObject::RemoveComponents()
 {
 	for (int i = 0; i < components.size(); i++)
 	{
-		if (T* comp = dynamic_cast<T*>(components[i]))
+		if (const T* comp = dynamic_cast<T*>(components[i]))
 		{
 			delete comp;
 			components.erase(components.begin() + i);

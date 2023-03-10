@@ -6,23 +6,45 @@
 class Transform
 {
 public:
-    Transform();
+    Transform(const lm::FVec3& pos = { 0 }, const lm::FVec3& rot = {0}, const lm::FVec3& scl = {1});
     ~Transform();
 
-    void SetPosition(const lm::FVec3& pos);
-    void SetRotation(const lm::FVec3& rot);
-    void SetScale(const lm::FVec3& scl);
+    void SetWorldPosition(const lm::FVec3& pos);
+    void SetWorldRotation(const lm::FVec3& rot);
+    void SetWorldScale(const lm::FVec3& scl);
 
-    [[nodiscard]] lm::FVec3 GetPosition() const;
-    [[nodiscard]] lm::FVec3 GetScale() const;
-    [[nodiscard]] lm::FVec3 GetRotation() const;
+    void SetLocalPosition(const lm::FVec3& pos);
+    void SetLocalRotation(const lm::FVec3& rot);
+    void SetLocalScale(const lm::FVec3& scl);
+
+    //DO NOT USE
+    void AssignWorldPosition(const lm::FVec3& pos);
+    //DO NOT USE
+    void AssignWorldRotation(const lm::FVec3& rot);
+    //DO NOT USE
+    void AssignWorldScale(const lm::FVec3& scl);
+
+    //DO NOT USE
+    void AssignLocalPosition(const lm::FVec3& pos);
+    //DO NOT USE
+    void AssignLocalRotation(const lm::FVec3& rot);
+    //DO NOT USE
+    void AssignLocalScale(const lm::FVec3& scl);
+
+    [[nodiscard]] lm::FVec3 GetWorldPosition() const;
+    [[nodiscard]] lm::FVec3 GetWorldScale() const;
+    [[nodiscard]] lm::FVec3 GetWorldRotation() const;
     [[nodiscard]] lm::FQuat GetOrientation();
 
-    void AddScale(const lm::FVec3& scl);
-    void AddRotation(const lm::FVec3& rot);
-    void AddPosition(const lm::FVec3& pos);
+    [[nodiscard]] lm::FVec3 GetLocalPosition() const;
+    [[nodiscard]] lm::FVec3 GetLocalScale() const;
+    [[nodiscard]] lm::FVec3 GetLocalRotation() const;
 
-    lm::FVec3 GetFront();
+    void AddPosition(const lm::FVec3& pos);
+    void AddRotation(const lm::FVec3& rot);
+    void AddScale(const lm::FVec3& scl);
+
+	lm::FVec3 GetFront();
     lm::FVec3 GetUp();
     lm::FVec3 GetRight();
 
@@ -32,10 +54,15 @@ private:
 	void UpdateMatrix();
 	void LimitRotation();
 
-    lm::FVec3 scale = lm::FVec3(1);
-    lm::FVec3 position;
-    lm::FVec3 rotation = lm::FVec3(1.f);
-    lm::FMat4 matrix;
+    lm::FVec3 worldPosition{ 0 };
+    lm::FVec3 worldRotation{ 0 };
+    lm::FVec3 worldScale{ 1 };
+
+    lm::FVec3 localPosition{0};
+    lm::FVec3 localRotation{0};
+    lm::FVec3 localScale{1};
+
+    lm::FMat4 worldMatrix;
 
     bool hasChanged = true;
 };

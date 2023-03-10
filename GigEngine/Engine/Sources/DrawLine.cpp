@@ -141,7 +141,7 @@ void Lines::CreateGuizmo(Transform* t)
 {
 	if (!t) return;
 
-	lm::FVec3 pos(t->GetPosition());
+	const lm::FVec3 pos(t->GetWorldPosition());
 	guizmoLines.push_back(new Line(pos, pos + t->GetRight(), lm::FVec3(1, 0, 0), 0));
 	guizmoLines.push_back(new Line(pos, pos + t->GetUp(), lm::FVec3(0, 1, 0), 0));
 	guizmoLines.push_back(new Line(pos, pos + t->GetFront(), lm::FVec3(0, 0, 1), 0));
@@ -150,10 +150,10 @@ void Lines::CreateGuizmo(Transform* t)
 void Lines::CreateTranslatedEditorTransform()
 {
 	//this must change, but ok for now
-	lm::FVec3 pos = Application::GetEditorCamera().transform.GetPosition();
+	lm::FVec3 pos = Application::GetEditorCamera().GetTransform().GetWorldPosition();
 	pos += 10 * Application::GetEditorCamera().GetFront();
 	pos -= 10 * Application::GetEditorCamera().GetRight();
 	pos += 8 * Application::GetEditorCamera().GetUp();
 
-	worldTransform.SetPosition(pos);
+	worldTransform.SetWorldPosition(pos);
 }
