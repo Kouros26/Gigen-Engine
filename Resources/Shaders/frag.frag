@@ -9,7 +9,7 @@ uniform vec3 viewPos;
 out vec4 outColor;
 
 struct DirLight {
-    vec3 direction;
+    vec3 direction
 
 	vec3 color;
 
@@ -69,7 +69,7 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     vec3 haflwaydir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(viewDir, haflwaydir), 0.0), SHINYNESS) ;
     float specular = spec * light.specular;
-    
+
     return (light.ambient + diffuse + specular) * light.color;
 }
 
