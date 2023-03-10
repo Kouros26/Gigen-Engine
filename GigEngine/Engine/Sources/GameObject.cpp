@@ -119,6 +119,10 @@ void GameObject::UpdateHierarchy()
 		child->UpdateHierarchy();
 }
 
+	for (const auto& child : this->children)
+		child->UpdateHierarchy();
+}
+
 void GameObject::AddComponent(Component* newComponent)
 {
 	components.push_back(newComponent);
