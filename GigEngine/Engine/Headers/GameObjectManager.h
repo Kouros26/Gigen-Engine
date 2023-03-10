@@ -10,7 +10,7 @@ public:
 	~GameObjectManager();
 
 	static unsigned int GetSize();
-	static GameObject* GetGameObject(int i);
+	static GameObject*& GetGameObject(int i);
 	static void Cleanup();
 	static void AddGameObject(GameObject* object);
 	static std::vector<GameObject*> FindObjectsByName(std::string name);

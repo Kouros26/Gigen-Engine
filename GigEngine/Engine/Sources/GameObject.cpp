@@ -20,6 +20,29 @@ GameObject::GameObject(const std::string& name)
 		this->name = name;
 }
 
+GameObject::GameObject(const std::string& name, const lm::FVec3& position, const lm::FVec3& rotation,
+	const lm::FVec3& scale)
+		: transform(position, rotation, scale)
+{
+	gameObjectIndex++;
+	id = gameObjectIndex;
+
+	if (!name.empty())
+		this->name = name;
+
+	else
+		this->name = "GameObject " + std::to_string(id);
+}
+
+GameObject::GameObject(const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale)
+	: transform(position, rotation, scale)
+{
+	gameObjectIndex++;
+	id = gameObjectIndex;
+
+	name = "GameObject " + std::to_string(id);
+}
+
 GameObject::~GameObject()
 {
 	for (const auto& component : components)
@@ -45,6 +68,10 @@ void GameObject::AddChild(GameObject* child)
 		child->parent->RemoveChild(child);
 
 	child->parent = this;
+
+	child->GetTransform().AssignLocalPosition(child->GetTransform().GetWorldPosition() - GetTransform().GetWorldPosition());
+	child->GetTransform().AssignLocalScale(child->GetTransform().GetWorldScale() / GetTransform().GetWorldScale());
+
 	children.push_back(child);
 }
 
@@ -52,6 +79,9 @@ void GameObject::RemoveChild(GameObject* child)
 {
 	if (child->parent != this)
 		return;
+
+	child->GetTransform().SetLocalPosition(child->GetTransform().GetWorldPosition());
+	child->GetTransform().SetLocalRotation(child->GetTransform().GetWorldRotation());
 
 	child->parent = nullptr;
 	children.remove(child);
@@ -73,14 +103,16 @@ void GameObject::UpdateHierarchy()
 {
 	if (this->parent != nullptr)
 	{
-		GetTransform().GetWorldRotation() = parent->GetTransform().GetOrientation() * GetTransform().GetLocalRotation();
-		GetTransform().GetWorldPosition() = parent->GetTransform().GetWorldPosition() + (parent->GetTransform().GetOrientation() * GetTransform().GetLocalPosition());
+		GetTransform().AssignWorldRotation(parent->GetTransform().GetWorldRotation() + GetTransform().GetLocalRotation());
+		GetTransform().AssignWorldPosition(parent->GetTransform().GetWorldPosition() + (parent->GetTransform().GetOrientation() * GetTransform().GetLocalPosition()));
+		GetTransform().AssignWorldScale(parent->GetTransform().GetWorldScale() * GetTransform().GetLocalScale());
 	}
 
 	else
 	{
-		GetTransform().GetWorldRotation() = GetTransform().GetLocalRotation();
-		GetTransform().GetWorldPosition() = GetTransform().GetLocalPosition();
+		GetTransform().AssignWorldRotation(GetTransform().GetLocalRotation());
+		GetTransform().AssignWorldPosition(GetTransform().GetLocalPosition());
+		GetTransform().AssignWorldScale(GetTransform().GetLocalScale());
 	}
 
 	for (const auto& child : this->children)

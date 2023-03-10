@@ -6,7 +6,7 @@
 class Transform
 {
 public:
-    Transform();
+    Transform(const lm::FVec3& pos = { 0 }, const lm::FVec3& rot = {0}, const lm::FVec3& scl = {1});
     ~Transform();
 
     void SetWorldPosition(const lm::FVec3& pos);
@@ -17,6 +17,20 @@ public:
     void SetLocalRotation(const lm::FVec3& rot);
     void SetLocalScale(const lm::FVec3& scl);
 
+    //DO NOT USE
+    void AssignWorldPosition(const lm::FVec3& pos);
+    //DO NOT USE
+    void AssignWorldRotation(const lm::FVec3& rot);
+    //DO NOT USE
+    void AssignWorldScale(const lm::FVec3& scl);
+
+    //DO NOT USE
+    void AssignLocalPosition(const lm::FVec3& pos);
+    //DO NOT USE
+    void AssignLocalRotation(const lm::FVec3& rot);
+    //DO NOT USE
+    void AssignLocalScale(const lm::FVec3& scl);
+
     [[nodiscard]] lm::FVec3 GetWorldPosition() const;
     [[nodiscard]] lm::FVec3 GetWorldScale() const;
     [[nodiscard]] lm::FVec3 GetWorldRotation() const;
@@ -26,11 +40,11 @@ public:
     [[nodiscard]] lm::FVec3 GetLocalScale() const;
     [[nodiscard]] lm::FVec3 GetLocalRotation() const;
 
-    void AddScale(const lm::FVec3& scl);
-    void AddRotation(const lm::FVec3& rot);
     void AddPosition(const lm::FVec3& pos);
+    void AddRotation(const lm::FVec3& rot);
+    void AddScale(const lm::FVec3& scl);
 
-    lm::FVec3 GetFront();
+	lm::FVec3 GetFront();
     lm::FVec3 GetUp();
     lm::FVec3 GetRight();
 
@@ -38,16 +52,17 @@ public:
 
 private:
     void UpdateMatrix();
+    void ComputeLocal();
     void LimitRotation();
     //
 
-    lm::FVec3 localScale = lm::FVec3(1);
-    lm::FVec3 localPosition;
-    lm::FVec3 localRotation = lm::FVec3(1.f);
+    lm::FVec3 worldPosition{ 0 };
+    lm::FVec3 worldRotation{ 0 };
+    lm::FVec3 worldScale{ 1 };
 
-    lm::FVec3 worldScale = lm::FVec3(1);
-    lm::FVec3 worldPosition;
-    lm::FVec3 worldRotation = lm::FVec3(1.f);
+    lm::FVec3 localPosition{0};
+    lm::FVec3 localRotation{0};
+    lm::FVec3 localScale{1};
 
     lm::FMat4 worldMatrix;
 

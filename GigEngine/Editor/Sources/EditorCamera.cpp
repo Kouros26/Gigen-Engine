@@ -89,7 +89,7 @@ void EditorCamera::Look()
 
         const lm::FVec3 rot = GetTransform().GetWorldRotation();
 
-        lm::FVec3 vecRot = { -Rx, Ry, 0 };
+        const lm::FVec3 vecRot = { -Rx, Ry, 0 };
         GetTransform().AddRotation(vecRot);
 
         if (rot.x > maxLookAngle)

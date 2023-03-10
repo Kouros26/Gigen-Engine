@@ -2,7 +2,7 @@
 #include "Displayable.h"
 #include "Watch.h"
 
-class FPSDisplay : Displayable
+class FPSDisplay : public Displayable
 {
 public:
 

@@ -11,21 +11,18 @@ GameObjectManager::~GameObjectManager()
 
 unsigned int GameObjectManager::GetSize()
 {
-	return (unsigned int)gameObjects.size();
+	return static_cast<unsigned>(gameObjects.size());
 }
 
-GameObject* GameObjectManager::GetGameObject(int i)
+GameObject*& GameObjectManager::GetGameObject(int i)
 {
 	return gameObjects[i];
 }
 
 void GameObjectManager::Cleanup()
 {
-	for (size_t i = 0; i < gameObjects.size(); i++)
-	{
-		if (gameObjects[i])
-			delete gameObjects[i];
-	}
+	for (const auto& gameObject : gameObjects)
+		delete gameObject;
 
 	//if (SkyBox)
 	//	delete SkyBox;
@@ -40,13 +37,11 @@ void GameObjectManager::AddGameObject(GameObject* object)
 std::vector<GameObject*> GameObjectManager::FindObjectsByName(std::string name)
 {
 	std::vector<GameObject*> namedObjects;
-	for (int i = 0; i < gameObjects.size(); i++)
-	{
-		if (gameObjects[i]->GetName() == name)
-		{
-			namedObjects.push_back(gameObjects[i]);
-		}
-	}
+
+	for (auto& gameObject : gameObjects)
+		if (gameObject->GetName() == name)
+			namedObjects.push_back(gameObject);
+
 	return namedObjects;
 }
 

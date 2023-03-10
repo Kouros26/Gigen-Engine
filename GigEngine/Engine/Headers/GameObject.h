@@ -10,6 +10,8 @@ class GameObject
 public:
 	GameObject();
 	GameObject(const std::string& name);
+	GameObject(const std::string& name, const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
+	GameObject(const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
 	~GameObject();
 
 	void UpdateRender() const;
@@ -50,8 +52,8 @@ private:
 
 	Transform transform;
 
-	GameObject* parent;
-	std::list<GameObject*> children;
+	GameObject* parent = nullptr;
+	std::list<GameObject*> children{};
 
 	std::vector<Component*> components;
 	Model* model = nullptr;
@@ -98,7 +100,7 @@ inline void GameObject::RemoveComponents()
 {
 	for (int i = 0; i < components.size(); i++)
 	{
-		if (T* comp = dynamic_cast<T*>(components[i]))
+		if (const T* comp = dynamic_cast<T*>(components[i]))
 		{
 			delete comp;
 			components.erase(components.begin() + i);
