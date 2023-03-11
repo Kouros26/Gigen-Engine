@@ -111,6 +111,9 @@ void GameObject::UpdateComponents() const
 {
 	for (const auto& component : components)
 		component->Update();
+
+	for (const auto& script : scripts)
+		script->LateUpdate();
 }
 
 void GameObject::UpdateHierarchy()
@@ -136,6 +139,17 @@ void GameObject::UpdateHierarchy()
 void GameObject::AddComponent(Component* newComponent)
 {
 	components.push_back(newComponent);
+
+	if (const auto script = dynamic_cast<Script*>(newComponent))
+	{
+		scripts.push_back(script);
+		script->Awake();
+	}
+}
+
+unsigned GameObject::GetComponentCount() const
+{
+	return static_cast<unsigned>(components.size());
 }
 
 Transform& GameObject::GetTransform()

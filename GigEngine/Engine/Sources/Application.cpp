@@ -26,6 +26,7 @@ Application::Application()
 	car->SetModel("Resources/Models/Car.fbx");
 	car->AddComponent<TestComponent>();
 	car->AddComponent<testComponent2>();
+	car->AddComponent<TestScript>();
 	Lines::SetFocusedObjectTransform(&car->GetTransform());
 	car->AddChild(chest);
 
@@ -78,6 +79,17 @@ lm::FMat4& Application::GetViewProj()
 lm::FVec3& Application::GetViewPos()
 {
 	return viewPos;
+}
+
+void Application::StartGame()
+{
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
+	{
+		const GameObject* object = GameObjectManager::GetGameObject(i);
+
+		for (int j = 0; j < object->GetComponentCount(); j++)
+			object->GetComponentByID(j)->Start();
+	}
 }
 
 void Application::Run()

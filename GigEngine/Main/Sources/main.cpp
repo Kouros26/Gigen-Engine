@@ -8,6 +8,8 @@ int main()
 
 	Interface interface(window.GetGLFWWindow(), window.GetGLSLVersion().c_str());
 
+	Application::StartGame();
+
 	while (!window.ShouldClose())
 	{
 		interface.BeginFrame();
