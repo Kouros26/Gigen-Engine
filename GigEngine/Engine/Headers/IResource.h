@@ -4,13 +4,19 @@
 class IResource
 {
 public:
-	IResource(const std::string& filePath) : filePath(filePath) {};
-	virtual ~IResource() = default;
+    IResource(const std::string& filePath) : filePath(filePath) {};
+    virtual ~IResource() = default;
 
-	[[nodiscard]] const std::string& GetFilePath() const { return filePath; };
+    IResource() = default;
+    IResource(const IResource& other) = default;
+    IResource(IResource&& other) noexcept = default;
+    IResource& operator=(const IResource& other) = default;
+    IResource& operator=(IResource&& other) noexcept = default;
+
+    [[nodiscard]] const std::string& GetFilePath() const { return filePath; };
 
 protected:
-	std::string filePath;
+    std::string filePath;
 };
 
 std::string readFile(std::string const&);

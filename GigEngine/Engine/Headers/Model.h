@@ -7,15 +7,20 @@
 class Model : public IResource
 {
 public:
-	Model(std::string const& filePath);
-	~Model();
+    Model(std::string const& filePath);
+    ~Model();
 
-	void Draw() const;
+    Model(const Model& other);
+    Model(Model&& other) noexcept;
+    Model& operator=(const Model& other);
+    Model& operator=(Model&& other) noexcept;
+
+    void Draw() const;
 
 private:
-	void loadModel(const std::string& pPath);
-	void processNode(const aiNode* pNode, const aiScene* pScene);
-	void processMesh(const aiMesh* pMesh, const aiScene* pScene);
+    void loadModel(const std::string& pPath);
+    void processNode(const aiNode* pNode, const aiScene* pScene);
+    void processMesh(const aiMesh* pMesh, const aiScene* pScene);
 
-	std::vector<Mesh*> meshes;
+    std::vector<Mesh*> meshes;
 };
