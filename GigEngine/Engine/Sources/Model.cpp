@@ -1,26 +1,49 @@
 #include "Model.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
+#include "ResourceManager.h"
+#include "Texture.h"
 
 Model::Model(std::string const& filePath)
 	:IResource(filePath)
 {
-	loadModel(filePath);
+	LoadModel(filePath);
 }
 
 Model::~Model()
 {
-	for (const auto& mesh : meshes)
+	for (const auto& mesh : meshes) 
+	{
 		delete mesh;
+	}
 }
 
 void Model::Draw() const
 {
-	for (const auto& mesh : meshes)
-		mesh->Draw();
+	for (int i = 0; i < meshes.size(); i++) 
+	{
+		if (meshes[i]) 
+		{
+			Texture* t = ResourceManager::Get<Texture>(meshes[i]->texturePath);
+			if (t)
+			{
+				t->Bind();
+			}
+			meshes[i]->Draw();
+			//glBindTexture(GL_TEXTURE_2D, 0);
+		}
+	}
 }
 
-void Model::loadModel(const std::string& pPath)
+void Model::SetTexture(const std::string& filePath)
+{
+	for (const auto& mesh : meshes)
+	{
+		mesh->texturePath = filePath;
+	}
+}
+
+void Model::LoadModel(const std::string& pPath)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(pPath, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals);
@@ -31,25 +54,28 @@ void Model::loadModel(const std::string& pPath)
 		return;
 	}
 
-	processNode(scene->mRootNode, scene);
+	ProcessNode(scene->mRootNode, scene);
 }
 
-void Model::processNode(const aiNode* pNode, const aiScene* pScene)
+void Model::ProcessNode(const aiNode* pNode, const aiScene* pScene)
 {
 	for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
 	{
 		const aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
-		processMesh(mesh, pScene);
+		ProcessMesh(mesh, pScene);
 	}
 
+	ProcessMaterial(pScene);
+
 	for (unsigned int i = 0; i < pNode->mNumChildren; i++)
-		processNode(pNode->mChildren[i], pScene);
+		ProcessNode(pNode->mChildren[i], pScene);
 }
 
-void Model::processMesh(const aiMesh* pMesh, const aiScene* pScene)
+void Model::ProcessMesh(const aiMesh* pMesh, const aiScene* pScene)
 {
 	Mesh* mesh = new Mesh(pMesh->mNumVertices * VERTEX_SIZE, pMesh->mNumFaces * FACE_SIZE);
 	mesh->vertices = new float[pMesh->mNumVertices * VERTEX_SIZE];
+	mesh->materialIndex = pMesh->mMaterialIndex;
 
 	for (unsigned int i = 0; i < pMesh->mNumVertices; i++)
 	{
@@ -82,4 +108,14 @@ void Model::processMesh(const aiMesh* pMesh, const aiScene* pScene)
 
 	mesh->setUpBuffers();
 	meshes.emplace_back(mesh);
+}
+
+void Model::ProcessMaterial(const aiScene* pScene)
+{
+	for (unsigned int i = 0; i < pScene->mNumMaterials; i++)
+	{
+		const aiMaterial* pMaterial = pScene->mMaterials[i];
+
+		
+	}
 }

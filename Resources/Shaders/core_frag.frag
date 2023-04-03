@@ -5,6 +5,7 @@ in vec2 fragTexCoord;
 in vec3 fragPos;
 
 uniform vec3 viewPos;
+uniform sampler2D ourTexture;
 
 out vec4 outColor;
 
@@ -129,5 +130,5 @@ void main() {
 //	for(int k = 0; k < nbSpotLight; k++)
 //		result += CalcSpotLight(spotLights[k], norm, fragPos, viewDir);
 
-	outColor =  vec4(result, 1.0);
+	outColor =  vec4(result, 1.0) * texture(ourTexture, fragTexCoord);
 }

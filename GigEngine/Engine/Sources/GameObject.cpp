@@ -73,6 +73,14 @@ void GameObject::SetModel(std::string const& filePath)
 	model = ResourceManager::Get<Model>(filePath);
 }
 
+void GameObject::SetTexture(const std::string& filePath)
+{
+	if (model) 
+	{
+		model->SetTexture(filePath);
+	}
+}
+
 void GameObject::AddChild(GameObject* child)
 {
 	if (child->parent == this)

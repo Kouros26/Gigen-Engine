@@ -19,6 +19,8 @@ public:
 
 	float* vertices = nullptr;
 	unsigned int* indices = nullptr;
+	std::string texturePath;
+	unsigned int materialIndex;
 
 private:
 	unsigned int verticesSize = 0;

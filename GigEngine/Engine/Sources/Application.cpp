@@ -21,9 +21,11 @@ Application::Application()
 
 	GameObject* chest = GameObjectManager::CreateGameObject("chest", {5, 0, 10}, {0}, {1});
 	chest->SetModel("Resources/Models/chest.obj");
+	chest->SetTexture("Resources/Textures/test.jpg");
 
 	GameObject* car = GameObjectManager::CreateGameObject("car", {-5, 0, 10}, {0}, {1});
 	car->SetModel("Resources/Models/Car.fbx");
+	car->SetTexture("Resources/Textures/test.jpg");
 	car->AddComponent<TestComponent>();
 	car->AddComponent<testComponent2>();
 	Lines::SetFocusedObjectTransform(&car->GetTransform());

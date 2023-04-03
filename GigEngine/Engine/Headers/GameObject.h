@@ -24,6 +24,7 @@ public:
 	unsigned int GetId();
 
 	void SetModel(const std::string& filePath);
+	void SetTexture(const std::string& filePath);
 
 	void AddChild(GameObject* child);
 	void RemoveChild(GameObject* child);

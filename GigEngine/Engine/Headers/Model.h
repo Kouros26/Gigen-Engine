@@ -4,6 +4,11 @@
 #include "Mesh.h"
 #include <assimp/scene.h>
 
+struct Material 
+{
+
+};
+
 class Model : public IResource
 {
 public:
@@ -11,11 +16,14 @@ public:
 	~Model();
 
 	void Draw() const;
+	void SetTexture(const std::string& filePath);
 
 private:
-	void loadModel(const std::string& pPath);
-	void processNode(const aiNode* pNode, const aiScene* pScene);
-	void processMesh(const aiMesh* pMesh, const aiScene* pScene);
+	void LoadModel(const std::string& pPath);
+	void ProcessNode(const aiNode* pNode, const aiScene* pScene);
+	void ProcessMesh(const aiMesh* pMesh, const aiScene* pScene);
+	void ProcessMaterial(const aiScene* pScene);
 
 	std::vector<Mesh*> meshes;
+	std::vector<Material*> materials;
 };
