@@ -18,6 +18,7 @@ public:
 	GLuint GetUniform(const char* name);
 
 	void SetVec3(float vec[3], const char* name);
+	void SetVec4(float vec[4], const char* name);
 	void SetMat4(lm::FMat4& value, const char* name);
 	void SetBool(bool& value, const char* name);
 	void SetInt(int& value, const char* name);

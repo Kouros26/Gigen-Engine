@@ -107,6 +107,11 @@ void ShaderProgram::SetVec3(float vec[3], const char* name)
 	glUniform3fv(GetUniform(name), 1, vec);
 }
 
+void ShaderProgram::SetVec4(float vec[4], const char* name)
+{
+	glUniform4fv(GetUniform(name), 1, vec);
+}
+
 void ShaderProgram::SetMat4(lm::FMat4& value, const char* name)
 {
 	glUniformMatrix4fv(GetUniform(name), 1, GL_FALSE, lm::FMat4::ToArray(value));

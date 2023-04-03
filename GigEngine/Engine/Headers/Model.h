@@ -13,6 +13,12 @@ struct Material
 	lm::FVec4 emission;
 
 	float shininess;
+
+	void SendToShader() 
+	{
+		//ShaderProgram& shader = Application::GetMainShader();
+		//shader.SetVec4(diffuse, "name");
+	};
 };
 
 class Model : public IResource
