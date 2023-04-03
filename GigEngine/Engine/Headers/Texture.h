@@ -8,6 +8,7 @@ public:
 	~Texture();
 
 	void Bind();
+	static void UnBind();
 
 private:
 	unsigned int texture;

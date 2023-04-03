@@ -3,10 +3,16 @@
 #include "Component.h"
 #include "Mesh.h"
 #include <assimp/scene.h>
+#include "Vec4/FVec4.hpp"
 
 struct Material 
 {
+	lm::FVec4 diffuse;
+	lm::FVec4 ambient;
+	lm::FVec4 specular;
+	lm::FVec4 emission;
 
+	float shininess;
 };
 
 class Model : public IResource

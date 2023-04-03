@@ -42,3 +42,8 @@ void Texture::Bind()
 {
 	glBindTexture(GL_TEXTURE_2D, texture);
 }
+
+void Texture::UnBind()
+{
+	glBindTexture(GL_TEXTURE_2D, 0);
+}

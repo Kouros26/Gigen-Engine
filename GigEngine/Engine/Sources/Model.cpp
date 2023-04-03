@@ -29,8 +29,17 @@ void Model::Draw() const
 			{
 				t->Bind();
 			}
+			if (meshes[i]->materialIndex < materials.size()) 
+			{
+				if (materials[meshes[i]->materialIndex]) 
+				{
+					//send material unifrom
+				}
+			}
 			meshes[i]->Draw();
-			//glBindTexture(GL_TEXTURE_2D, 0);
+
+			Texture::UnBind();
+			//unbind material
 		}
 	}
 }
@@ -116,6 +125,29 @@ void Model::ProcessMaterial(const aiScene* pScene)
 	{
 		const aiMaterial* pMaterial = pScene->mMaterials[i];
 
-		
+		Material* m = new Material();
+
+		aiColor4D vec4;
+		if (AI_SUCCESS == aiGetMaterialColor(pMaterial, AI_MATKEY_COLOR_DIFFUSE, &vec4)) 
+		{
+			m->diffuse = lm::FVec4(vec4.r, vec4.g, vec4.b, vec4.a);
+		}
+		if (AI_SUCCESS == aiGetMaterialColor(pMaterial, AI_MATKEY_COLOR_AMBIENT, &vec4))
+		{
+			m->ambient = lm::FVec4(vec4.r, vec4.g, vec4.b, vec4.a);
+		}
+		if (AI_SUCCESS == aiGetMaterialColor(pMaterial, AI_MATKEY_COLOR_SPECULAR, &vec4))
+		{
+			m->specular = lm::FVec4(vec4.r, vec4.g, vec4.b, vec4.a);
+		}
+		if (AI_SUCCESS == aiGetMaterialColor(pMaterial, AI_MATKEY_COLOR_EMISSIVE, &vec4))
+		{
+			m->emission = lm::FVec4(vec4.r, vec4.g, vec4.b, vec4.a);
+		}
+
+		unsigned int max;
+		aiGetMaterialFloatArray(pMaterial, AI_MATKEY_SHININESS, &m->shininess, &max);
+
+		materials.push_back(m);
 	}
 }
