@@ -40,6 +40,10 @@ public:
 	void Start() override;
 	void Update() override;
 	void LateUpdate() override;
+
+    virtual Component* Clone(GameObject* newGameObject) override {
+        return new TestScript(newGameObject);
+    };
 };
 
 class TestComponent : public Component
