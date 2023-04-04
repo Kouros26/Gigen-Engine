@@ -1,24 +1,46 @@
 #pragma once
-#include <condition_variable>
-#include <functional>
-#include <queue>
+#include <iostream>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <queue>
+#include <functional>
+#include <future>
 
 class ThreadPool
 {
 public:
+    ThreadPool(size_t numThreads);
 
-	ThreadPool();
-	~ThreadPool();
-	static void AddToQueue(const std::function<void()>& task);
-	static bool IsBusy();
+    template<typename Func, typename... Args>
+    auto Enqueue(Func&& func, Args&&... args) -> std::future<typename std::invoke_result_t<Func, Args...>> {
+        using ReturnType = typename std::invoke_result_t<Func, Args...>;
+
+        auto task = std::make_shared<std::packaged_task<ReturnType()>>(std::bind(std::forward<Func>(func), std::forward<Args>(args)...));
+
+        std::future<ReturnType> result = task->get_future();
+
+        {
+            std::unique_lock<std::mutex> lock(queueMutex);
+
+            if (stop) {
+                throw std::runtime_error("enqueue on stopped thread pool");
+            }
+
+            tasks.emplace([task]() { (*task)(); });
+        }
+
+        condition.notify_one();
+
+        return result;
+    }
+
+    ~ThreadPool();
+
 private:
-
-	void ThreadLoop();
-
-	inline static bool shouldStop = false;
-	inline static std::mutex queueMutex;
-	inline static std::condition_variable mutexCondition;
-	inline static std::vector<std::thread> threads;
-	inline static std::queue<std::function<void()>> tasksQueue;
+    std::vector<std::thread> threads;
+    std::queue<std::function<void()>> tasks;
+    std::mutex queueMutex;
+    std::condition_variable condition;
+    bool stop = false;
 };

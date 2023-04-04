@@ -6,14 +6,15 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-	resources.clear();
 }
 
-void ResourceManager::DeleteRessource(const std::string& pStr)
+inline void ResourceManager::DeleteResource(const std::string& filePath)
 {
-	auto it = resources.find(pStr);
-	if (it != resources.end())
-	{
-		resources.erase(it);
-	}
+    auto it = resources.find(filePath);
+    if (it != resources.end())
+    {
+        resources.erase(it);
+    }
 }
+
+inline ThreadPool ResourceManager::threadPool(std::thread::hardware_concurrency() - 1);

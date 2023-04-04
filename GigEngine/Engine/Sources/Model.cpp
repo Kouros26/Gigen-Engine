@@ -55,6 +55,12 @@ void Model::Draw() const
         mesh->Draw();
 }
 
+void Model::Init()
+{
+    for (const auto& mesh : meshes)
+        mesh->setUpBuffers();
+}
+
 void Model::loadModel(const std::string& pPath)
 {
     Assimp::Importer importer;
@@ -115,6 +121,5 @@ void Model::processMesh(const aiMesh* pMesh, const aiScene* pScene)
         mesh->indices[(i * FACE_SIZE) + 2] = pMesh->mFaces[i].mIndices[2];
     }
 
-    mesh->setUpBuffers();
     meshes.emplace_back(mesh);
 }
