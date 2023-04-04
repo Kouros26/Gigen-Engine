@@ -4,7 +4,10 @@
 #include "Transform.h"
 #include <vector>
 
+class Component;
+class Script;
 class Model;
+
 class GameObject
 {
 public:
@@ -34,7 +37,7 @@ public:
     void AddChild(GameObject* child);
     void RemoveChild(GameObject* child);
 
-    void AddComponent(class Component* newComponent);
+	void AddComponent(Component* newComponent);
 
     //create New component of type and return the new Component
     template<class T>
@@ -44,15 +47,19 @@ public:
     template<class T>
     T* GetComponent();
 
-    //return vector of all components of type
-    template<class T>
-    std::vector<T*> GetComponents();
+	[[nodiscard]] Component* GetComponentByID(int id) const;
+
+	//return vector of all components of type
+	template<class T>
+	std::vector<T*>& GetComponents();
 
     //remove all components of type
     template<class T>
     void RemoveComponents();
 
-    Transform& GetTransform();
+	[[nodiscard]] unsigned int GetComponentCount() const;
+
+	Transform& GetTransform();
 
 private:
 
@@ -64,36 +71,48 @@ private:
     GameObject* parent = nullptr;
     std::list<GameObject*> children{};
 
-    std::vector<Component*> components;
-    Model* model = nullptr;
+	std::vector<Component*> components;
+	std::vector<Script*> scripts;
+
+	Model* model = nullptr;
 
     //use so every gameObject has a different id
     static unsigned int gameObjectIndex;
 };
 
 template<class T>
-inline T* GameObject::AddComponent() {
-    T* newComp = new T(this);
-    components.push_back(newComp);
-    return newComp;
-}
-
-template<class T>
-inline T* GameObject::GetComponent()
+T* GameObject::AddComponent()
 {
-    for (int i = 0; i < components.size(); i++)
-    {
-        T* comp = dynamic_cast<T*>(components[i]);
-        if (comp)
-        {
-            return comp;
-        }
-    }
-    return nullptr;
+	T* newComp = new T(this);
+	components.push_back(newComp);
+
+	if (const auto script = dynamic_cast<Script*>(newComp))
+	{
+		scripts.push_back(script);
+		script->Awake();
+	}
+
+	return newComp;
 }
 
 template<class T>
-inline std::vector<T*> GameObject::GetComponents()
+T* GameObject::GetComponent()
+{
+	for (int i = 0; i < components.size(); i++)
+	{
+		if (T* comp = dynamic_cast<T*>(components[i]))
+			return comp;
+	}
+	return nullptr;
+}
+
+inline Component* GameObject::GetComponentByID(const int componentID) const
+{
+	return components[componentID];
+}
+
+template<class T>
+std::vector<T*>& GameObject::GetComponents()
 {
     std::vector<T*> comps;
     for (int i = 0; i < components.size(); i++)
@@ -105,7 +124,7 @@ inline std::vector<T*> GameObject::GetComponents()
 }
 
 template<class T>
-inline void GameObject::RemoveComponents()
+void GameObject::RemoveComponents()
 {
     for (int i = 0; i < components.size(); i++)
     {

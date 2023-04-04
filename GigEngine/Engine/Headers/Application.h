@@ -16,6 +16,7 @@ public:
 	static lm::FMat4& GetViewProj();
 	static lm::FVec3& GetViewPos();
 
+	static void StartGame();
 	void Run();
 	void SwapFrames();
 

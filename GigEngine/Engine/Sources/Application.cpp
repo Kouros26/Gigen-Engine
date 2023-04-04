@@ -22,12 +22,13 @@ Application::Application()
     GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 0, 10 }, { 0 }, { 1 });
     chest->SetModel("Resources/Models/chest.obj");
 
-    GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
-    car->SetModel("Resources/Models/Car.fbx");
-    car->AddComponent<TestComponent>();
-    car->AddComponent<testComponent2>();
-    Lines::SetFocusedObjectTransform(&car->GetTransform());
-    car->AddChild(chest);
+	GameObject* car = GameObjectManager::CreateGameObject("car", {-5, 0, 10}, {0}, {1});
+	car->SetModel("Resources/Models/Car.fbx");
+	car->AddComponent<TestComponent>();
+	car->AddComponent<testComponent2>();
+	car->AddComponent<TestScript>();
+	Lines::SetFocusedObjectTransform(&car->GetTransform());
+	car->AddChild(chest);
 
     GameObject* car2 = GameObjectManager::CreateGameObject(car); //copy constructor test
     car2->GetTransform().SetWorldPosition(lm::FVec3(0));
@@ -81,6 +82,17 @@ lm::FMat4& Application::GetViewProj()
 lm::FVec3& Application::GetViewPos()
 {
     return viewPos;
+}
+
+void Application::StartGame()
+{
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
+	{
+		const GameObject* object = GameObjectManager::GetGameObject(i);
+
+		for (int j = 0; j < object->GetComponentCount(); j++)
+			object->GetComponentByID(j)->Start();
+	}
 }
 
 void Application::Run()
