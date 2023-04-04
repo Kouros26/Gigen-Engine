@@ -2,24 +2,9 @@
 #include "IResource.h"
 #include "Component.h"
 #include "Mesh.h"
+#include "Material.h"
+#include "Texture.h"
 #include <assimp/scene.h>
-#include "Vec4/FVec4.hpp"
-
-struct Material 
-{
-	lm::FVec4 diffuse;
-	lm::FVec4 ambient;
-	lm::FVec4 specular;
-	lm::FVec4 emission;
-
-	float shininess;
-
-	void SendToShader() 
-	{
-		//ShaderProgram& shader = Application::GetMainShader();
-		//shader.SetVec4(diffuse, "name");
-	};
-};
 
 class Model : public IResource
 {
@@ -38,4 +23,5 @@ private:
 
 	std::vector<Mesh*> meshes;
 	std::vector<Material*> materials;
+	Texture* texture = nullptr;
 };

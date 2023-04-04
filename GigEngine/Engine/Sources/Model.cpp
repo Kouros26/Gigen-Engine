@@ -2,53 +2,57 @@
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "ResourceManager.h"
-#include "Texture.h"
 
 Model::Model(std::string const& filePath)
 	:IResource(filePath)
 {
 	LoadModel(filePath);
+	texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
 }
 
 Model::~Model()
 {
-	for (const auto& mesh : meshes) 
+	for (const auto& mesh : meshes)
 	{
 		delete mesh;
+	}
+	for (const auto& mat : materials)
+	{
+		delete mat;
 	}
 }
 
 void Model::Draw() const
 {
-	for (int i = 0; i < meshes.size(); i++) 
+	texture->Bind();
+	for (int i = 0; i < meshes.size(); i++)
 	{
-		if (meshes[i]) 
+		if (meshes[i])
 		{
-			Texture* t = ResourceManager::Get<Texture>(meshes[i]->texturePath);
-			if (t)
+			if (meshes[i]->materialIndex < materials.size())
 			{
-				t->Bind();
-			}
-			if (meshes[i]->materialIndex < materials.size()) 
-			{
-				if (materials[meshes[i]->materialIndex]) 
+				if (materials[meshes[i]->materialIndex])
 				{
-					//send material unifrom
+					materials[meshes[i]->materialIndex]->SendToShader();
+				}
+				else
+				{
+					Material::SendDefaultMaterial();
 				}
 			}
 			meshes[i]->Draw();
-
-			Texture::UnBind();
-			//unbind material
 		}
 	}
+	Texture::UnBind();
 }
 
 void Model::SetTexture(const std::string& filePath)
 {
-	for (const auto& mesh : meshes)
+	texture = ResourceManager::Get<Texture>(filePath);
+	if (!texture->isValid())
 	{
-		mesh->texturePath = filePath;
+		std::cout << "texture invalid for model" << std::endl;
+		texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
 	}
 }
 
@@ -127,26 +131,26 @@ void Model::ProcessMaterial(const aiScene* pScene)
 
 		Material* m = new Material();
 
+		//diffuse & ambient are inverted ??
 		aiColor4D vec4;
-		if (AI_SUCCESS == aiGetMaterialColor(pMaterial, AI_MATKEY_COLOR_DIFFUSE, &vec4)) 
+		if (AI_SUCCESS == aiGetMaterialColor(pMaterial, AI_MATKEY_COLOR_DIFFUSE, &vec4))
 		{
-			m->diffuse = lm::FVec4(vec4.r, vec4.g, vec4.b, vec4.a);
+			m->SetAmbient(lm::FVec3(vec4.r, vec4.g, vec4.b));
 		}
 		if (AI_SUCCESS == aiGetMaterialColor(pMaterial, AI_MATKEY_COLOR_AMBIENT, &vec4))
 		{
-			m->ambient = lm::FVec4(vec4.r, vec4.g, vec4.b, vec4.a);
+			m->SetDiffuse(lm::FVec3(vec4.r, vec4.g, vec4.b));
 		}
 		if (AI_SUCCESS == aiGetMaterialColor(pMaterial, AI_MATKEY_COLOR_SPECULAR, &vec4))
 		{
-			m->specular = lm::FVec4(vec4.r, vec4.g, vec4.b, vec4.a);
-		}
-		if (AI_SUCCESS == aiGetMaterialColor(pMaterial, AI_MATKEY_COLOR_EMISSIVE, &vec4))
-		{
-			m->emission = lm::FVec4(vec4.r, vec4.g, vec4.b, vec4.a);
+			m->SetSpecular(lm::FVec3(vec4.r, vec4.g, vec4.b));
 		}
 
 		unsigned int max;
-		aiGetMaterialFloatArray(pMaterial, AI_MATKEY_SHININESS, &m->shininess, &max);
+		float shininess;
+		aiGetMaterialFloatArray(pMaterial, AI_MATKEY_SHININESS, &shininess, &max);
+
+		m->SetShininess(shininess);
 
 		materials.push_back(m);
 	}

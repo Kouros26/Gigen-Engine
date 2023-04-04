@@ -19,34 +19,23 @@ Application::Application()
 
 	//to remove =====================================================
 
-	GameObject* chest = GameObjectManager::CreateGameObject("chest", {5, 0, 10}, {0}, {1});
-	chest->SetModel("Resources/Models/chest.obj");
-	chest->SetTexture("Resources/Textures/test.png");
+	GameObject* skybox = GameObjectManager::CreateGameObject("Skybox", lm::FVec3(0), lm::FVec3(180, 0, 0), lm::FVec3(1));
+	skybox->SetModel("Resources/Models/Skybox/cube.obj");
+	skybox->SetTexture("Resources/Textures/Skybox/default.png");
 
-	GameObject* car = GameObjectManager::CreateGameObject("car", {-5, 0, 10}, {0}, {1});
+	GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 0, 10 }, { 0 }, { 1 });
+	chest->SetModel("Resources/Models/chest.obj");
+	chest->SetTexture("Resources/Textures/test.jpg");
+
+	GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
 	car->SetModel("Resources/Models/Car.fbx");
-	car->SetTexture("Resources/Textures/test.png");
 	car->AddComponent<TestComponent>();
 	car->AddComponent<testComponent2>();
 	Lines::SetFocusedObjectTransform(&car->GetTransform());
 	car->AddChild(chest);
 
-	GameObject* dirlight = GameObjectManager::CreateDirLight(0.05f, 0.2f, 0.5f, lm::FVec3(1));
+	GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
 	dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
-
-	GameObject* dirlight2 = GameObjectManager::CreateDirLight(0.05f, 0.2f, 0.3f, lm::FVec3(1));
-	dirlight2->GetTransform().SetWorldRotation(lm::FVec3(-45, -20, 0));
-
-	GameObject* pointlight = GameObjectManager::CreatePointLight(0.05f, 0.2f, 0.3f, 0.01f, 0.01f, 0.01f, lm::FVec3(1));
-	pointlight->GetTransform().SetWorldRotation(lm::FVec3(10, 0, 10));
-
-	//spotlight2->transform.SetPosition(lm::FVec3(-5, -10, 10));
-
-	//spotlight2->transform.SetRotation(lm::FVec3(-90, 0, 0));
-	//GameObject* spotlight2 = GameObjectManager::CreateSpotLight(0.1f, 0.1f, 0.2f, 0.01f, 0.01f, 0.01f, 25, 50, lm::FVec3(1));
-	//spotlight->transform.SetPosition(lm::FVec3(-5, 10, 10));
-	//spotlight->transform.SetRotation(lm::FVec3(90, 0, 0));
-	//GameObject* spotlight = GameObjectManager::CreateSpotLight(0.05f, 0.2f, 0.5f, 0.01f, 0.01f, 0.01f, 25, 50, lm::FVec3(1));
 
 	//==================================================================
 }
@@ -168,11 +157,10 @@ void Application::UpdateGameObjectRender()
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		GameObject* object = GameObjectManager::GetGameObject(i);
-    
+
 		object->UpdateHierarchy();
 		glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, lm::FMat4::ToArray(object->GetTransform().GetMatrix()));
-        object->UpdateRender();
-		
+		object->UpdateRender();
 	}
 }
 

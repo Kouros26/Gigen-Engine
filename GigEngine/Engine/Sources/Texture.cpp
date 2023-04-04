@@ -3,18 +3,18 @@
 #include <glad/glad.h>
 #include <iostream>
 
-Texture::Texture(std::string const& filePath) 
-	:IResource(filePath) 
+Texture::Texture(std::string const& filePath)
+	:IResource(filePath)
 {
 	Load();
 }
 
-Texture::~Texture() 
+Texture::~Texture()
 {
 	glDeleteTextures(1, &texture);
 }
 
-void Texture::Load() 
+void Texture::Load()
 {
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -25,15 +25,17 @@ void Texture::Load()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
 	if (data)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
+		valid = true;
 	}
 	else
 	{
-		std::cout << "Failed to load texture" << std::endl;
+		std::cout << "Failed to load texture : " << filePath << std::endl;
 	}
 	stbi_image_free(data);
 }
@@ -46,4 +48,9 @@ void Texture::Bind()
 void Texture::UnBind()
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+bool Texture::isValid()
+{
+	return valid;
 }
