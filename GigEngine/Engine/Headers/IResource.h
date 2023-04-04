@@ -13,6 +13,8 @@ public:
     IResource& operator=(const IResource& other) = default;
     IResource& operator=(IResource&& other) noexcept = default;
 
+    virtual void Init() = 0;
+
     [[nodiscard]] const std::string& GetFilePath() const { return filePath; };
 
 protected:

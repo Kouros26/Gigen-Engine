@@ -1,5 +1,4 @@
 #include "GameObject.h"
-#include "Component.h"
 #include "Model.h"
 #include "ResourceManager.h"
 #include "GameObjectManager.h"

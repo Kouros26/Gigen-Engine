@@ -8,40 +8,43 @@
 class ShaderProgram
 {
 public:
-	ShaderProgram();
-	~ShaderProgram();
-	bool Link(class VertexShader* vertex, class FragmentShader* fragment);
-	void Use();
-	void UnUse();
+    ShaderProgram();
+    ~ShaderProgram();
+    bool Link(class VertexShader* vertex, class FragmentShader* fragment);
+    void Use();
+    void UnUse();
 
-	GLuint GetId();
-	GLuint GetUniform(const char* name);
+    GLuint GetId();
+    GLuint GetUniform(const char* name);
 
-	void SetVec3(float vec[3], const char* name);
-	void SetMat4(lm::FMat4& value, const char* name);
-	void SetBool(bool& value, const char* name);
-	void SetInt(int& value, const char* name);
-	void SetFloat(float& value, const char* name);
+    void SetVec3(float vec[3], const char* name);
+    void SetMat4(lm::FMat4& value, const char* name);
+    void SetBool(bool& value, const char* name);
+    void SetInt(int& value, const char* name);
+    void SetFloat(float& value, const char* name);
 
 private:
-	GLuint shaderProgram = GL_FALSE;
+    GLuint shaderProgram = GL_FALSE;
 };
 
 class Shader : public IResource
 {
 public:
-	Shader(std::string const& filePath, int shaderType);
-	GLuint shaderId = GL_FALSE;
+    Shader(std::string const& filePath, int shaderType);
+    GLuint shaderId = GL_FALSE;
+    int shaderType = GL_FALSE;
+    std::string shader;
+    void Init() override;
 };
 
 class VertexShader : public Shader
 {
 public:
-	VertexShader(std::string const& filePath);
+    VertexShader(std::string const& filePath);
 };
 
 class FragmentShader : public Shader
 {
 public:
-	FragmentShader(std::string const& filePath);
+    FragmentShader(std::string const& filePath);
 };

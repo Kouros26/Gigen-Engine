@@ -17,6 +17,8 @@ public:
 
     void Draw() const;
 
+    void Init() override;
+
 private:
     void loadModel(const std::string& pPath);
     void processNode(const aiNode* pNode, const aiScene* pScene);

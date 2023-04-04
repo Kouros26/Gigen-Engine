@@ -24,87 +24,87 @@
 
 struct Mouse
 {
-	double x;
-	double y;
+    double x;
+    double y;
 
-	double lastX;
-	double lastY;
+    double lastX;
+    double lastY;
 
-	double mouseOffsetX;
-	double mouseOffsetY;
+    double mouseOffsetX;
+    double mouseOffsetY;
 
-	double wheelOffsetY;
+    double wheelOffsetY;
 
-	bool rightClick;
-	bool leftClick;
+    bool rightClick;
+    bool leftClick;
 
-	bool wheelClick;
+    bool wheelClick;
 };
 
 class Inputs
 {
 public:
-	Inputs() = delete;
+    Inputs() = delete;
 
-	static bool GetKey(int key);
+    static bool GetKey(int key);
 
-	static Mouse GetMouse();
+    static Mouse GetMouse();
 
-	static void UpdateKey(int key, int action);
+    static void UpdateKey(int key, int action);
 
-	static void UpdateMousePosition(GLFWwindow* window);
+    static void UpdateMousePosition(GLFWwindow* window);
 
-	static void UpdateMouseButton(int button, int action);
-	static void UpdateMouseWheelOffset(double offset);
+    static void UpdateMouseButton(int button, int action);
+    static void UpdateMouseWheelOffset(double offset);
 
 private:
-	inline static Mouse mouse;
-	inline static std::vector<bool> inputs = std::vector<bool>(GLFW_KEY_LAST + 1, false);
+    inline static Mouse mouse;
+    inline static std::vector<bool> inputs = std::vector<bool>(GLFW_KEY_LAST + 1, false);
 };
 
 inline bool Inputs::GetKey(int key)
 {
-	if ('a' <= key && key <= 'z')
-	{
-		key -= ('a' - 'A');
-	}
-	return inputs[key];
+    if ('a' <= key && key <= 'z')
+    {
+        key -= ('a' - 'A');
+    }
+    return inputs[key];
 }
 
 inline Mouse Inputs::GetMouse()
 {
-	return mouse;
+    return mouse;
 }
 
 inline void Inputs::UpdateKey(int key, int action)
 {
-	inputs[key] = action == GLFW_RELEASE ? false : true;
+    inputs[key] = action == GLFW_RELEASE ? false : true;
 }
 
 inline void Inputs::UpdateMousePosition(GLFWwindow* window)
 {
-	glfwGetCursorPos(window, &mouse.x, &mouse.y);
+    glfwGetCursorPos(window, &mouse.x, &mouse.y);
 
-	mouse.mouseOffsetX = mouse.x - mouse.lastX;
-	mouse.mouseOffsetY = mouse.y - mouse.lastY;
+    mouse.mouseOffsetX = mouse.x - mouse.lastX;
+    mouse.mouseOffsetY = mouse.y - mouse.lastY;
 
-	mouse.lastX = mouse.x;
-	mouse.lastY = mouse.y;
+    mouse.lastX = mouse.x;
+    mouse.lastY = mouse.y;
 }
 
 inline void Inputs::UpdateMouseButton(int button, int action)
 {
-	if (button == GLFW_MOUSE_BUTTON_LEFT)
-		mouse.leftClick = action;
+    if (button == GLFW_MOUSE_BUTTON_LEFT)
+        mouse.leftClick = action;
 
-	if (button == GLFW_MOUSE_BUTTON_RIGHT)
-		mouse.rightClick = action;
+    if (button == GLFW_MOUSE_BUTTON_RIGHT)
+        mouse.rightClick = action;
 
-	if (button == GLFW_MOUSE_BUTTON_MIDDLE)
-		mouse.wheelClick = action;
+    if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+        mouse.wheelClick = action;
 }
 
 inline void Inputs::UpdateMouseWheelOffset(double offset)
 {
-	mouse.wheelOffsetY = offset;
+    mouse.wheelOffsetY = offset;
 }

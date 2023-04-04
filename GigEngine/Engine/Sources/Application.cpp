@@ -1,12 +1,8 @@
 #include "Application.h"
-#include "Inputs.h"
-#include "Watch.h"
 #include "Model.h"
 #include "GameObjectManager.h"
 #include "ResourceManager.h"
 #include "DrawLine.h"
-#include "Light.h"
-#include <iostream>
 
 Application::Application()
 {
@@ -32,6 +28,12 @@ Application::Application()
 
     GameObject* car2 = GameObjectManager::CreateGameObject(car); //copy constructor test
     car2->GetTransform().SetWorldPosition(lm::FVec3(0));
+
+    GameObject* sponza = GameObjectManager::CreateGameObject("sponza", { 0, 0, 0 }, { 0 }, { 0.05 });
+    sponza->SetModel("Resources/Models/sponza.obj");
+
+    GameObject* village = GameObjectManager::CreateGameObject("village", { 10,0,0 }, { 0 }, { 0.05 });
+    village->SetModel("Resources/Models/MinecraftVillage.fbx");
 
     GameObject* dirlight = GameObjectManager::CreateDirLight(0.05f, 0.2f, 0.5f, lm::FVec3(1));
     dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
