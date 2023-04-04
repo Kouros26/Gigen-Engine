@@ -56,6 +56,13 @@ GameObject::GameObject(const GameObject& other)
     for (const auto& component : other.components)
         components.push_back(component->Clone(this));
 
+    for (const auto& script : other.scripts)
+    {
+	    auto newScript = dynamic_cast<Script*>(script->Clone(this));
+        scripts.push_back(newScript);
+        newScript->Awake();
+    }
+
     for (const auto& child : other.children)
         AddChild(GameObjectManager::CreateGameObject(*child));
 
@@ -151,9 +158,12 @@ void GameObject::UpdateComponents() const
 {
 	for (const auto& component : components)
 		component->Update();
+}
 
-	for (const auto& script : scripts)
-		script->LateUpdate();
+void GameObject::LateUpdate() const
+{
+    for (const auto& script : scripts)
+        script->LateUpdate();
 }
 
 void GameObject::UpdateHierarchy()

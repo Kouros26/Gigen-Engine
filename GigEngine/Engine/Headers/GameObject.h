@@ -27,6 +27,7 @@ public:
 
     void UpdateRender() const;
     void UpdateComponents() const;
+    void LateUpdate() const;
     void UpdateHierarchy();
 
     std::string GetName();

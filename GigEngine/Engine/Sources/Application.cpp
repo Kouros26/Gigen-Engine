@@ -171,8 +171,14 @@ void Application::UpdateGameObjectComponent()
 {
     for (int i = 0; i < GameObjectManager::GetSize(); i++)
     {
-        GameObject* object = GameObjectManager::GetGameObject(i);
+	    const GameObject* object = GameObjectManager::GetGameObject(i);
         object->UpdateComponents();
+    }
+
+    for (int i = 0; i < GameObjectManager::GetSize(); i++)
+    {
+	    const GameObject* object = GameObjectManager::GetGameObject(i);
+        object->LateUpdate();
     }
 }
 
