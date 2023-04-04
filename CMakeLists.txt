@@ -14,7 +14,6 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT $
 
 
 
-
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 add_compile_options(/Zc:__cplusplus)

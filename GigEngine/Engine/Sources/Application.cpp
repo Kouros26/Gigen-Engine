@@ -19,10 +19,10 @@ Application::Application()
 
 	//to remove =====================================================
 
-	GameObject* chest = GameObjectManager::CreateGameObject("chest", {5, 0, 10}, {0}, {1});
+	GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 0, 10 }, { 0 }, { 1 });
 	chest->SetModel("Resources/Models/chest.obj");
 
-	GameObject* car = GameObjectManager::CreateGameObject("car", {-5, 0, 10}, {0}, {1});
+	GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
 	car->SetModel("Resources/Models/Car.fbx");
 	car->AddComponent<TestComponent>();
 	car->AddComponent<testComponent2>();
@@ -166,11 +166,10 @@ void Application::UpdateGameObjectRender()
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		GameObject* object = GameObjectManager::GetGameObject(i);
-    
+
 		object->UpdateHierarchy();
 		glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, lm::FMat4::ToArray(object->GetTransform().GetMatrix()));
-        object->UpdateRender();
-		
+		object->UpdateRender();
 	}
 }
 

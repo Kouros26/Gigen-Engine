@@ -297,11 +297,11 @@ public:
 
 private:
     // -------------------------------------------------------------------
-    void OnDestruct(const std::string &filename, BlobIOStream *child) {
+    void OnDestruct(const std::string &filename, BlobIOStream *childs) {
         // we don't know in which the files are closed, so we
         // can't reliably say that the first must be the master
         // file ...
-        blobs.emplace_back(filename, child->GetBlob());
+        blobs.emplace_back(filename, childs->GetBlob());
     }
 
 private:

@@ -5,6 +5,13 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CMAKE_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
 
+set(THIRD_PARTY_DLL
+	${DEPENDS_DIR}/assimp/bin/assimp-vc143-mt.dll
+	${DEPENDS_DIR}/assimp/bin/assimp-vc143-mtd.dll
+
+)
+
+
 set( THIRD_PARTY_PROJECT
    Editor
    Engine
@@ -23,15 +30,7 @@ set(GLFW_BUILD_TESTS OFF)
 set(GLFW_BUILD_EXAMPLES OFF)
 FetchContent_MakeAvailable(GLFW)
 
-FetchContent_Declare(
-	assimp
-	GIT_REPOSITORY https://github.com/assimp/assimp.git
-	GIT_TAG v5.2.5)
-	
-	set(CMAKE_FOLDER "${CMAKE_FOLDER_OLD}/vendor/assimp")
-	set(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
-	set(ASSIMP_BUILD_TESTS OFF)
-FetchContent_MakeAvailable(assimp)
+
 
 FetchContent_Declare(
     LibMath
@@ -46,7 +45,7 @@ set(CMAKE_FOLDER ${CMAKE_FOLDER_OLD})
 
 set( THIRD_PARTY_INCLUDE
 ${glfw_SOURCE_DIR}
-${assimp_SOURCE_DIR}
+assimp
 stb_image
 IMGUI
 )
@@ -88,7 +87,6 @@ add_executable(${MAIN_PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES} )
 target_include_directories(${MAIN_PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE_DIR})
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${THIRD_PARTY_PROJECT})
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE glfw)
-target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE assimp)
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${LIBMATHS_LIBRARY})
 
 
@@ -123,5 +121,19 @@ file(GLOB_RECURSE IMGUI_SOURCES ${DEPENDS_DIR}/IMGUI/*.cpp ${DEPENDS_DIR}/IMGUI/
 add_library(ImGui STATIC ${IMGUI_SOURCES})
 target_include_directories(ImGui PUBLIC ${DEPENDS_DIR}/IMGUI)
 target_include_directories(ImGui PUBLIC ${glfw_SOURCE_DIR}/include)
+
+
+# copy dll to build folder
+foreach( dll_i ${THIRD_PARTY_DLL})
+add_custom_command(TARGET ${MAIN_PROJECT_NAME} PRE_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		${dll_i}
+		$<TARGET_FILE_DIR:${MAIN_PROJECT_NAME}>)
+endforeach( dll_i )
+
+
+
+
+
 
 set(CMAKE_FOLDER ${CMAKE_FOLDER_OLD})
