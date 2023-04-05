@@ -6,6 +6,7 @@
 #include "ResourceManager.h"
 #include "DrawLine.h"
 #include "Light.h"
+#include "Skybox.h"
 #include <iostream>
 
 Application::Application()
@@ -19,13 +20,11 @@ Application::Application()
 
 	//to remove =====================================================
 
-	GameObject* skybox = GameObjectManager::CreateGameObject("Skybox", lm::FVec3(0), lm::FVec3(180, 0, 0), lm::FVec3(1));
-	skybox->SetModel("Resources/Models/Skybox/cube.obj");
-	skybox->SetTexture("Resources/Textures/Skybox/default.png");
+	skybox = new Skybox();
 
 	GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 0, 10 }, { 0 }, { 1 });
 	chest->SetModel("Resources/Models/chest.obj");
-	chest->SetTexture("Resources/Textures/test.jpg");
+	chest->SetTexture("Resources/Textures/test.png");
 
 	GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
 	car->SetModel("Resources/Models/Car.fbx");
@@ -69,6 +68,11 @@ lm::FMat4& Application::GetViewProj()
 lm::FVec3& Application::GetViewPos()
 {
 	return viewPos;
+}
+
+bool Application::IsInEditor()
+{
+	return isEditor;
 }
 
 void Application::Run()
@@ -123,13 +127,19 @@ void Application::Draw()
 
 	if (isEditor)
 	{
-		mainShader.Use(); //start using the main shader
+		//draw skybox
+		glDisable(GL_DEPTH_TEST);
+		skybox->Draw();
+
 		editorCamera.Update();
+
+		mainShader.Use(); //start using the main shader
 		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
 		UpdateUniforms(); //then send the global uniforms
 		UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
 
 		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
 		UpdateGameObjectRender(); //render model if they have one
 		mainShader.UnUse(); //stop using the main shader
 

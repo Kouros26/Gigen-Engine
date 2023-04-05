@@ -16,7 +16,7 @@ public:
 
 	void Destroy();
 
-	void UpdateRender() const;
+	virtual void UpdateRender() const;
 	void UpdateComponents() const;
 	void UpdateHierarchy();
 

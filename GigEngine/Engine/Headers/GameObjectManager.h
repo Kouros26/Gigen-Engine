@@ -46,7 +46,7 @@ public:
 
 	static Camera* GetCurrentCamera();
 	static void SetCurrentCamera(Camera* camera);
-
+	//ok
 	static void SendLightsToShader();
 	static int GetDirLightSize();
 	static int GetPointLightSize();
