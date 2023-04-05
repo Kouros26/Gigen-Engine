@@ -29,8 +29,8 @@ public:
     void BindVertexArray(const unsigned int pArray);
     void BindBuffer(unsigned int pTarget, unsigned int pBuffer);
     void DrawElements(unsigned int pMode, int pCount, unsigned int pType, const void* pIndices);
-    void GenVertexArrays(int n, unsigned int* array);
-    void GenBuffers(int n, unsigned int* buffer);
+    void GenVertexArrays(int pN, unsigned int* pArray);
+    void GenBuffers(int pN, unsigned int* pBuffer);
     void BufferData(unsigned int pTarget, int pSize, const void* pData, unsigned int pUsage);
     void EnableVertexAttribArray(unsigned int pIndex);
     void VertexAttribPointer(unsigned int pIndex, int pSize, unsigned int pType, bool pNormalized, int pStride, const void* pPointer);
@@ -40,7 +40,7 @@ public:
     void CompileShader(unsigned int pShader);
     void GetShaderiv(unsigned int pShader, unsigned int pName, int* pParams);
     void GetShaderInfoLog(unsigned int pShader, int pBufSize, int* pLength, char* pInfoLog);
-    void ViewPort(int x, int y, int width, int height);
+    void ViewPort(int pX, int pY, int pWidth, int pHeight);
     void DeleteShader(unsigned int pShader);
     void DeleteProgram(unsigned int pProgram);
     void UseProgram(unsigned int pProgram);
