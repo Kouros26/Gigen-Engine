@@ -29,7 +29,7 @@ private:
     unsigned int verticesSize = 0;
     unsigned int indicesSize = 0;
 
-    GLuint VBO = GL_FALSE;
-    GLuint VAO = GL_FALSE;
-    GLuint EBO = GL_FALSE;
+    unsigned int VBO = 0;
+    unsigned int VAO = 0;
+    unsigned int EBO = 0;
 };

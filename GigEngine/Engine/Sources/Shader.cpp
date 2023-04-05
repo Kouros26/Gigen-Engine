@@ -1,9 +1,8 @@
 #include "Shader.h"
-#include <vector>
-#include <algorithm>
-#include <iostream>
-#include <sstream>
 #include <fstream>
+#include "Renderer.h"
+#include "Mat4/FMat4.hpp"
+#include <iostream >
 
 Shader::Shader(std::string const& filePath, int shaderType)
     :IResource(filePath)
@@ -19,17 +18,20 @@ Shader::Shader(std::string const& filePath, int shaderType)
 
 void Shader::Init()
 {
-    shaderId = glCreateShader(shaderType);
+    shaderId = RENDERER.CreateShader(shaderType);
     const char* content = shader.c_str();
 
-    glShaderSource(shaderId, 1, &content, NULL);
-    glCompileShader(shaderId);
+    RENDERER.ShaderSource(shaderId, 1, &content, NULL);
+    RENDERER.CompileShader(shaderId);
 
-    GLint success = GL_FALSE;
+    int success = RD_FALSE;
     char infoLog[512];
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
-    if (success == GL_FALSE) {
-        glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
+    RENDERER.GetShaderiv(shaderId, RD_COMPILE_STATUS, &success);
+
+    if (success == RD_FALSE)
+    {
+        RENDERER.GetShaderInfoLog(shaderId, 512, NULL, infoLog);
+
         std::cout << "error compiling fragment : " << filePath << std::endl;
         std::cout << infoLog << std::endl;
         return;
@@ -37,12 +39,12 @@ void Shader::Init()
 }
 
 VertexShader::VertexShader(std::string const& filePath)
-    :Shader(filePath, GL_VERTEX_SHADER)
+    :Shader(filePath, RD_VERTEX_SHADER)
 {
 }
 
 FragmentShader::FragmentShader(std::string const& filePath)
-    : Shader(filePath, GL_FRAGMENT_SHADER)
+    : Shader(filePath, RD_FRAGMENT_SHADER)
 {
 }
 
@@ -52,28 +54,29 @@ ShaderProgram::ShaderProgram()
 
 ShaderProgram::~ShaderProgram()
 {
-    glDeleteProgram(shaderProgram);
+    if (shaderProgram != RD_FALSE)
+        RENDERER.DeleteProgram(shaderProgram);
 }
 
 bool ShaderProgram::Link(VertexShader* vertex, FragmentShader* fragment)
 {
-    if (shaderProgram == GL_FALSE)
-        shaderProgram = glCreateProgram();
+    if (shaderProgram == RD_FALSE)
+        shaderProgram = RENDERER.CreateProgram();
 
-    if (vertex->shaderId == GL_FALSE || fragment->shaderId == GL_FALSE) return false;
+    if (vertex->shaderId == RD_FALSE || fragment->shaderId == RD_FALSE) return false;
 
-    glAttachShader(shaderProgram, vertex->shaderId);
-    glAttachShader(shaderProgram, fragment->shaderId);
-    glLinkProgram(shaderProgram);
+    RENDERER.AttachShader(shaderProgram, vertex->shaderId);
+    RENDERER.AttachShader(shaderProgram, fragment->shaderId);
+    RENDERER.LinkProgram(shaderProgram);
 
-    GLint success = GL_TRUE;
+    int success = RD_TRUE;
     char infoLog[512]{ 0 };
-    glGetShaderiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (success == GL_FALSE) {
-        GLint logLen;
-        glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLen);
-        GLsizei written;
-        glGetProgramInfoLog(shaderProgram, 512, &written, infoLog);
+    RENDERER.GetShaderiv(shaderProgram, RD_LINK_STATUS, &success);
+    if (success == RD_FALSE) {
+        int logLen;
+        RENDERER.GetProgramiv(shaderProgram, RD_INFO_LOG_LENGTH, &logLen);
+        int written;
+        RENDERER.GetProgramInfoLog(shaderProgram, logLen, &written, infoLog);
         std::cout << "error linking program : " << std::endl;
         std::cout << infoLog << std::endl;
         return false;
@@ -84,23 +87,23 @@ bool ShaderProgram::Link(VertexShader* vertex, FragmentShader* fragment)
 
 void ShaderProgram::Use()
 {
-    if (shaderProgram != GL_FALSE)
-        glUseProgram(shaderProgram);
+    if (shaderProgram != RD_FALSE)
+        RENDERER.UseProgram(shaderProgram);
 }
 
 void ShaderProgram::UnUse()
 {
-    glUseProgram(0);
+    RENDERER.UseProgram(0);
 }
 
-GLuint ShaderProgram::GetId()
+unsigned int ShaderProgram::GetId()
 {
     return shaderProgram;
 }
 
-GLuint ShaderProgram::GetUniform(const char* name)
+unsigned int ShaderProgram::GetUniform(const char* name)
 {
-    GLuint result = glGetUniformLocation(shaderProgram, name);
+    unsigned int result = RENDERER.GetUniformLocation(shaderProgram, name);
 
     if (result == -1)
         std::cout << name << " not found in uniform" << std::endl;
@@ -110,25 +113,25 @@ GLuint ShaderProgram::GetUniform(const char* name)
 
 void ShaderProgram::SetVec3(float vec[3], const char* name)
 {
-    glUniform3fv(GetUniform(name), 1, vec);
+    RENDERER.SetUniformValue(shaderProgram, name, UniformType::VEC3, vec);
 }
 
 void ShaderProgram::SetMat4(lm::FMat4& value, const char* name)
 {
-    glUniformMatrix4fv(GetUniform(name), 1, GL_FALSE, lm::FMat4::ToArray(value));
+    RENDERER.SetUniformValue(shaderProgram, name, UniformType::MAT4, lm::FMat4::ToArray(value));
 }
 
 void ShaderProgram::SetBool(bool& value, const char* name)
 {
-    glUniform1i(GetUniform(name), (int)value);
+    RENDERER.SetUniformValue(shaderProgram, name, UniformType::BOOL, &value);
 }
 
 void ShaderProgram::SetInt(int& value, const char* name)
 {
-    glUniform1i(GetUniform(name), value);
+    RENDERER.SetUniformValue(shaderProgram, name, UniformType::INT, &value);
 }
 
 void ShaderProgram::SetFloat(float& value, const char* name)
 {
-    glUniform1f(GetUniform(name), value);
+    RENDERER.SetUniformValue(shaderProgram, name, UniformType::FLOAT, &value);
 }

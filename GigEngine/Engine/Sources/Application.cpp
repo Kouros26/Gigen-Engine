@@ -1,3 +1,4 @@
+#include "Renderer.h"
 #include "Application.h"
 #include "Model.h"
 #include "GameObjectManager.h"
@@ -6,10 +7,10 @@
 
 Application::Application()
 {
-    InitOpenGl();
+    InitGLFW();
     window.Init();
     editorCamera.SetRatio(window.GetRatio());
-    InitGlad();
+    RENDERER.Init();
     Lines::Init();
     InitMainShader();
 
@@ -18,13 +19,13 @@ Application::Application()
     GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 0, 10 }, { 0 }, { 1 });
     chest->SetModel("Resources/Models/chest.obj");
 
-	GameObject* car = GameObjectManager::CreateGameObject("car", {-5, 0, 10}, {0}, {1});
-	car->SetModel("Resources/Models/Car.fbx");
-	car->AddComponent<TestComponent>();
-	car->AddComponent<testComponent2>();
-	car->AddComponent<TestScript>();
-	Lines::SetFocusedObjectTransform(&car->GetTransform());
-	car->AddChild(chest);
+    GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
+    car->SetModel("Resources/Models/Car.fbx");
+    car->AddComponent<TestComponent>();
+    car->AddComponent<testComponent2>();
+    car->AddComponent<TestScript>();
+    Lines::SetFocusedObjectTransform(&car->GetTransform());
+    car->AddChild(chest);
 
     GameObject* car2 = GameObjectManager::CreateGameObject(car); //copy constructor test
     car2->GetTransform().SetWorldPosition(lm::FVec3(0));
@@ -88,13 +89,13 @@ lm::FVec3& Application::GetViewPos()
 
 void Application::StartGame()
 {
-	for (int i = 0; i < GameObjectManager::GetSize(); i++)
-	{
-		const GameObject* object = GameObjectManager::GetGameObject(i);
+    for (int i = 0; i < GameObjectManager::GetSize(); i++)
+    {
+        const GameObject* object = GameObjectManager::GetGameObject(i);
 
-		for (int j = 0; j < object->GetComponentCount(); j++)
-			object->GetComponentByID(j)->Start();
-	}
+        for (int j = 0; j < object->GetComponentCount(); j++)
+            object->GetComponentByID(j)->Start();
+    }
 }
 
 void Application::Run()
@@ -110,19 +111,10 @@ void Application::SwapFrames()
     glfwSwapBuffers(window.GetGLFWWindow());
 }
 
-void Application::InitOpenGl()
+void Application::InitGLFW()
 {
     if (glfwInit() == GLFW_FALSE) {
         std::cout << "Failed to initialize GLFW" << std::endl;
-    }
-}
-
-void Application::InitGlad()
-{
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        glfwTerminate();
     }
 }
 
@@ -155,7 +147,7 @@ void Application::Draw()
         UpdateUniforms(); //then send the global uniforms
         UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
 
-        glEnable(GL_DEPTH_TEST);
+        RENDERER.Enable(RD_DEPTH_TEST);
         UpdateGameObjectRender(); //render model if they have one
         mainShader.UnUse(); //stop using the main shader
 
@@ -165,21 +157,21 @@ void Application::Draw()
 
 void Application::ClearWindow()
 {
-    glClearColor(0.2f, 0.2f, 0.2f, 1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    RENDERER.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    RENDERER.Clear(RD_COLOR_BUFFER_BIT | RD_DEPTH_BUFFER_BIT);
 }
 
 void Application::UpdateGameObjectComponent()
 {
     for (int i = 0; i < GameObjectManager::GetSize(); i++)
     {
-	    const GameObject* object = GameObjectManager::GetGameObject(i);
+        const GameObject* object = GameObjectManager::GetGameObject(i);
         object->UpdateComponents();
     }
 
     for (int i = 0; i < GameObjectManager::GetSize(); i++)
     {
-	    const GameObject* object = GameObjectManager::GetGameObject(i);
+        const GameObject* object = GameObjectManager::GetGameObject(i);
         object->LateUpdate();
     }
 }
@@ -191,16 +183,21 @@ void Application::UpdateGameObjectRender()
         GameObject* object = GameObjectManager::GetGameObject(i);
 
         object->UpdateHierarchy();
-        glUniformMatrix4fv(ModelLocation, 1, GL_FALSE, lm::FMat4::ToArray(object->GetTransform().GetMatrix()));
+
+        RENDERER.SetUniformValue(ModelLocation, UniformType::MAT4, lm::FMat4::ToArray(object->GetTransform().GetMatrix()));
         object->UpdateRender();
     }
 }
 
 void Application::UpdateLights()
 {
-    glUniform1i(nbDirLightLocation, GameObjectManager::GetDirLightSize());
-    glUniform1i(nbPointLightLocation, GameObjectManager::GetPointLightSize());
-    glUniform1i(nbSpotLightLocation, GameObjectManager::GetSpotLightSize());
+    int nbDirLight = GameObjectManager::GetDirLightSize();
+    int nbPointLight = GameObjectManager::GetPointLightSize();
+    int nbSpotLight = GameObjectManager::GetSpotLightSize();
+
+    RENDERER.SetUniformValue(nbDirLightLocation, UniformType::INT, &nbDirLight);
+    RENDERER.SetUniformValue(nbPointLightLocation, UniformType::INT, &nbPointLight);
+    RENDERER.SetUniformValue(nbSpotLightLocation, UniformType::INT, &nbSpotLight);
 
     GameObjectManager::SendLightsToShader();
 }
@@ -212,6 +209,8 @@ void Application::UpdateUniforms()
     viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
     viewPos = editorCamera.GetTransform().GetWorldPosition();
 
-    glUniformMatrix4fv(viewProjLocation, 1, GL_FALSE, lm::FMat4::ToArray(viewProj));
-    glUniform3f(viewPosLocation, viewPos.x, viewPos.y, viewPos.z);
+    RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(viewProj));
+
+    //glUniform3f(viewPosLocation, viewPos.x, viewPos.y, viewPos.z);
+    RENDERER.SetUniformValue(viewPosLocation, UniformType::VEC3, &viewPos);
 }

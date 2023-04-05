@@ -1,9 +1,12 @@
 #pragma once
 #include "IResource.h"
-#include <glad/glad.h>
+
 #include <string>
-#include "Mat4/FMat4.hpp"
-#include "Vec3/FVec3.hpp"
+
+namespace lm
+{
+    struct FMat4;
+}
 
 class ShaderProgram
 {
@@ -14,8 +17,8 @@ public:
     void Use();
     void UnUse();
 
-    GLuint GetId();
-    GLuint GetUniform(const char* name);
+    unsigned int GetId();
+    unsigned int GetUniform(const char* name);
 
     void SetVec3(float vec[3], const char* name);
     void SetMat4(lm::FMat4& value, const char* name);
@@ -24,15 +27,15 @@ public:
     void SetFloat(float& value, const char* name);
 
 private:
-    GLuint shaderProgram = GL_FALSE;
+    unsigned int shaderProgram = 0;
 };
 
 class Shader : public IResource
 {
 public:
     Shader(std::string const& filePath, int shaderType);
-    GLuint shaderId = GL_FALSE;
-    int shaderType = GL_FALSE;
+    unsigned int shaderId = 0;
+    int shaderType = 0;
     std::string shader;
     void Init() override;
 };

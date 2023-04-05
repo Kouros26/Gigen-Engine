@@ -1,0 +1,79 @@
+#pragma once
+#include <glad/glad.h>
+
+enum class UniformType
+{
+    INT,
+    FLOAT,
+    VEC3,
+    MAT4,
+    BOOL
+};
+
+struct Renderer
+{
+public:
+    Renderer() = default;
+    ~Renderer() = default;
+    Renderer(const Renderer&) = delete;
+    Renderer& operator=(const Renderer&) = delete;
+    Renderer(Renderer&&) = delete;
+    Renderer& operator=(Renderer&&) = delete;
+
+    static Renderer& GetInstance();
+
+    void Init();
+
+    void DeleteVertexArray(int n, const unsigned int* pArray);
+    void DeleteBuffer(int n, const unsigned int* pBuffer);
+    void BindVertexArray(const unsigned int pArray);
+    void BindBuffer(unsigned int pTarget, unsigned int pBuffer);
+    void DrawElements(unsigned int pMode, int pCount, unsigned int pType, const void* pIndices);
+    void GenVertexArrays(int n, unsigned int* array);
+    void GenBuffers(int n, unsigned int* buffer);
+    void BufferData(unsigned int pTarget, int pSize, const void* pData, unsigned int pUsage);
+    void EnableVertexAttribArray(unsigned int pIndex);
+    void VertexAttribPointer(unsigned int pIndex, int pSize, unsigned int pType, bool pNormalized, int pStride, const void* pPointer);
+    void DisableVertexAttribArray(unsigned int pIndex);
+    [[nodiscard]] unsigned int CreateShader(unsigned int pShaderType);
+    void ShaderSource(unsigned int pShader, int pCount, const char** pString, const int* pLength);
+    void CompileShader(unsigned int pShader);
+    void GetShaderiv(unsigned int pShader, unsigned int pName, int* pParams);
+    void GetShaderInfoLog(unsigned int pShader, int pBufSize, int* pLength, char* pInfoLog);
+    void ViewPort(int x, int y, int width, int height);
+    void DeleteShader(unsigned int pShader);
+    void DeleteProgram(unsigned int pProgram);
+    void UseProgram(unsigned int pProgram);
+    [[nodiscard]] unsigned int CreateProgram();
+    void AttachShader(unsigned int pProgram, unsigned int pShader);
+    void LinkProgram(unsigned int pProgram);
+    void GetProgramiv(unsigned int pProgram, unsigned int pName, int* pParams);
+    void GetProgramInfoLog(unsigned int pProgram, int pBufSize, int* pLength, char* pInfoLog);
+    [[nodiscard]] int GetUniformLocation(unsigned int pProgram, const char* pName);
+    void SetUniformValue(unsigned int pProgram, const char* pName, UniformType pType, void* pValue);
+    void SetUniformValue(int pLocation, UniformType pType, void* pValue);
+    void Disable(unsigned int pCap);
+    void Enable(unsigned int pCap);
+    void DrawArray(unsigned int pMode, int pFirst, int pCount);
+    void ClearColor(float pRed, float pGreen, float pBlue, float pAlpha);
+    void Clear(unsigned int pMask);
+};
+
+#define RENDERER Renderer::GetInstance()
+#define RD_TRIANGLE 0x0004
+#define RD_UNSIGNED_INT 0x1405
+#define RD_ARRAY_BUFFER 0x8892
+#define RD_STATIC_DRAW 0x88E4
+#define RD_ELEMENT_ARRAY_BUFFER 0x8893
+#define RD_FLOAT 0x1406
+#define RD_FALSE 0
+#define RD_TRUE 1
+#define RD_COMPILE_STATUS 0x8B81
+#define RD_VERTEX_SHADER 0x8B31
+#define RD_FRAGMENT_SHADER 0x8B30
+#define RD_LINK_STATUS 0x8B82
+#define RD_INFO_LOG_LENGTH 0x8B84
+#define RD_DEPTH_TEST 0x0B71
+#define RD_LINES 0x0001
+#define RD_COLOR_BUFFER_BIT 0x00004000
+#define RD_DEPTH_BUFFER_BIT 0x00000100

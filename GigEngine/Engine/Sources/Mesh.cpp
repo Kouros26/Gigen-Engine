@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include "Renderer.h"
 #include "Mesh.h"
 
 Mesh::Mesh(unsigned int verticesSize, unsigned int indicesSize)
@@ -37,9 +37,9 @@ Mesh::Mesh(Mesh&& other) noexcept
 
     other.vertices = nullptr;
     other.indices = nullptr;
-    other.VAO = GL_FALSE;
-    other.VBO = GL_FALSE;
-    other.EBO = GL_FALSE;
+    other.VAO = 0;
+    other.VBO = 0;
+    other.EBO = 0;
 
     other.verticesSize = 0;
     other.indicesSize = 0;
@@ -49,9 +49,9 @@ Mesh::~Mesh()
 {
     delete[] vertices;
     delete[] indices;
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    RENDERER.DeleteVertexArray(1, &VAO);
+    RENDERER.DeleteBuffer(1, &VBO);
+    RENDERER.DeleteBuffer(1, &EBO);
 }
 
 Mesh& Mesh::operator=(const Mesh& other)
@@ -91,9 +91,9 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept
 
         other.vertices = nullptr;
         other.indices = nullptr;
-        other.VAO = GL_FALSE;
-        other.VBO = GL_FALSE;
-        other.EBO = GL_FALSE;
+        other.VAO = 0;
+        other.VBO = 0;
+        other.EBO = 0;
 
         other.verticesSize = 0;
         other.indicesSize = 0;
@@ -103,39 +103,39 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept
 
 void Mesh::Draw()
 {
-    glBindVertexArray(this->VAO);
-    glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    RENDERER.BindVertexArray(VAO);
+    RENDERER.DrawElements(RD_TRIANGLE, indicesSize, RD_UNSIGNED_INT, 0);
+    RENDERER.BindVertexArray(0);
 }
 
 void Mesh::setUpBuffers()
 {
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    RENDERER.GenVertexArrays(1, &VAO);
+    RENDERER.GenBuffers(1, &VBO);
+    RENDERER.GenBuffers(1, &EBO);
 
-    glBindVertexArray(VAO);
+    RENDERER.BindVertexArray(VAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
+    RENDERER.BindBuffer(RD_ARRAY_BUFFER, VBO);
+    RENDERER.BufferData(RD_ARRAY_BUFFER, verticesSize * sizeof(float), vertices, RD_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+    RENDERER.BindBuffer(RD_ELEMENT_ARRAY_BUFFER, EBO);
+    RENDERER.BufferData(RD_ELEMENT_ARRAY_BUFFER, indicesSize * sizeof(unsigned int), indices, RD_STATIC_DRAW);
 
-    glEnableVertexAttribArray(0);       // position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)0);
+    RENDERER.EnableVertexAttribArray(0);       // position
+    RENDERER.VertexAttribPointer(0, 3, RD_FLOAT, RD_FALSE, VERTEX_SIZE * sizeof(float), (void*)0);
 
-    glEnableVertexAttribArray(1);       // normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(3 * sizeof(float)));
+    RENDERER.EnableVertexAttribArray(1);       // normal
+    RENDERER.VertexAttribPointer(1, 3, RD_FLOAT, RD_FALSE, VERTEX_SIZE * sizeof(float), (void*)(3 * sizeof(float)));
 
-    glEnableVertexAttribArray(2);       // textureCoordinates
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
+    RENDERER.EnableVertexAttribArray(2);       // texture
+    RENDERER.VertexAttribPointer(2, 2, RD_FLOAT, RD_FALSE, VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
 
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    RENDERER.BindVertexArray(0);
+    RENDERER.BindBuffer(RD_ARRAY_BUFFER, 0);
+    RENDERER.BindBuffer(RD_ELEMENT_ARRAY_BUFFER, 0);
 
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
+    RENDERER.DisableVertexAttribArray(0);
+    RENDERER.DisableVertexAttribArray(1);
+    RENDERER.DisableVertexAttribArray(2);
 }

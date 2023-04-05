@@ -16,9 +16,9 @@ public:
     static lm::FMat4& GetViewProj();
     static lm::FVec3& GetViewPos();
 
-	static void StartGame();
-	void Run();
-	void SwapFrames();
+    static void StartGame();
+    void Run();
+    void SwapFrames();
 
 private:
     static inline Window window;
@@ -31,15 +31,15 @@ private:
 
     //main shader
     static inline ShaderProgram mainShader;
-    GLint viewProjLocation;
-    GLint ModelLocation;
-    GLint viewPosLocation;
-    GLint nbDirLightLocation;
-    GLint nbPointLightLocation;
-    GLint nbSpotLightLocation;
+    int viewProjLocation;
+    int ModelLocation;
+    int viewPosLocation;
+    int nbDirLightLocation;
+    int nbPointLightLocation;
+    int nbSpotLightLocation;
 
-    void InitOpenGl();
-    void InitGlad();
+    void InitGLFW();
+
     void InitMainShader();
     void Draw();
     void ClearWindow();
