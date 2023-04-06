@@ -3,8 +3,8 @@
 #include <glad/glad.h>
 #include <iostream>
 
-Texture::Texture(std::string const& filePath)
-	:IResource(filePath)
+Texture::Texture(std::string const& pFilePath)
+	:IResource(pFilePath)
 {
 	Load();
 }

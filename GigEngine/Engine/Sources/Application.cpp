@@ -7,6 +7,7 @@
 #include "DrawLine.h"
 #include "Light.h"
 #include "Skybox.h"
+#include "Component.h"
 #include <iostream>
 
 Application::Application()

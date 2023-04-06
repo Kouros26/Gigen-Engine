@@ -9,14 +9,14 @@ Material::~Material()
 {
 }
 
-Material::Material(lm::FVec3 diff, lm::FVec3 amb, lm::FVec3 spec, float shini)
-	:shininess(shini)
+Material::Material(lm::FVec3 pDiff, lm::FVec3 pAmb, lm::FVec3 pSpec, float pShini)
+	:shininess(pShini)
 {
 	for (int i = 0; i < 3; i++)
 	{
-		diffuse[i] = diff[i];
-		specular[i] = spec[i];
-		ambient[i] = amb[i];
+		diffuse[i] = pDiff[i];
+		specular[i] = pSpec[i];
+		ambient[i] = pAmb[i];
 	}
 }
 
@@ -43,31 +43,31 @@ void Material::SendDefaultMaterial()
 	shader.SetFloat(baseShini, "material.shininess");
 }
 
-void Material::SetDiffuse(lm::FVec3 vec)
+void Material::SetDiffuse(lm::FVec3 pVec)
 {
 	for (int i = 0; i < 3; i++)
 	{
-		diffuse[i] = vec[i];
+		diffuse[i] = pVec[i];
 	}
 }
 
-void Material::SetAmbient(lm::FVec3 vec)
+void Material::SetAmbient(lm::FVec3 pVec)
 {
 	for (int i = 0; i < 3; i++)
 	{
-		ambient[i] = vec[i];
+		ambient[i] = pVec[i];
 	}
 }
 
-void Material::SetSpecular(lm::FVec3 vec)
+void Material::SetSpecular(lm::FVec3 pVec)
 {
 	for (int i = 0; i < 3; i++)
 	{
-		specular[i] = vec[i];
+		specular[i] = pVec[i];
 	}
 }
 
-void Material::SetShininess(float shini)
+void Material::SetShininess(float pShini)
 {
-	shininess = shini;
+	shininess = pShini;
 }

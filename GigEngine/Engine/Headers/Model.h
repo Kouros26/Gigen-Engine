@@ -1,19 +1,20 @@
 #pragma once
 #include "IResource.h"
-#include "Component.h"
-#include "Mesh.h"
-#include "Material.h"
-#include "Texture.h"
 #include <assimp/scene.h>
+#include <vector>
+
+class Texture;
+class Material;
+class Mesh;
 
 class Model : public IResource
 {
 public:
-	Model(std::string const& filePath);
+	Model(std::string const& pFilePath);
 	~Model();
 
 	void Draw() const;
-	void SetTexture(const std::string& filePath);
+	void SetTexture(const std::string& pFilePath);
 
 private:
 	void LoadModel(const std::string& pPath);

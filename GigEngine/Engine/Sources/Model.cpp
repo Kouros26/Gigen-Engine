@@ -1,12 +1,15 @@
 #include "Model.h"
+#include "Texture.h"
+#include "Material.h"
+#include "Mesh.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "ResourceManager.h"
 
-Model::Model(std::string const& filePath)
-	:IResource(filePath)
+Model::Model(std::string const& pFilePath)
+	:IResource(pFilePath)
 {
-	LoadModel(filePath);
+	LoadModel(pFilePath);
 	texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
 }
 
@@ -46,9 +49,9 @@ void Model::Draw() const
 	Texture::UnBind();
 }
 
-void Model::SetTexture(const std::string& filePath)
+void Model::SetTexture(const std::string& pFilePath)
 {
-	texture = ResourceManager::Get<Texture>(filePath);
+	texture = ResourceManager::Get<Texture>(pFilePath);
 	if (!texture->isValid())
 	{
 		std::cout << "texture invalid for model" << std::endl;

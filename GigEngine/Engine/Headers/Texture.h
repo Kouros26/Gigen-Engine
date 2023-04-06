@@ -6,7 +6,7 @@ const char* const g_defaultTexturePath = "Resources/Textures/default.png";
 class Texture : public IResource
 {
 public:
-	Texture(std::string const& filePath);
+	Texture(std::string const& pFilePath);
 	~Texture();
 
 	void Bind();

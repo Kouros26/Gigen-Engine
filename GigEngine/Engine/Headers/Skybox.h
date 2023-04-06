@@ -2,6 +2,8 @@
 #include "Shader.h"
 #include "GameObject.h"
 
+class ShaderProgram;
+
 const char* const g_SkyboxModelPath = "Resources/Models/Skybox/cube.obj";
 const char* const g_SkyboxTexturePath = "Resources/Textures/Skybox/default.png";
 

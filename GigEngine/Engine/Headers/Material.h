@@ -1,20 +1,24 @@
 #pragma once
-#include "Vec4/FVec4.hpp"
+
+namespace lm
+{
+	class FVec3;
+}
 
 class Material
 {
 public:
 	Material();
-	Material(lm::FVec3 diff, lm::FVec3 amb, lm::FVec3 spec, float shini);
+	Material(lm::FVec3 pDiff, lm::FVec3 pAmb, lm::FVec3 pSpec, float pShini);
 	~Material();
 
 	void SendToShader();
 	static void SendDefaultMaterial();
 
-	void SetDiffuse(lm::FVec3 vec);
-	void SetAmbient(lm::FVec3 vec);
-	void SetSpecular(lm::FVec3 vec);
-	void SetShininess(float shini);
+	void SetDiffuse(lm::FVec3 pVec);
+	void SetAmbient(lm::FVec3 pVec);
+	void SetSpecular(lm::FVec3 pVec);
+	void SetShininess(float pShini);
 
 private:
 	float diffuse[3];
