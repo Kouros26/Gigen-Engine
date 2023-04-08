@@ -4,213 +4,207 @@
 #include "GameObjectManager.h"
 #include "ResourceManager.h"
 #include "DrawLine.h"
+#include "Light.h"
+#include "Skybox.h"
+#include "Component.h"
+#include <iostream>
 
 Application::Application()
 {
-    InitGLFW();
-    window.Init();
-    editorCamera.SetRatio(window.GetRatio());
-    RENDERER.Init();
-    Lines::Init();
-    InitMainShader();
+	InitGLFW();
+	window.Init();
+	editorCamera.SetRatio(window.GetRatio());
+	RENDERER.Init();
+	Lines::Init();
+	InitMainShader();
 
-    //to remove =====================================================
+	//to remove =====================================================
 
-    GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 0, 10 }, { 0 }, { 1 });
-    chest->SetModel("Resources/Models/chest.obj");
+	skybox = new Skybox();
 
-    GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
-    car->SetModel("Resources/Models/Car.fbx");
-    car->AddComponent<TestComponent>();
-    car->AddComponent<testComponent2>();
-    car->AddComponent<TestScript>();
-    Lines::SetFocusedObjectTransform(&car->GetTransform());
-    car->AddChild(chest);
+	GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 0, 10 }, { 0 }, { 1 });
+	chest->SetModel("Resources/Models/chest.obj");
+	chest->SetTexture("Resources/Textures/test.png");
 
-    GameObject* car2 = GameObjectManager::CreateGameObject(car); //copy constructor test
-    car2->GetTransform().SetWorldPosition(lm::FVec3(0));
+	GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
+	car->SetModel("Resources/Models/Car.fbx");
+	car->AddComponent<TestComponent>();
+	car->AddComponent<testComponent2>();
+	Lines::SetFocusedObjectTransform(&car->GetTransform());
+	car->AddChild(chest);
 
-    GameObject* sponza = GameObjectManager::CreateGameObject("sponza", { 0, 0, 0 }, { 0 }, { 0.05 });
-    sponza->SetModel("Resources/Models/sponza.obj");
+	GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
+	dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
 
-    GameObject* village = GameObjectManager::CreateGameObject("village", { 10,0,0 }, { 0 }, { 0.05 });
-    village->SetModel("Resources/Models/MinecraftVillage.fbx");
-
-    GameObject* dirlight = GameObjectManager::CreateDirLight(0.05f, 0.2f, 0.5f, lm::FVec3(1));
-    dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
-
-    GameObject* dirlight2 = dirlight;
-    dirlight2->GetTransform().SetWorldRotation(lm::FVec3(-45, -20, 0));
-
-    GameObject* pointlight = GameObjectManager::CreatePointLight(0.05f, 0.2f, 0.3f, 0.01f, 0.01f, 0.01f, lm::FVec3(1));
-    pointlight->GetTransform().SetWorldRotation(lm::FVec3(10, 0, 10));
-
-    //spotlight2->transform.SetPosition(lm::FVec3(-5, -10, 10));
-
-    //spotlight2->transform.SetRotation(lm::FVec3(-90, 0, 0));
-    //GameObject* spotlight2 = GameObjectManager::CreateSpotLight(0.1f, 0.1f, 0.2f, 0.01f, 0.01f, 0.01f, 25, 50, lm::FVec3(1));
-    //spotlight->transform.SetPosition(lm::FVec3(-5, 10, 10));
-    //spotlight->transform.SetRotation(lm::FVec3(90, 0, 0));
-    //GameObject* spotlight = GameObjectManager::CreateSpotLight(0.05f, 0.2f, 0.5f, 0.01f, 0.01f, 0.01f, 25, 50, lm::FVec3(1));
-
-    //==================================================================
+	//==================================================================
+	GameObject* sponza = GameObjectManager::CreateGameObject("sponza", { 0, 0, 0 }, { 0 }, { 0.05 });
+	sponza->SetModel("Resources/Models/sponza.obj");
+	GameObject* village = GameObjectManager::CreateGameObject("village", { 10,0,0 }, { 0 }, { 0.05 });
+	village->SetModel("Resources/Models/MinecraftVillage.fbx");
 }
 
 Application::~Application()
 {
-    Lines::Clear();
-    GameObjectManager::Cleanup();
+	Lines::Clear();
+	GameObjectManager::Cleanup();
 }
 
 Window& Application::GetWindow()
 {
-    return window;
+	return window;
 }
 
 EditorCamera& Application::GetEditorCamera()
 {
-    return editorCamera;
+	return editorCamera;
 }
 
 ShaderProgram& Application::GetMainShader()
 {
-    return mainShader;
+	return mainShader;
 }
 
 lm::FMat4& Application::GetViewProj()
 {
-    return viewProj;
+	return viewProj;
 }
 
 lm::FVec3& Application::GetViewPos()
 {
-    return viewPos;
+	return viewPos;
 }
 
+bool Application::IsInEditor()
+{
+	return isEditor;
+}
 void Application::StartGame()
 {
-    for (int i = 0; i < GameObjectManager::GetSize(); i++)
-    {
-        const GameObject* object = GameObjectManager::GetGameObject(i);
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
+	{
+		const GameObject* object = GameObjectManager::GetGameObject(i);
 
-        for (int j = 0; j < object->GetComponentCount(); j++)
-            object->GetComponentByID(j)->Start();
-    }
+		for (int j = 0; j < object->GetComponentCount(); j++)
+			object->GetComponentByID(j)->Start();
+	}
 }
 
 void Application::Run()
 {
-    glfwPollEvents();
-    window.ProcessInput();
-    Time::UpdateDeltaTime();
-    Draw();
+	glfwPollEvents();
+	window.ProcessInput();
+	Time::UpdateDeltaTime();
+	Draw();
 }
 
 void Application::SwapFrames()
 {
-    glfwSwapBuffers(window.GetGLFWWindow());
+	glfwSwapBuffers(window.GetGLFWWindow());
 }
 
 void Application::InitGLFW()
 {
-    if (glfwInit() == GLFW_FALSE) {
-        std::cout << "Failed to initialize GLFW" << std::endl;
-    }
+	if (glfwInit() == GLFW_FALSE) {
+		std::cout << "Failed to initialize GLFW" << std::endl;
+	}
 }
 
 void Application::InitMainShader()
 {
-    VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/core_vert.vert");
-    FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/core_frag.frag");
+	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/core_vert.vert");
+	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/core_frag.frag");
 
-    if (!mainShader.Link(mainVertex, mainFragment))
-        std::cout << "Error linking main shader" << std::endl;
+	if (!mainShader.Link(mainVertex, mainFragment))
+		std::cout << "Error linking main shader" << std::endl;
 
-    ModelLocation = mainShader.GetUniform("model");
-    viewProjLocation = mainShader.GetUniform("viewProj");
-    viewPosLocation = mainShader.GetUniform("viewPos");
+	ModelLocation = mainShader.GetUniform("model");
+	viewProjLocation = mainShader.GetUniform("viewProj");
+	viewPosLocation = mainShader.GetUniform("viewPos");
 
-    nbDirLightLocation = mainShader.GetUniform("nbDirLight");
-    nbPointLightLocation = mainShader.GetUniform("nbPointLight");
-    nbSpotLightLocation = mainShader.GetUniform("nbSpotLight");
+	nbDirLightLocation = mainShader.GetUniform("nbDirLight");
+	nbPointLightLocation = mainShader.GetUniform("nbPointLight");
+	nbSpotLightLocation = mainShader.GetUniform("nbSpotLight");
 }
 
 void Application::Draw()
 {
-    ClearWindow();
+	ClearWindow();
 
-    if (isEditor)
-    {
-        mainShader.Use(); //start using the main shader
-        editorCamera.Update();
-        UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
-        UpdateUniforms(); //then send the global uniforms
-        UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
+	if (isEditor)
+	{
+		RENDERER.Disable(RD_DEPTH_TEST);
+		skybox->Draw();
+		editorCamera.Update();
+		mainShader.Use(); //start using the main shader
 
-        RENDERER.Enable(RD_DEPTH_TEST);
-        UpdateGameObjectRender(); //render model if they have one
-        mainShader.UnUse(); //stop using the main shader
+		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
+		UpdateUniforms(); //then send the global uniforms
+		UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
 
-        Lines::DrawLines(); //render debug lines or guizmos
-    }
+		RENDERER.Enable(RD_DEPTH_TEST);
+		RENDERER.DepthFunction(RD_LESS);
+		UpdateGameObjectRender(); //render model if they have one
+		mainShader.UnUse(); //stop using the main shader
+
+		Lines::DrawLines(); //render debug lines or guizmos
+	}
 }
 
 void Application::ClearWindow()
 {
-    RENDERER.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-    RENDERER.Clear(RD_COLOR_BUFFER_BIT | RD_DEPTH_BUFFER_BIT);
+	RENDERER.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	RENDERER.Clear(RD_COLOR_BUFFER_BIT | RD_DEPTH_BUFFER_BIT);
 }
 
 void Application::UpdateGameObjectComponent()
 {
-    for (int i = 0; i < GameObjectManager::GetSize(); i++)
-    {
-        const GameObject* object = GameObjectManager::GetGameObject(i);
-        object->UpdateComponents();
-    }
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
+	{
+		const GameObject* object = GameObjectManager::GetGameObject(i);
+		object->UpdateComponents();
+	}
 
-    for (int i = 0; i < GameObjectManager::GetSize(); i++)
-    {
-        const GameObject* object = GameObjectManager::GetGameObject(i);
-        object->LateUpdate();
-    }
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
+	{
+		const GameObject* object = GameObjectManager::GetGameObject(i);
+		object->LateUpdate();
+	}
 }
 
 void Application::UpdateGameObjectRender()
 {
-    for (int i = 0; i < GameObjectManager::GetSize(); i++)
-    {
-        GameObject* object = GameObjectManager::GetGameObject(i);
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
+	{
+		GameObject* object = GameObjectManager::GetGameObject(i);
 
-        object->UpdateHierarchy();
+		object->UpdateHierarchy();
 
-        RENDERER.SetUniformValue(ModelLocation, UniformType::MAT4, lm::FMat4::ToArray(object->GetTransform().GetMatrix()));
-        object->UpdateRender();
-    }
+		RENDERER.SetUniformValue(ModelLocation, UniformType::MAT4, lm::FMat4::ToArray(object->GetTransform().GetMatrix()));
+		object->UpdateRender();
+	}
 }
 
 void Application::UpdateLights()
 {
-    int nbDirLight = GameObjectManager::GetDirLightSize();
-    int nbPointLight = GameObjectManager::GetPointLightSize();
-    int nbSpotLight = GameObjectManager::GetSpotLightSize();
+	int nbDirLight = GameObjectManager::GetDirLightSize();
+	int nbPointLight = GameObjectManager::GetPointLightSize();
+	int nbSpotLight = GameObjectManager::GetSpotLightSize();
 
-    RENDERER.SetUniformValue(nbDirLightLocation, UniformType::INT, &nbDirLight);
-    RENDERER.SetUniformValue(nbPointLightLocation, UniformType::INT, &nbPointLight);
-    RENDERER.SetUniformValue(nbSpotLightLocation, UniformType::INT, &nbSpotLight);
+	RENDERER.SetUniformValue(nbDirLightLocation, UniformType::INT, &nbDirLight);
+	RENDERER.SetUniformValue(nbPointLightLocation, UniformType::INT, &nbPointLight);
+	RENDERER.SetUniformValue(nbSpotLightLocation, UniformType::INT, &nbSpotLight);
 
-    GameObjectManager::SendLightsToShader();
+	GameObjectManager::SendLightsToShader();
 }
 
 void Application::UpdateUniforms()
 {
-    mainShader.Use();
+	mainShader.Use();
 
-    viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
-    viewPos = editorCamera.GetTransform().GetWorldPosition();
+	viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
+	viewPos = editorCamera.GetTransform().GetWorldPosition();
 
-    RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(viewProj));
+	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(viewProj));
 
-    //glUniform3f(viewPosLocation, viewPos.x, viewPos.y, viewPos.z);
-    RENDERER.SetUniformValue(viewPosLocation, UniformType::VEC3, &viewPos);
+	RENDERER.SetUniformValue(viewPosLocation, UniformType::VEC3, &viewPos);
 }

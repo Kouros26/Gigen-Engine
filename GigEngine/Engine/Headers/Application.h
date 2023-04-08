@@ -17,17 +17,21 @@ public:
     static lm::FVec3& GetViewPos();
 
     static void StartGame();
-    void Run();
-    void SwapFrames();
+	static bool IsInEditor();
+
+	void Run();
+	void SwapFrames();
 
 private:
-    static inline Window window;
-    static inline EditorCamera editorCamera;
+	class Skybox* skybox;
+
+	static inline Window window;
+	static inline EditorCamera editorCamera;
 
     static inline lm::FMat4 viewProj;
     static inline lm::FVec3 viewPos;
 
-    bool isEditor = true;
+	static inline bool isEditor = true;
 
     //main shader
     static inline ShaderProgram mainShader;

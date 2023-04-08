@@ -1,28 +1,34 @@
 #pragma once
 #include "IResource.h"
-#include "Component.h"
-#include "Mesh.h"
 #include <assimp/scene.h>
+#include <vector>
+
+class Texture;
+class Material;
+class Mesh;
 
 class Model : public IResource
 {
 public:
-    Model(std::string const& filePath);
-    ~Model();
+	Model(std::string const& pFilePath);
+	~Model();
 
-    Model(const Model& other);
-    Model(Model&& other) noexcept;
-    Model& operator=(const Model& other);
-    Model& operator=(Model&& other) noexcept;
+	Model(const Model& other);
+	Model(Model&& other) noexcept;
+	Model& operator=(const Model& other);
+	Model& operator=(Model&& other) noexcept;
+	void Draw() const;
+	void SetTexture(const std::string& pFilePath);
 
-    void Draw() const;
-
-    void Init() override;
+	void Init() override;
 
 private:
-    void loadModel(const std::string& pPath);
-    void processNode(const aiNode* pNode, const aiScene* pScene);
-    void processMesh(const aiMesh* pMesh, const aiScene* pScene);
+	void LoadModel(const std::string& pPath);
+	void ProcessNode(const aiNode* pNode, const aiScene* pScene);
+	void ProcessMesh(const aiMesh* pMesh, const aiScene* pScene);
+	void ProcessMaterial(const aiScene* pScene);
 
-    std::vector<Mesh*> meshes;
+	std::vector<Mesh*> meshes;
+	std::vector<Material*> materials;
+	Texture* texture = nullptr;
 };

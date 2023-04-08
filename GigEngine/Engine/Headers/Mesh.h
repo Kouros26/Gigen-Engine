@@ -19,6 +19,8 @@ public:
     Mesh& operator=(const Mesh& other);
     Mesh& operator=(Mesh&& other) noexcept;
 
+	std::string texturePath;
+	unsigned int materialIndex;
     void Draw();
     void setUpBuffers();
 

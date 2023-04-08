@@ -11,42 +11,42 @@ class Model;
 class GameObject
 {
 public:
-    GameObject();
-    GameObject(const std::string& name);
-    GameObject(const std::string& name, const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
-    GameObject(const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
+	GameObject();
+	GameObject(const std::string& name);
+	GameObject(const std::string& name, const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
+	GameObject(const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
 
-    GameObject(const GameObject& other);
-    GameObject(GameObject&& other) noexcept = delete;
-    GameObject& operator=(const GameObject& other);
-    GameObject& operator=(GameObject&& other) noexcept = delete;
+	GameObject(const GameObject& other);
+	GameObject(GameObject&& other) noexcept = delete;
+	GameObject& operator=(const GameObject& other);
+	GameObject& operator=(GameObject&& other) noexcept = delete;
 
-    virtual ~GameObject();
+	virtual ~GameObject();
+	virtual void UpdateRender() const;
+	void UpdateComponents() const;
+	void UpdateHierarchy();
 
-    void Destroy();
+	void Destroy();
 
-    void UpdateRender() const;
-    void UpdateComponents() const;
-    void LateUpdate() const;
-    void UpdateHierarchy();
+	void SetModel(const std::string& filePath);
+	void SetTexture(const std::string& filePath);
+	void LateUpdate() const;
 
-    std::string GetName();
-    unsigned int GetId();
+	std::string GetName();
+	unsigned int GetId();
 
-    void SetModel(const std::string& filePath);
-
-    void AddChild(GameObject* child);
-    void RemoveChild(GameObject* child);
+	void AddChild(GameObject* child);
+	void RemoveChild(GameObject* child);
 
 	void AddComponent(Component* newComponent);
 
-    //create New component of type and return the new Component
-    template<class T>
-    T* AddComponent();
+	//create New component of type and return the new Component
+	template<class T>
+	T* AddComponent();
 
-    //return first component of type
-    template<class T>
-    T* GetComponent();
+	//return first component of type
+	template<class T>
+	T* GetComponent();
 
 	[[nodiscard]] Component* GetComponentByID(int id) const;
 
@@ -54,9 +54,9 @@ public:
 	template<class T>
 	std::vector<T*>& GetComponents();
 
-    //remove all components of type
-    template<class T>
-    void RemoveComponents();
+	//remove all components of type
+	template<class T>
+	void RemoveComponents();
 
 	[[nodiscard]] unsigned int GetComponentCount() const;
 
@@ -64,21 +64,21 @@ public:
 
 private:
 
-    std::string name;
-    unsigned int id;
+	std::string name;
+	unsigned int id;
 
-    Transform transform;
+	Transform transform;
 
-    GameObject* parent = nullptr;
-    std::list<GameObject*> children{};
+	GameObject* parent = nullptr;
+	std::list<GameObject*> children{};
 
 	std::vector<Component*> components;
 	std::vector<Script*> scripts;
 
 	Model* model = nullptr;
 
-    //use so every gameObject has a different id
-    static unsigned int gameObjectIndex;
+	//use so every gameObject has a different id
+	static unsigned int gameObjectIndex;
 };
 
 template<class T>
@@ -115,24 +115,24 @@ inline Component* GameObject::GetComponentByID(const int componentID) const
 template<class T>
 std::vector<T*>& GameObject::GetComponents()
 {
-    std::vector<T*> comps;
-    for (int i = 0; i < components.size(); i++)
-    {
-        if (T* comp = dynamic_cast<T*>(components[i]))
-            comps.push_back(comp);
-    }
-    return comps;
+	std::vector<T*> comps;
+	for (int i = 0; i < components.size(); i++)
+	{
+		if (T* comp = dynamic_cast<T*>(components[i]))
+			comps.push_back(comp);
+	}
+	return comps;
 }
 
 template<class T>
 void GameObject::RemoveComponents()
 {
-    for (int i = 0; i < components.size(); i++)
-    {
-        if (const T* comp = dynamic_cast<T*>(components[i]))
-        {
-            delete comp;
-            components.erase(components.begin() + i);
-        }
-    }
+	for (int i = 0; i < components.size(); i++)
+	{
+		if (const T* comp = dynamic_cast<T*>(components[i]))
+		{
+			delete comp;
+			components.erase(components.begin() + i);
+		}
+	}
 }
