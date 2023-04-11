@@ -44,7 +44,6 @@ FetchContent_MakeAvailable(LibMath)
 set(CMAKE_FOLDER ${CMAKE_FOLDER_OLD})
 
 set( THIRD_PARTY_INCLUDE
-${glfw_SOURCE_DIR}
 assimp
 STB
 )
