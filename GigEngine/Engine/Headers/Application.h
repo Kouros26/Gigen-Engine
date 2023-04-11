@@ -1,7 +1,7 @@
 #pragma once
 #include "Shader.h"
-#include "Window.h"
 #include "EditorCamera.h"
+#include "Window.h"
 
 class Application
 {
@@ -17,21 +17,21 @@ public:
     static lm::FVec3& GetViewPos();
 
     static void StartGame();
-	static bool IsInEditor();
+    static bool IsInEditor();
 
-	void Run();
-	void SwapFrames();
+    void Run();
+    void SwapFrames();
 
 private:
-	class Skybox* skybox;
+    class Skybox* skybox;
 
-	static inline Window window;
-	static inline EditorCamera editorCamera;
+    static inline Window window;
+    static inline EditorCamera editorCamera;
 
     static inline lm::FMat4 viewProj;
     static inline lm::FVec3 viewPos;
 
-	static inline bool isEditor = true;
+    static inline bool isEditor = true;
 
     //main shader
     static inline ShaderProgram mainShader;
@@ -42,8 +42,8 @@ private:
     int nbPointLightLocation;
     int nbSpotLightLocation;
 
-    void InitGLFW();
-
+    void Init();
+    void CreateGameObjects();
     void InitMainShader();
     void Draw();
     void ClearWindow();

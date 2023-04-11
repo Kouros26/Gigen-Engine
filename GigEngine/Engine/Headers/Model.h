@@ -7,28 +7,31 @@ class Texture;
 class Material;
 class Mesh;
 
+constexpr unsigned int VERTEX_SIZE = 8;
+constexpr unsigned int FACE_SIZE = 3;
+
 class Model : public IResource
 {
 public:
-	Model(std::string const& pFilePath);
-	~Model();
+    Model(std::string const& pFilePath);
+    ~Model();
 
-	Model(const Model& other);
-	Model(Model&& other) noexcept;
-	Model& operator=(const Model& other);
-	Model& operator=(Model&& other) noexcept;
-	void Draw() const;
-	void SetTexture(const std::string& pFilePath);
+    Model(const Model& other);
+    Model(Model&& other) noexcept;
+    Model& operator=(const Model& other);
+    Model& operator=(Model&& other) noexcept;
+    void Draw() const;
+    void SetTexture(const std::string& pFilePath);
 
-	void Init() override;
+    void Init() override;
 
 private:
-	void LoadModel(const std::string& pPath);
-	void ProcessNode(const aiNode* pNode, const aiScene* pScene);
-	void ProcessMesh(const aiMesh* pMesh, const aiScene* pScene);
-	void ProcessMaterial(const aiScene* pScene);
+    void LoadModel(const std::string& pPath);
+    void ProcessNode(const aiNode* pNode, const aiScene* pScene);
+    void ProcessMesh(const aiMesh* pMesh, const aiScene* pScene);
+    void ProcessMaterial(const aiScene* pScene);
 
-	std::vector<Mesh*> meshes;
-	std::vector<Material*> materials;
-	Texture* texture = nullptr;
+    std::vector<Mesh*> meshes;
+    std::vector<Material*> materials;
+    Texture* texture = nullptr;
 };

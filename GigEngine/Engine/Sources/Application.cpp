@@ -13,42 +13,16 @@ using namespace GigRenderer;
 
 Application::Application()
 {
-    InitGLFW();
-    window.Init();
-    editorCamera.SetRatio(window.GetRatio());
-    RENDERER.Init();
-    Lines::Init();
-    InitMainShader();
+    Init();
 
-    //to remove =====================================================
-
-    skybox = new Skybox();
-
-    GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 0, 10 }, { 0 }, { 1 });
-    chest->SetModel("Resources/Models/chest.obj");
-    chest->SetTexture("Resources/Textures/test.png");
-
-    GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
-    car->SetModel("Resources/Models/Car.fbx");
-    car->AddComponent<TestComponent>();
-    car->AddComponent<testComponent2>();
-    Lines::SetFocusedObjectTransform(&car->GetTransform());
-    car->AddChild(chest);
-
-    GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
-    dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
-
-    //==================================================================
-    GameObject* sponza = GameObjectManager::CreateGameObject("sponza", { 0, 0, 0 }, { 0 }, { 0.05 });
-    sponza->SetModel("Resources/Models/sponza.obj");
-    GameObject* village = GameObjectManager::CreateGameObject("village", { 10,0,0 }, { 0 }, { 0.05 });
-    village->SetModel("Resources/Models/MinecraftVillage.fbx");
+    CreateGameObjects();
 }
 
 Application::~Application()
 {
     Lines::Clear();
     GameObjectManager::Cleanup();
+    delete skybox;
 }
 
 Window& Application::GetWindow()
@@ -93,7 +67,6 @@ void Application::StartGame()
 
 void Application::Run()
 {
-    glfwPollEvents();
     window.ProcessInput();
     Time::UpdateDeltaTime();
     Draw();
@@ -101,14 +74,43 @@ void Application::Run()
 
 void Application::SwapFrames()
 {
-    glfwSwapBuffers(window.GetGLFWWindow());
+    window.swapBuffers();
 }
 
-void Application::InitGLFW()
+void Application::Init()
 {
-    if (glfwInit() == GLFW_FALSE) {
-        std::cout << "Failed to initialize GLFW" << std::endl;
-    }
+    window.Init();
+    editorCamera.SetRatio(window.GetRatio());
+    RENDERER.Init();
+    Lines::Init();
+    InitMainShader();
+}
+
+void Application::CreateGameObjects()
+{
+    //to remove =====================================================
+
+    skybox = new Skybox();
+
+    GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 0, 10 }, { 0 }, { 1 });
+    chest->SetModel("Resources/Models/chest.obj");
+    chest->SetTexture("Resources/Textures/test.png");
+
+    GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
+    car->SetModel("Resources/Models/Car.fbx");
+    car->AddComponent<TestComponent>();
+    car->AddComponent<testComponent2>();
+    Lines::SetFocusedObjectTransform(&car->GetTransform());
+    car->AddChild(chest);
+
+    GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
+    dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
+
+    GameObject* sponza = GameObjectManager::CreateGameObject("sponza", { 0, 0, 0 }, { 0 }, { 0.05 });
+    sponza->SetModel("Resources/Models/sponza.obj");
+    GameObject* village = GameObjectManager::CreateGameObject("village", { 10,0,0 }, { 0 }, { 0.05 });
+    village->SetModel("Resources/Models/MinecraftVillage.fbx");
+    //==================================================================
 }
 
 void Application::InitMainShader()

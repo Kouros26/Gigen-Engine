@@ -5,6 +5,7 @@
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "ResourceManager.h"
+#include <Vec3/FVec3.hpp>
 
 Model::Model(std::string const& pFilePath)
     :IResource(pFilePath)

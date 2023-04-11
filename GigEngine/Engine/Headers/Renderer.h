@@ -1,5 +1,4 @@
 #pragma once
-#include <glad/glad.h>
 
 #define RENDERER Renderer::GetInstance()
 #define RD_TRIANGLE 0x0004

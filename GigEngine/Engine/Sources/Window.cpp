@@ -8,6 +8,11 @@ using namespace GigRenderer;
 
 void Window::Init()
 {
+    if (glfwInit() == GLFW_FALSE)
+    {
+        std::cout << "Failed to initialize GLFW" << std::endl;
+    }
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, versionMajor);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, versionMinor);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -46,20 +51,21 @@ void Window::Init()
 
 void Window::ProcessInput() const
 {
-    Inputs::UpdateMousePosition(window);
+    glfwPollEvents();
+    GigInput::Inputs::UpdateMousePosition();
 
-    if (Inputs::GetKey(ESCAPE))
+    if (GigInput::Inputs::GetKey(GigInput::Keys::ESCAPE))
         glfwSetWindowShouldClose(window, true);
 }
 
 void Window::KeyCallback(GLFWwindow* /*window*/, int key, int /*scancode*/, int action, int /*mods*/)
 {
-    Inputs::UpdateKey(key, action);
+    GigInput::Inputs::UpdateKey(key, action);
 }
 
 void Window::MouseButtonCallback(GLFWwindow* /*window*/, int button, int action, int /*mods*/)
 {
-    Inputs::UpdateMouseButton(button, action);
+    GigInput::Inputs::UpdateMouseButton(button, action);
 }
 
 void Window::FrameBufferResizeCallback(GLFWwindow* pWindow, int width, int height)
@@ -74,7 +80,29 @@ void Window::FrameBufferResizeCallback(GLFWwindow* pWindow, int width, int heigh
 
 void Window::scrollCallback(GLFWwindow* /*window*/, double /*xoffset*/, double yoffset)
 {
-    Inputs::UpdateMouseWheelOffset(yoffset);
+    GigInput::Inputs::UpdateMouseWheelOffset(yoffset);
+}
+
+void Window::setCursorShow(bool pShowCursor)
+{
+    if (pShowCursor)
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    else
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+}
+
+void Window::swapBuffers() const
+{
+    glfwSwapBuffers(window);
+}
+
+void Window::getCursorPosition(double& xpos, double& ypos) const
+{
+    glfwGetCursorPos(window, &xpos, &ypos);
 }
 
 void Window::ToggleVSync(int input)

@@ -10,6 +10,9 @@ public:
     void ProcessInput() const;
 
     static void ToggleVSync(int input);
+    void setCursorShow(bool pShowCursor);
+    void swapBuffers() const;
+    void getCursorPosition(double& xpos, double& ypos) const;
 
     [[nodiscard]] unsigned int GetWidth() const;
     [[nodiscard]] unsigned int GetHeight() const;
