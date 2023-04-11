@@ -18,8 +18,8 @@ private:
     float vertices[6];
     float color[3];
 
-    unsigned int VAO;
-    unsigned int  VBO;
+    unsigned int VAO = 0;
+    unsigned int  VBO = 0;
 };
 
 class Lines

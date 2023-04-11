@@ -19,10 +19,10 @@ public:
     Mesh& operator=(const Mesh& other);
     Mesh& operator=(Mesh&& other) noexcept;
 
-	std::string texturePath;
-	unsigned int materialIndex;
+    std::string texturePath;
+    unsigned int materialIndex;
     void Draw();
-    void setUpBuffers();
+    void SetupBuffers();
 
     float* vertices = nullptr;
     unsigned int* indices = nullptr;

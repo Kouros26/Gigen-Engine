@@ -4,6 +4,8 @@
 #include "Application.h"
 #include "ResourceManager.h"
 
+using namespace GigRenderer;
+
 Line::Line(const lm::FVec3 start, const lm::FVec3 end, const lm::FVec3 color, float timer)
     :timer(timer)
 {
@@ -19,18 +21,9 @@ Line::Line(const lm::FVec3 start, const lm::FVec3 end, const lm::FVec3 color, fl
     this->color[1] = color.y;
     this->color[2] = color.z;
 
-    RENDERER.GenVertexArrays(1, &VAO);
-    RENDERER.GenBuffers(1, &VBO);
-    RENDERER.BindVertexArray(VAO);
-
-    RENDERER.BindBuffer(RD_ARRAY_BUFFER, VBO);
-    RENDERER.BufferData(RD_ARRAY_BUFFER, sizeof(vertices), vertices, RD_STATIC_DRAW);
-
-    RENDERER.VertexAttribPointer(0, 3, RD_FLOAT, RD_FALSE, 3 * sizeof(float), (void*)0);
-    RENDERER.EnableVertexAttribArray(0);
-
-    RENDERER.BindBuffer(RD_ARRAY_BUFFER, 0);
-    RENDERER.BindVertexArray(0);
+    Buffer VBO{ this->VBO, vertices, sizeof(vertices) };
+    BufferVAO VAO{ this->VAO };
+    RENDERER.SetupBuffer(VBO, VAO);
 }
 
 Line::~Line()
@@ -102,6 +95,7 @@ void Lines::DrawDebugLines()
 
             RENDERER.BindVertexArray(debugLines[i]->GetVAO());
             RENDERER.DrawArray(RD_LINES, 0, 2);
+            RENDERER.BindVertexArray(0);
         }
     }
 }
@@ -130,6 +124,8 @@ void Lines::DrawGuizmoLines()
             RENDERER.BindVertexArray(guizmoLines[i]->GetVAO());
 
             RENDERER.DrawArray(RD_LINES, 0, 2);
+
+            RENDERER.BindVertexArray(0);
         }
     }
 

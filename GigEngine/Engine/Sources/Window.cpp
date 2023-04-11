@@ -4,6 +4,8 @@
 #include "Application.h"
 #include <iostream>
 
+using namespace GigRenderer;
+
 void Window::Init()
 {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, versionMajor);

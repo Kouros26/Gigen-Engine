@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include "Mesh.h"
 
+using namespace GigRenderer;
+
 Mesh::Mesh(unsigned int verticesSize, unsigned int indicesSize)
     :verticesSize(verticesSize), indicesSize(indicesSize)
 {
@@ -20,7 +22,7 @@ Mesh::Mesh(const Mesh& other)
     for (int i = 0; i < indicesSize; i++)
         this->indices[i] = other.indices[i];
 
-    setUpBuffers();
+    SetupBuffers();
 }
 
 Mesh::Mesh(Mesh&& other) noexcept
@@ -70,7 +72,7 @@ Mesh& Mesh::operator=(const Mesh& other)
         for (int i = 0; i < indicesSize; i++)
             this->indices[i] = other.indices[i];
 
-        setUpBuffers();
+        SetupBuffers();
     }
     return *this;
 }
@@ -108,34 +110,10 @@ void Mesh::Draw()
     RENDERER.BindVertexArray(0);
 }
 
-void Mesh::setUpBuffers()
+void Mesh::SetupBuffers()
 {
-    RENDERER.GenVertexArrays(1, &VAO);
-    RENDERER.GenBuffers(1, &VBO);
-    RENDERER.GenBuffers(1, &EBO);
-
-    RENDERER.BindVertexArray(VAO);
-
-    RENDERER.BindBuffer(RD_ARRAY_BUFFER, VBO);
-    RENDERER.BufferData(RD_ARRAY_BUFFER, verticesSize * sizeof(float), vertices, RD_STATIC_DRAW);
-
-    RENDERER.BindBuffer(RD_ELEMENT_ARRAY_BUFFER, EBO);
-    RENDERER.BufferData(RD_ELEMENT_ARRAY_BUFFER, indicesSize * sizeof(unsigned int), indices, RD_STATIC_DRAW);
-
-    RENDERER.EnableVertexAttribArray(0);       // position
-    RENDERER.VertexAttribPointer(0, 3, RD_FLOAT, RD_FALSE, VERTEX_SIZE * sizeof(float), (void*)0);
-
-    RENDERER.EnableVertexAttribArray(1);       // normal
-    RENDERER.VertexAttribPointer(1, 3, RD_FLOAT, RD_FALSE, VERTEX_SIZE * sizeof(float), (void*)(3 * sizeof(float)));
-
-    RENDERER.EnableVertexAttribArray(2);       // texture
-    RENDERER.VertexAttribPointer(2, 2, RD_FLOAT, RD_FALSE, VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
-
-    RENDERER.BindVertexArray(0);
-    RENDERER.BindBuffer(RD_ARRAY_BUFFER, 0);
-    RENDERER.BindBuffer(RD_ELEMENT_ARRAY_BUFFER, 0);
-
-    RENDERER.DisableVertexAttribArray(0);
-    RENDERER.DisableVertexAttribArray(1);
-    RENDERER.DisableVertexAttribArray(2);
+    Buffer VBO{ this->VBO, this->vertices, verticesSize };
+    Buffer EBO{ this->EBO, this->indices,indicesSize };
+    BufferVAO VAO{ this->VAO };
+    RENDERER.SetupBuffer(VBO, EBO, VAO);
 }
