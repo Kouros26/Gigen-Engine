@@ -13,6 +13,6 @@ public:
 	void Draw() override;
 
 private:
-
+	float test[3]{ 0 };
 	void GetGameObjects();
 };

@@ -24,6 +24,15 @@ public:
 	static GameObject* CreateGameObject(const std::string& name, const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
 	static GameObject* CreateGameObject(const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
 
+	static GameObject* CreateGameObject(const GameObject& other);
+	static GameObject* CreateGameObject(GameObject&& other) noexcept = delete;
+	static GameObject* CreateGameObject(const GameObject* other);
+	static GameObject* CreateGameObject(GameObject*&& other) noexcept = delete;
+
+	//rule of 5
+	GameObject& operator=(const GameObject& other);
+	GameObject& operator=(GameObject&& other) noexcept;
+
 	static GameObject* CreateSpotLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
 		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
 		float cutOff = 45, float outerCutOff = 90,
@@ -38,19 +47,18 @@ public:
 
 	static GameObject* CreateCamera();
 
+	static Camera* GetCurrentCamera();
+	static void SetCurrentCamera(Camera* camera);
+	//ok
+	static void SendLightsToShader();
+	static int GetDirLightSize();
+	static int GetPointLightSize();
+	static int GetSpotLightSize();
 	static void Remove(GameObject* object);
 
 	static std::vector<GameObject*> FindObjectsByName(std::string name);
 	static GameObject* FindObjectByName(std::string name);
 	static GameObject* FindObjectById(int id);
-
-	static Camera* GetCurrentCamera();
-	static void SetCurrentCamera(Camera* camera);
-
-	static void SendLightsToShader();
-	static int GetDirLightSize();
-	static int GetPointLightSize();
-	static int GetSpotLightSize();
 
 private:
 	static GameObject* AddGameObject(GameObject* object);

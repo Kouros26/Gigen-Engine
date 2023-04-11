@@ -50,3 +50,7 @@ foreach(include_i ${THIRD_PARTY_INCLUDE})
 	include_directories(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/${include_i}/${INCLUDE_FOLDER})
 endforeach( include_i )
 
+#link assimp
+target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/assimp/lib/assimp-vc143-mt.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/assimp/lib/IrrXML.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/assimp/lib/zlibstatic.lib)

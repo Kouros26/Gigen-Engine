@@ -17,18 +17,12 @@ public:
     void SetLocalRotation(const lm::FVec3& rot);
     void SetLocalScale(const lm::FVec3& scl);
 
-    //DO NOT USE
     void AssignWorldPosition(const lm::FVec3& pos);
-    //DO NOT USE
     void AssignWorldRotation(const lm::FVec3& rot);
-    //DO NOT USE
     void AssignWorldScale(const lm::FVec3& scl);
 
-    //DO NOT USE
     void AssignLocalPosition(const lm::FVec3& pos);
-    //DO NOT USE
     void AssignLocalRotation(const lm::FVec3& rot);
-    //DO NOT USE
     void AssignLocalScale(const lm::FVec3& scl);
 
     [[nodiscard]] lm::FVec3 GetWorldPosition() const;

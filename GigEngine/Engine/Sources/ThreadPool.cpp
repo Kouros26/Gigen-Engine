@@ -1,73 +1,46 @@
 #include "ThreadPool.h"
-#include <iostream>
 
-ThreadPool::ThreadPool()
+ThreadPool::ThreadPool(size_t numThreads)
 {
-	const unsigned int num_threads = std::thread::hardware_concurrency();
+    for (size_t i = 0; i < numThreads; ++i)
+    {
+        threads.emplace_back([this]
+            {
+                while (true)
+                {
+                    std::function<void()> task;
 
-	for (unsigned int i = 0; i < num_threads; i++)
-	{
-		threads.emplace_back(std::thread(&ThreadPool::ThreadLoop, this));
-	}
+                    {
+                        std::unique_lock<std::mutex> lock(queueMutex);
+
+                        condition.wait(lock, [this] { return stop || !tasks.empty(); });
+
+                        if (stop && tasks.empty())
+                        {
+                            return;
+                        }
+
+                        task = std::move(tasks.front());
+                        tasks.pop();
+                    }
+
+                    task();
+                }
+            });
+    }
 }
 
 ThreadPool::~ThreadPool()
 {
-	std::unique_lock<std::mutex> lock(queueMutex);
-	shouldStop = true;
+    {
+        std::unique_lock<std::mutex> lock(queueMutex);
+        stop = true;
+    }
 
-	mutexCondition.notify_all();
+    condition.notify_all();
 
-	for (std::thread& active_thread : threads)
-	{
-		active_thread.join();
-	}
-
-	threads.clear();
-}
-
-void ThreadPool::AddToQueue(const std::function<void()>& task)
-{
-	{
-		std::unique_lock<std::mutex> lock(queueMutex);
-		tasksQueue.push(task);
-	}
-
-	mutexCondition.notify_one();
-}
-
-bool ThreadPool::IsBusy()
-{
-	bool isPoolbusy;
-	{
-		std::unique_lock<std::mutex> lock(queueMutex);
-		isPoolbusy = !tasksQueue.empty();
-	}
-	return isPoolbusy;
-}
-
-void ThreadPool::ThreadLoop()
-{
-	while (true)
-	{
-		std::function<void()> task;
-		{
-			std::unique_lock<std::mutex> lock(queueMutex);
-
-			mutexCondition.wait(lock, [this]
-				{
-					return !tasksQueue.empty() || shouldStop;
-				});
-
-			if (shouldStop)
-			{
-				return;
-			}
-
-			task = tasksQueue.front();
-			tasksQueue.pop();
-		}
-
-		task();
-	}
+    for (std::thread& thread : threads)
+    {
+        thread.join();
+    }
 }

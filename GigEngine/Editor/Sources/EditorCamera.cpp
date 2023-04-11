@@ -66,6 +66,12 @@ void EditorCamera::Move()
     if (Inputs::GetKey(RIGHT) || Inputs::GetKey('D'))
         GetTransform().AddPosition(-GetRight() * scaleSpeed);
 
+    if (Inputs::GetKey('E'))
+        GetTransform().AddPosition(GetUp() * scaleSpeed);
+
+    if (Inputs::GetKey('Q'))
+        GetTransform().AddPosition(GetUp() * -scaleSpeed);
+
     if (Inputs::GetMouse().wheelClick)
     {
         GetTransform().AddPosition(GetRight() * Inputs::GetMouse().mouseOffsetX);

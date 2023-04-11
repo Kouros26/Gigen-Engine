@@ -1,55 +1,119 @@
-#include <glad/glad.h>
+#include "Renderer.h"
 #include "Mesh.h"
 
+using namespace GigRenderer;
+
 Mesh::Mesh(unsigned int verticesSize, unsigned int indicesSize)
-	:verticesSize(verticesSize), indicesSize(indicesSize)
+    :verticesSize(verticesSize), indicesSize(indicesSize)
 {
+}
+
+Mesh::Mesh(const Mesh& other)
+{
+    this->verticesSize = other.verticesSize;
+    this->indicesSize = other.indicesSize;
+
+    this->vertices = new float[verticesSize];
+    this->indices = new unsigned int[indicesSize];
+
+    for (int i = 0; i < verticesSize; i++)
+        this->vertices[i] = other.vertices[i];
+
+    for (int i = 0; i < indicesSize; i++)
+        this->indices[i] = other.indices[i];
+
+    SetupBuffers();
+}
+
+Mesh::Mesh(Mesh&& other) noexcept
+{
+    this->verticesSize = other.verticesSize;
+    this->indicesSize = other.indicesSize;
+
+    this->vertices = other.vertices;
+    this->indices = other.indices;
+
+    this->VAO = other.VAO;
+    this->VBO = other.VBO;
+    this->EBO = other.EBO;
+
+    other.vertices = nullptr;
+    other.indices = nullptr;
+    other.VAO = 0;
+    other.VBO = 0;
+    other.EBO = 0;
+
+    other.verticesSize = 0;
+    other.indicesSize = 0;
 }
 
 Mesh::~Mesh()
 {
-	delete[] vertices;
-	delete[] indices;
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+    delete[] vertices;
+    delete[] indices;
+    RENDERER.DeleteVertexArray(1, &VAO);
+    RENDERER.DeleteBuffer(1, &VBO);
+    RENDERER.DeleteBuffer(1, &EBO);
+}
+
+Mesh& Mesh::operator=(const Mesh& other)
+{
+    if (this != &other)
+    {
+        this->verticesSize = other.verticesSize;
+        this->indicesSize = other.indicesSize;
+
+        this->vertices = new float[verticesSize];
+        this->indices = new unsigned int[indicesSize];
+
+        for (int i = 0; i < verticesSize; i++)
+            this->vertices[i] = other.vertices[i];
+
+        for (int i = 0; i < indicesSize; i++)
+            this->indices[i] = other.indices[i];
+
+        SetupBuffers();
+    }
+    return *this;
+}
+
+Mesh& Mesh::operator=(Mesh&& other) noexcept
+{
+    if (this != &other)
+    {
+        this->verticesSize = other.verticesSize;
+        this->indicesSize = other.indicesSize;
+
+        this->vertices = other.vertices;
+        this->indices = other.indices;
+
+        this->VAO = other.VAO;
+        this->VBO = other.VBO;
+        this->EBO = other.EBO;
+
+        other.vertices = nullptr;
+        other.indices = nullptr;
+        other.VAO = 0;
+        other.VBO = 0;
+        other.EBO = 0;
+
+        other.verticesSize = 0;
+        other.indicesSize = 0;
+    }
+    return *this;
 }
 
 void Mesh::Draw()
 {
-	glBindVertexArray(this->VAO);
-	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+    RENDERER.BindVertexArray(VAO);
+    RENDERER.DrawElements(RD_TRIANGLE, indicesSize, RD_UNSIGNED_INT, 0);
+    RENDERER.BindVertexArray(0);
 }
 
-void Mesh::setUpBuffers()
+void Mesh::SetupBuffers()
 {
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize * sizeof(unsigned int), indices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);       // position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)0);
-
-	glEnableVertexAttribArray(1);       // normal
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(3 * sizeof(float)));
-
-	glEnableVertexAttribArray(2);       // textureCoordinates
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(float), (void*)(6 * sizeof(float)));
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
+    Buffer VBO{ this->VBO, this->vertices, verticesSize };
+    Buffer EBO{ this->EBO, this->indices,indicesSize };
+    BufferVAO VAO{ this->VAO };
+    RENDERER.SetupBuffer(VBO, EBO, VAO);
 }

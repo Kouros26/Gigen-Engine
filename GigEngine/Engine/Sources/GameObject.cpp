@@ -1,8 +1,8 @@
 #include "GameObject.h"
-#include "Component.h"
 #include "Model.h"
 #include "ResourceManager.h"
 #include "GameObjectManager.h"
+#include "Component.h"
 
 unsigned int GameObject::gameObjectIndex = 0;
 
@@ -23,7 +23,7 @@ GameObject::GameObject(const std::string& name)
 
 GameObject::GameObject(const std::string& name, const lm::FVec3& position, const lm::FVec3& rotation,
 	const lm::FVec3& scale)
-		: transform(position, rotation, scale)
+	: transform(position, rotation, scale)
 {
 	gameObjectIndex++;
 	id = gameObjectIndex;
@@ -44,11 +44,58 @@ GameObject::GameObject(const lm::FVec3& position, const lm::FVec3& rotation, con
 	name = "GameObject " + std::to_string(id);
 }
 
+GameObject::GameObject(const GameObject& other)
+{
+	gameObjectIndex++;
+	id = gameObjectIndex;
+
+	name = other.name + " " + std::to_string(id);
+
+	transform = other.transform;
+
+	for (const auto& component : other.components)
+		components.push_back(component->Clone(this));
+
+	for (const auto& script : other.scripts)
+	{
+		auto newScript = dynamic_cast<Script*>(script->Clone(this));
+		scripts.push_back(newScript);
+		newScript->Awake();
+	}
+
+	for (const auto& child : other.children)
+		AddChild(GameObjectManager::CreateGameObject(*child));
+
+	if (other.model != nullptr)
+		model = new Model(*other.model);
+}
+
+GameObject& GameObject::operator=(const GameObject& other)
+{
+	if (this == &other)
+		return *this;
+
+	name = other.name + " " + std::to_string(id);
+
+	transform = other.transform;
+
+	for (const auto& component : other.components)
+		components.push_back(component->Clone(this));
+
+	for (const auto& child : other.children)
+		AddChild(GameObjectManager::CreateGameObject(*child));
+
+	if (other.model != nullptr)
+		model = new Model(*other.model);
+
+	return *this;
+}
+
 GameObject::~GameObject()
 {
 	for (const auto& component : components)
 		delete component;
-            
+
 	model = nullptr;
 	GameObjectManager::Remove(this);
 }
@@ -71,6 +118,14 @@ unsigned int GameObject::GetId()
 void GameObject::SetModel(std::string const& filePath)
 {
 	model = ResourceManager::Get<Model>(filePath);
+}
+
+void GameObject::SetTexture(const std::string& filePath)
+{
+	if (model)
+	{
+		model->SetTexture(filePath);
+	}
 }
 
 void GameObject::AddChild(GameObject* child)
@@ -113,6 +168,12 @@ void GameObject::UpdateComponents() const
 		component->Update();
 }
 
+void GameObject::LateUpdate() const
+{
+	for (const auto& script : scripts)
+		script->LateUpdate();
+}
+
 void GameObject::UpdateHierarchy()
 {
 	if (this->parent != nullptr)
@@ -136,6 +197,17 @@ void GameObject::UpdateHierarchy()
 void GameObject::AddComponent(Component* newComponent)
 {
 	components.push_back(newComponent);
+
+	if (const auto script = dynamic_cast<Script*>(newComponent))
+	{
+		scripts.push_back(script);
+		script->Awake();
+	}
+}
+
+unsigned GameObject::GetComponentCount() const
+{
+	return static_cast<unsigned>(components.size());
 }
 
 Transform& GameObject::GetTransform()
