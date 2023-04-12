@@ -1,5 +1,8 @@
 #include "InterfaceManager.h"
 #include "Application.h"
+#include "GameObjectInspector.h"
+#include "FileDisplay.h"
+#include "HierarchyDisplay.h"
 
 void InterfaceManager::DrawEditor()
 {
@@ -8,6 +11,10 @@ void InterfaceManager::DrawEditor()
 
 	for (const auto& displayable : displayables)
 		displayable->Draw();
+
+	float posX = GetClassWidth<HierarchyDisplay>();
+	float posY = GetClassHeight<FileDisplay>();
+	Application::GetWindow().SetViewPort((int)posX, (int)posY, (int)(width - GetClassWidth<GameObjectInspector>() - posX), (int)(height - posY));
 }
 
 void InterfaceManager::AddEditorElement(Displayable* element)

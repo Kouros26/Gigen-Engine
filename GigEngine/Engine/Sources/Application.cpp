@@ -12,7 +12,6 @@ Application::Application()
 {
 	InitOpenGl();
 	window.Init();
-	editorCamera.SetRatio(window.GetRatio());
 	InitGlad();
 	Lines::Init();
 	InitMainShader();
@@ -144,8 +143,6 @@ void Application::InitMainShader()
 void Application::Draw()
 {
 	ClearWindow();
-	//must be responsive
-	glViewport(300, 300, window.GetWidth() - 300, window.GetHeight() - 300);
 
 	if (isEditor)
 	{
