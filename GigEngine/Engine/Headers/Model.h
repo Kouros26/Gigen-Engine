@@ -1,16 +1,13 @@
 #pragma once
 #include "IResource.h"
-#include <assimp/scene.h>
+#include "ModelLoader.h"
 #include <vector>
 
 class Texture;
 class Material;
 class Mesh;
 
-constexpr unsigned int VERTEX_SIZE = 8;
-constexpr unsigned int FACE_SIZE = 3;
-
-class Model : public IResource
+class Model : public IResource, public ModelLoader
 {
 public:
     Model(std::string const& pFilePath);
@@ -26,10 +23,6 @@ public:
     void Init() override;
 
 private:
-    void LoadModel(const std::string& pPath);
-    void ProcessNode(const aiNode* pNode, const aiScene* pScene);
-    void ProcessMesh(const aiMesh* pMesh, const aiScene* pScene);
-    void ProcessMaterial(const aiScene* pScene);
 
     std::vector<Mesh*> meshes;
     std::vector<Material*> materials;
