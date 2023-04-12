@@ -3,6 +3,8 @@
 #include "FileDisplay.h"
 #include "imgui.h"
 #include "Application.h"
+#include "GameObject.h"
+#include "GameObjectManager.h"
 
 GameObjectInspector::GameObjectInspector()
 {
@@ -25,18 +27,26 @@ void GameObjectInspector::Draw()
 	LimitWidthResize();
 	ImGui::SetWindowSize("Inspector", { width, height });
 
-	GetGameObjects();
+	DrawGameObject();
 
 	ImGui::End();
 }
 
-void GameObjectInspector::GetGameObjects()
+void GameObjectInspector::DrawGameObject()
 {
-	GameObject* object = GameObjectManager::GetGameObject(1);
+	GameObject* object = GameObjectManager::GetFocusedGameObject();
+	if (!object) return;
 
 	ImGui::Text(object->GetName().c_str());
 
 	ImGui::Separator();
+
+	DrawTransform(object);
+}
+
+void GameObjectInspector::DrawTransform(GameObject * object)
+{
+	ImGui::Text("Transform :");
 
 	lm::FVec3 rot = object->GetTransform().GetWorldRotation();
 	lm::FVec3 pos = object->GetTransform().GetWorldPosition();

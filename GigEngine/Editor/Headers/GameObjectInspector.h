@@ -1,7 +1,7 @@
 #pragma once
 #include "Displayable.h"
-#include "GameObject.h"
-#include "GameObjectManager.h"
+
+class GameObject;
 
 class GameObjectInspector : public Displayable
 {
@@ -13,5 +13,6 @@ public:
 	void Draw() override;
 
 private:
-	void GetGameObjects();
+	void DrawGameObject();
+	void DrawTransform(GameObject* object);
 };

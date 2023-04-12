@@ -26,8 +26,9 @@ Application::Application()
 	car->AddComponent<TestComponent>();
 	car->AddComponent<testComponent2>();
 	car->AddComponent<TestScript>();
-	Lines::SetFocusedObjectTransform(&car->GetTransform());
 	car->AddChild(chest);
+
+	GameObjectManager::SetFocusedGameObject(car);
 
 	GameObject* car2 = GameObjectManager::CreateGameObject(car); //copy constructor test
 	car2->GetTransform().SetWorldPosition(lm::FVec3(0));
