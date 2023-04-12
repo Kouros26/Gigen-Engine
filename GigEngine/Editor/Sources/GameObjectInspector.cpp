@@ -14,9 +14,9 @@ GameObjectInspector::~GameObjectInspector()
 
 void GameObjectInspector::Draw()
 {
-	height = InterfaceManager::GetHeight() - InterfaceManager::GetClassHeight<FileDisplay>();
+	height = InterfaceManager::GetHeight() - InterfaceManager::GetClassHeight<FileDisplay>() - g_menuBarSize;
 	bool open = true;
-	ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width, 0 });
+	ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width, g_menuBarSize });
 	ImGui::SetNextWindowSize({ width, height });
 
 	// noMove et NoCollapse

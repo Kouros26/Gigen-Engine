@@ -7,7 +7,7 @@
 void InterfaceManager::DrawEditor()
 {
 	width = (float)Application::GetWindow().GetWidth();
-	height = (float)Application::GetWindow().GetHeight();
+	height = (float)Application::GetWindow().GetHeight() - g_menuBarSize;
 
 	for (const auto& displayable : displayables)
 		displayable->Draw();

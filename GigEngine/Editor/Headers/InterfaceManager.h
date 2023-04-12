@@ -3,6 +3,7 @@
 #include "Displayable.h"
 
 const float g_basicSize = 300;
+const float g_menuBarSize = 20;
 
 class InterfaceManager
 {
