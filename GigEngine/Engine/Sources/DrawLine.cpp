@@ -2,6 +2,7 @@
 #include "DrawLine.h"
 #include "Watch.h"
 #include "Application.h"
+#include "GameObjectManager.h"
 #include "ResourceManager.h"
 
 using namespace GigRenderer;
@@ -59,11 +60,6 @@ void Lines::DrawLine(const lm::FVec3& start, const lm::FVec3& end, const lm::FVe
     debugLines.push_back(new Line(start, end, color, timer));
 }
 
-void Lines::SetFocusedObjectTransform(Transform* transform)
-{
-    focusedObjectTransform = transform;
-}
-
 void Lines::DrawLines()
 {
     shaderProgram.Use();
@@ -113,7 +109,12 @@ void Lines::DrawGuizmoLines()
 {
     CreateTranslatedEditorTransform();
     CreateGuizmo(&worldTransform);
-    CreateGuizmo(focusedObjectTransform);
+
+    GameObject* obj = GameObjectManager::GetFocusedGameObject();
+    if (obj)
+    {
+        CreateGuizmo(&obj->GetTransform());
+    }
 
     for (int i = 0; i < guizmoLines.size(); i++)
     {

@@ -75,7 +75,7 @@ void Window::FrameBufferResizeCallback(GLFWwindow* pWindow, int width, int heigh
     const auto window = static_cast<Window*>(glfwGetWindowUserPointer(pWindow));
     window->width = width;
     window->height = height;
-    Application::GetEditorCamera().SetRatio(window->GetRatio());
+    Application::GetEditorCamera().SetRatio(window->GetViewPortRatio());
 }
 
 void Window::scrollCallback(GLFWwindow* /*window*/, double /*xoffset*/, double yoffset)
@@ -120,12 +120,6 @@ unsigned int Window::GetHeight() const
     return height;
 }
 
-float Window::GetRatio() const
-{
-    if (height == 0) return 1;
-    return static_cast<float>(width) / static_cast<float>(height);
-}
-
 bool Window::ShouldClose() const
 {
     return glfwWindowShouldClose(window);
@@ -139,4 +133,16 @@ GLFWwindow* Window::GetGLFWWindow() const
 std::string& Window::GetGLSLVersion()
 {
     return version;
+}
+
+float Window::GetViewPortRatio()
+{
+    return viewPortRatio;
+}
+
+void Window::SetViewPort(unsigned int pX, unsigned int pY, unsigned int pWidth, unsigned int pHeight)
+{
+    RENDERER.ViewPort(pX, pY, pWidth, pHeight);
+    viewPortRatio = (float)pWidth / (float)pHeight;
+    Application::GetEditorCamera().SetRatio(viewPortRatio);
 }

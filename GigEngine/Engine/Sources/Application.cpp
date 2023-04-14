@@ -80,7 +80,7 @@ void Application::SwapFrames()
 void Application::Init()
 {
     window.Init();
-    editorCamera.SetRatio(window.GetRatio());
+    editorCamera.SetRatio(window.GetViewPortRatio());
     RENDERER.Init();
     Lines::Init();
     InitMainShader();
@@ -100,7 +100,6 @@ void Application::CreateGameObjects()
     car->SetModel("Resources/Models/Car.fbx");
     car->AddComponent<TestComponent>();
     car->AddComponent<testComponent2>();
-    Lines::SetFocusedObjectTransform(&car->GetTransform());
     car->AddChild(chest);
 
     GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
