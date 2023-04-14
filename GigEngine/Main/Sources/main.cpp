@@ -1,8 +1,20 @@
 #include "Application.h"
+#include "Interface.h"
 
 int main()
 {
-    Application app;
+	Application app;
+	Window& window = Application::GetWindow(); //Used as text replacement
 
-    app.Run();
+	Interface interface(window.GetGLFWWindow(), window.GetGLSLVersion().c_str());
+
+	Application::StartGame();
+
+	while (!window.ShouldClose())
+	{
+		interface.BeginFrame();
+		app.Run(); 
+		interface.Draw();
+		app.SwapFrames();
+	}
 }

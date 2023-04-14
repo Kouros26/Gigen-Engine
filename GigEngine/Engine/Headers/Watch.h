@@ -1,26 +1,10 @@
 #pragma once
-#include "FixedQueue.h"
-#include <GLFW/glfw3.h>
+#include <vector>
+
+const int MAX_FPS_VECTOR_SIZE = 10;
 
 class Time
 {
-	class FPS
-	{
-		static inline FixedQueue<unsigned short, 10> fpsQueue;
-
-		static inline unsigned short fps = 0;
-		static inline unsigned short averageFps = 0;
-		static inline double FPSUpdateDelay = 1;
-		static inline double lastFPSUpdate = 0;
-
-	public:
-		static void UpdateFPS();
-		static void UpdateAverageFPS();
-
-		static void SetFPSUpdateDelay(const double& newDelay);
-		[[nodiscard]] static unsigned short GetFPS();
-	};
-
 	static inline double deltaTime = 0;
 	static inline double timeScale = 1;
 	static inline double unscaledDeltaTime;
@@ -29,11 +13,33 @@ class Time
 
 public:
 
+	class FPS
+	{
+		static inline std::vector<float> fpsVec;
+
+		static inline float fps = 0;
+		static inline float averageFps = 0;
+		static inline float fpsAddition = 0;
+		static inline float FPSUpdateDelay = 0.5f;
+		static inline float lastFPSUpdate = 0.0f;
+
+	public:
+		static void UpdateFPS();
+		static void ToggleVSync(bool input);
+
+		static void SetFPSUpdateDelay(const float newDelay);
+		static float GetFPSUpdateDelay();
+		[[nodiscard]] static float GetFPS();
+		static float GetAverageFPS();
+		static std::vector<float>& GetFPSVec();
+	};
+
 	static void UpdateDeltaTime();
 
 	[[nodiscard]] static double GetDeltaTime();
 	[[nodiscard]] static double GetTimeScale();
 	[[nodiscard]] static double GetUnscaledDeltaTime();
+	[[nodiscard]] static double GetCurrentTime();
 
 	static void SetTimeScale(const double& newTimeScale);
 };

@@ -1,97 +1,114 @@
 #pragma once
-#include <GLFW/glfw3.h>
 #include<string>
 #include<vector>
 
-#define SPACE GLFW_KEY_SPACE
-#define ESCAPE GLFW_KEY_ESCAPE
-#define ENTER GLFW_KEY_ENTER
-#define TAB GLFW_KEY_TAB
-#define BACKSPACE GLFW_KEY_BACKSPACE
-#define INSERT GLFW_KEY_INSERT
-#define DELETE GLFW_KEY_DELETE
-#define RIGHT GLFW_KEY_RIGHT
-#define LEFT GLFW_KEY_LEFT
-#define DOWN GLFW_KEY_DOWN
-#define LEFT_SHIFT GLFW_KEY_LEFT_SHIFT
-#define RIGHT_SHIFT GLFW_KEY_RIGHT_SHIFT
-#define UP GLFW_KEY_UP
-#define F1 GLFW_KEY_F1
-#define F2 GLFW_KEY_F2
-#define F3 GLFW_KEY_F3
-#define F4 GLFW_KEY_F4
-#define F5 GLFW_KEY_F5
-
-struct Mouse
+namespace GigInput
 {
-	double x;
-	double y;
+    enum class MouseButton
+    {
+        LEFT = 0,
+        RIGHT = 1,
+        MIDDLE = 2
+    };
 
-	double lastX;
-	double lastY;
+    enum class MouseState
+    {
+        RELEASE = 0,
+        PRESS = 1
+    };
 
-	double mouseOffsetX;
-	double mouseOffsetY;
+    enum class Keys
+    {
+        ESCAPE = 256,
+        A = 65,
+        B = 66,
+        C = 67,
+        D = 68,
+        E = 69,
+        F = 70,
+        G = 71,
+        H = 72,
+        I = 73,
+        J = 74,
+        K = 75,
+        L = 76,
+        M = 77,
+        N = 78,
+        O = 79,
+        P = 80,
+        Q = 81,
+        R = 82,
+        S = 83,
+        T = 84,
+        U = 85,
+        V = 86,
+        W = 87,
+        X = 88,
+        Y = 89,
+        Z = 90,
+        SPACE = 32,
+        LEFT_SHIFT = 340,
+        LEFT_CONTROL = 341,
+        LEFT_ALT = 342,
+        RIGHT_SHIFT = 344,
+        RIGHT_CONTROL = 345,
+        RIGHT_ALT = 346,
+        LEFT = 263,
+        RIGHT = 262,
+        DOWN = 264,
+        UP = 265,
+        F1 = 290,
+        F2 = 291,
+        F3 = 292,
+        F4 = 293,
+        F5 = 294,
+        F6 = 295,
+        F7 = 296,
+        F8 = 297,
+        F9 = 298,
+        F10 = 299,
+        F11 = 300,
+        F12 = 301,
+        LAST = 348
+    };
 
-	bool rightClick;
-	bool leftClick;
-};
+    struct Mouse
+    {
+        double x;
+        double y;
 
-class Inputs
-{
-public:
-	Inputs() = delete;
+        double lastX;
+        double lastY;
 
-	static bool GetKey(int key);
+        double mouseOffsetX;
+        double mouseOffsetY;
 
-	static Mouse GetMouse();
+        double wheelOffsetY;
 
-	static void UpdateKey(int key, int action);
+        bool rightClick;
+        bool leftClick;
 
-	static void UpdateMousePosition(GLFWwindow* window);
+        bool wheelClick;
+    };
 
-	static void UpdateMouseButton(int button, int action);
+    class Inputs
+    {
+    public:
+        Inputs() = delete;
 
-private:
-	inline static Mouse mouse;
-	inline static std::vector<bool> inputs = std::vector<bool>(GLFW_KEY_LAST + 1, false);
-};
+        static bool GetKey(Keys pKey);
 
-inline bool Inputs::GetKey(int key)
-{
-	if ('a' <= key && key <= 'z')
-	{
-		key -= ('a' - 'A');
-	}
-	return inputs[key];
-}
+        static Mouse GetMouse();
 
-inline Mouse Inputs::GetMouse()
-{
-	return mouse;
-}
+        static void UpdateKey(int key, int action);
 
-inline void Inputs::UpdateKey(int key, int action)
-{
-	inputs[key] = action == GLFW_RELEASE ? false : true;
-}
+        static void UpdateMousePosition();
 
-inline void Inputs::UpdateMousePosition(GLFWwindow* window)
-{
-	glfwGetCursorPos(window, &mouse.x, &mouse.y);
+        static void UpdateMouseButton(int button, int action);
+        static void UpdateMouseWheelOffset(double offset);
 
-	mouse.mouseOffsetX = mouse.x - mouse.lastX;
-	mouse.mouseOffsetY = mouse.y - mouse.lastY;
-
-	mouse.lastX = mouse.x;
-	mouse.lastY = mouse.y;
-}
-
-inline void Inputs::UpdateMouseButton(int button, int action)
-{
-	if (button == GLFW_MOUSE_BUTTON_LEFT)
-		mouse.leftClick = action;
-
-	if (button == GLFW_MOUSE_BUTTON_RIGHT)
-		mouse.rightClick = action;
+    private:
+        inline static Mouse mouse;
+        inline static std::vector<bool> inputs = std::vector<bool>((int)Keys::LAST + 1, false);
+    };
 }

@@ -1,46 +1,62 @@
 #include "Watch.h"
-#include <iostream>
+#include "Window.h"
 
-unsigned short Time::FPS::GetFPS()
+float Time::FPS::GetFPS()
 {
 	return fps;
+}
+
+float Time::FPS::GetAverageFPS()
+{
+	return averageFps;
+}
+
+std::vector<float>& Time::FPS::GetFPSVec()
+{
+	return fpsVec;
 }
 
 void Time::FPS::UpdateFPS()
 {
 	if (currentTime - lastFPSUpdate < FPSUpdateDelay) return;
 
-	fps = static_cast<unsigned short>(1000 / deltaTime);
+	fps = static_cast<float>(1 / deltaTime);
 	lastFPSUpdate = currentTime;
 
-	const unsigned short fp = fps;
-	fpsQueue.push(fp);
+	fpsVec.push_back(fps);
 
-	UpdateAverageFPS();
-
-	std::cout << fps << std::endl; //TEMP
-}
-
-void Time::FPS::UpdateAverageFPS()
-{
-	FixedQueue<unsigned short, 10> queueCopy = fpsQueue;
-
-	const auto QueueSize = static_cast<unsigned short>(queueCopy.size());
-
-	for (unsigned short i = 0; i < QueueSize; i++)
+	int size = fpsVec.size();
+	if (size > MAX_FPS_VECTOR_SIZE)
 	{
-		averageFps += queueCopy.front();
-		queueCopy.pop();
+		fpsAddition -= fpsVec[0];
+		fpsVec.erase(fpsVec.begin());
 	}
 
-	averageFps /= QueueSize;
-
-	std::cout << "Average FPS from last 10 seconds : " << averageFps << std::endl;
+	fpsAddition += fps;
+	averageFps = fpsAddition / size;
 }
 
-void Time::FPS::SetFPSUpdateDelay(const double& newDelay)
+void Time::FPS::ToggleVSync(const bool input)
+{
+	//int result;
+
+	//if (input)
+	//	result = 1;
+
+	//else
+	//	result = 0;
+
+	Window::ToggleVSync(input);
+}
+
+void Time::FPS::SetFPSUpdateDelay(const float newDelay)
 {
 	FPSUpdateDelay = newDelay;
+}
+
+float Time::FPS::GetFPSUpdateDelay()
+{
+	return FPSUpdateDelay;
 }
 
 void Time::UpdateDeltaTime()
@@ -66,6 +82,11 @@ double Time::GetTimeScale()
 double Time::GetUnscaledDeltaTime()
 {
 	return unscaledDeltaTime;
+}
+
+double Time::GetCurrentTime()
+{
+	return currentTime;
 }
 
 void Time::SetTimeScale(const double& newTimeScale)

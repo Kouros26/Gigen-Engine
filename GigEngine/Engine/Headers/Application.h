@@ -1,19 +1,54 @@
 #pragma once
+#include "Shader.h"
+#include "EditorCamera.h"
 #include "Window.h"
 
 class Application
 {
 public:
-	Application();
-	~Application();
+    Application();
+    ~Application();
 
-	static Window& GetWindow();
+    static Window& GetWindow();
+    static EditorCamera& GetEditorCamera();
+    static ShaderProgram& GetMainShader();
 
-	void Run();
+    static lm::FMat4& GetViewProj();
+    static lm::FVec3& GetViewPos();
+
+    static void StartGame();
+    static bool IsInEditor();
+
+    void Run();
+    void SwapFrames();
+
 private:
-	static inline Window window;
+    class Skybox* skybox;
 
-	void InitOpenGl();
-	void InitGlad();
-	void Draw();
+    static inline Window window;
+    static inline EditorCamera editorCamera;
+
+    static inline lm::FMat4 viewProj;
+    static inline lm::FVec3 viewPos;
+
+    static inline bool isEditor = true;
+
+    //main shader
+    static inline ShaderProgram mainShader;
+    int viewProjLocation;
+    int ModelLocation;
+    int viewPosLocation;
+    int nbDirLightLocation;
+    int nbPointLightLocation;
+    int nbSpotLightLocation;
+
+    void Init();
+    void CreateGameObjects();
+    void InitMainShader();
+    void Draw();
+    void ClearWindow();
+    void UpdateGameObjectComponent();
+    void UpdateGameObjectRender();
+    void UpdateLights();
+    void UpdateUniforms();
 };

@@ -40,11 +40,18 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR})
 target_include_directories(${PROJECT_NAME} PUBLIC
 	${DEPENDS_DIR}/GLAD/include)
 target_sources(${PROJECT_NAME} PUBLIC ${DEPENDS_DIR}/GLAD/src/glad.cpp)
+source_group(Sources ${DEPENDS_DIR}/GLAD/src/glad.cpp)
 
-foreach( project_i ${THIRD_PARTY_PROJECT})
-	include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/${project_i}/${INCLUDE_FOLDER})
+foreach(project_i ${THIRD_PARTY_PROJECT})
+	include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE}/${project_i}/${INCLUDE_FOLDER})
 endforeach( project_i )
 
-foreach( include_i ${THIRD_PARTY_INCLUDE})
+
+
+foreach(include_i ${THIRD_PARTY_INCLUDE})
 	include_directories(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/${include_i}/${INCLUDE_FOLDER})
 endforeach( include_i )
+
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ImGui)
+

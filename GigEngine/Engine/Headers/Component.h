@@ -8,32 +8,68 @@ public:
     Component(GameObject* gameObject);
     virtual ~Component();
 
+    virtual void Start();
     virtual void Update();
+
+    virtual Component* Clone(GameObject* newGameObject) = 0;
+
+    Component(const Component& other) = default;
+    Component(Component&& other) noexcept = default;
+    Component& operator=(const Component& other) = default;
+    Component& operator=(Component&& other) noexcept = default;
 
 protected:
     GameObject* gameObject;
 };
 
-class testComponent1 : public Component
+class Script : public Component
 {
 public:
-    testComponent1(GameObject* gameObject) : Component(gameObject) {};
+	Script(GameObject* obj) : Component(obj) {}
+
+	virtual void Awake();
+	virtual void LateUpdate();
+};
+
+class TestScript : public Script
+{
+public:
+	TestScript(GameObject* obj) : Script(obj) {}
+
+	void Awake() override;
+	void Start() override;
+	void Update() override;
+	void LateUpdate() override;
+
+    virtual Component* Clone(GameObject* newGameObject) override {
+        return new TestScript(newGameObject);
+    };
+};
+
+class TestComponent : public Component
+{
+public:
+	TestComponent(GameObject* obj) : Component(obj) {}
 
     virtual void Update() override {
-        gameObject->transform.AddRotation(lm::FVec3(20) * static_cast<float>(Time::GetDeltaTime()));
-    }
+        gameObject->GetTransform().AddPosition(lm::FVec3(0, 0.5f, 0.f) * Time::GetDeltaTime());
+    };
+
+    virtual Component* Clone(GameObject* newGameObject) override {
+        return new TestComponent(newGameObject);
+    };
 };
 
 class testComponent2 : public Component
 {
 public:
-    testComponent2(GameObject* gameObject) : Component(gameObject) {}
+	testComponent2(GameObject* obj) : Component(obj) {};
 
     virtual void Update() override {
-        float sinus = static_cast<float>(sin(glfwGetTime())) * 3;
-        if (sinus < 0) {
-            sinus *= -1;
-        }
-        gameObject->transform.SetScale(lm::FVec3(1 + sinus));
-    }
+        gameObject->GetTransform().AddRotation(lm::FVec3(0, 0, 20.f) * Time::GetDeltaTime());
+    };
+
+    virtual Component* Clone(GameObject* newGameObject) override {
+        return new testComponent2(newGameObject);
+    };
 };
