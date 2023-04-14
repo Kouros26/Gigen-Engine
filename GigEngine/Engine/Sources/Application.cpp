@@ -27,27 +27,27 @@ Application::~Application()
 
 Window& Application::GetWindow()
 {
-    return window;
+	return window;
 }
 
 EditorCamera& Application::GetEditorCamera()
 {
-    return editorCamera;
+	return editorCamera;
 }
 
 ShaderProgram& Application::GetMainShader()
 {
-    return mainShader;
+	return mainShader;
 }
 
 lm::FMat4& Application::GetViewProj()
 {
-    return viewProj;
+	return viewProj;
 }
 
 lm::FVec3& Application::GetViewPos()
 {
-    return viewPos;
+	return viewPos;
 }
 
 bool Application::IsInEditor()
@@ -115,24 +115,24 @@ void Application::CreateGameObjects()
 
 void Application::InitMainShader()
 {
-    VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/core_vert.vert");
-    FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/core_frag.frag");
+	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/core_vert.vert");
+	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/core_frag.frag");
 
-    if (!mainShader.Link(mainVertex, mainFragment))
-        std::cout << "Error linking main shader" << std::endl;
+	if (!mainShader.Link(mainVertex, mainFragment))
+		std::cout << "Error linking main shader" << std::endl;
 
-    ModelLocation = mainShader.GetUniform("model");
-    viewProjLocation = mainShader.GetUniform("viewProj");
-    viewPosLocation = mainShader.GetUniform("viewPos");
+	ModelLocation = mainShader.GetUniform("model");
+	viewProjLocation = mainShader.GetUniform("viewProj");
+	viewPosLocation = mainShader.GetUniform("viewPos");
 
-    nbDirLightLocation = mainShader.GetUniform("nbDirLight");
-    nbPointLightLocation = mainShader.GetUniform("nbPointLight");
-    nbSpotLightLocation = mainShader.GetUniform("nbSpotLight");
+	nbDirLightLocation = mainShader.GetUniform("nbDirLight");
+	nbPointLightLocation = mainShader.GetUniform("nbPointLight");
+	nbSpotLightLocation = mainShader.GetUniform("nbSpotLight");
 }
 
 void Application::Draw()
 {
-    ClearWindow();
+	ClearWindow();
 
     if (isEditor)
     {
@@ -150,8 +150,8 @@ void Application::Draw()
         UpdateGameObjectRender(); //render model if they have one
         mainShader.UnUse(); //stop using the main shader
 
-        Lines::DrawLines(); //render debug lines or guizmos
-    }
+		Lines::DrawLines(); //render debug lines or guizmos
+	}
 }
 
 void Application::ClearWindow()
@@ -177,9 +177,9 @@ void Application::UpdateGameObjectComponent()
 
 void Application::UpdateGameObjectRender()
 {
-    for (int i = 0; i < GameObjectManager::GetSize(); i++)
-    {
-        GameObject* object = GameObjectManager::GetGameObject(i);
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
+	{
+		GameObject* object = GameObjectManager::GetGameObject(i);
 
         object->UpdateHierarchy();
 
@@ -203,10 +203,10 @@ void Application::UpdateLights()
 
 void Application::UpdateUniforms()
 {
-    mainShader.Use();
+	mainShader.Use();
 
-    viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
-    viewPos = editorCamera.GetTransform().GetWorldPosition();
+	viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
+	viewPos = editorCamera.GetTransform().GetWorldPosition();
 
     RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(viewProj));
 

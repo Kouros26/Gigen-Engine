@@ -17,9 +17,9 @@ EditorCamera::~EditorCamera()
 
 void EditorCamera::Update()
 {
-    ChangeSpeed();
-    Move();
-    Look();
+	ChangeSpeed();
+	Move();
+	Look();
 }
 
 void EditorCamera::ChangeSpeed()
@@ -28,11 +28,11 @@ void EditorCamera::ChangeSpeed()
     {
         speed *= speedStep;
 
-        if (speed > speedMax)
-            speed = speedMax;
+		if (speed > speedMax)
+			speed = speedMax;
 
-        pressLeftShift = true;
-    }
+		pressLeftShift = true;
+	}
 
     if (!GigInput::Inputs::GetKey(GigInput::Keys::LEFT_SHIFT))
         pressLeftShift = false;
@@ -41,11 +41,11 @@ void EditorCamera::ChangeSpeed()
     {
         speed -= speedStep;
 
-        if (speed < 0)
-            speed = 0;
+		if (speed < 0)
+			speed = 0;
 
-        pressRightShift = true;
-    }
+		pressRightShift = true;
+	}
 
     if (!GigInput::Inputs::GetKey(GigInput::Keys::RIGHT_SHIFT))
         pressRightShift = false;
@@ -53,7 +53,7 @@ void EditorCamera::ChangeSpeed()
 
 void EditorCamera::Move()
 {
-    const float scaleSpeed = speed * static_cast<float>(Time::GetDeltaTime());
+	const float scaleSpeed = speed * static_cast<float>(Time::GetDeltaTime());
 
     if (GigInput::Inputs::GetKey(GigInput::Keys::W) || GigInput::Inputs::GetKey(GigInput::Keys::UP))
         GetTransform().AddPosition(GetFront() * scaleSpeed);
@@ -94,7 +94,7 @@ void EditorCamera::Look()
         const float Ry = static_cast<float>(GigInput::Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity));
         const float Rx = static_cast<float>(GigInput::Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity));
 
-        const lm::FVec3 rot = GetTransform().GetWorldRotation();
+		const lm::FVec3 rot = GetTransform().GetWorldRotation();
 
         const lm::FVec3 vecRot = { -Rx, Ry, 0 };
         GetTransform().AddRotation(vecRot);

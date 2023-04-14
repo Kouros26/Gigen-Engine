@@ -140,3 +140,15 @@ std::string& Window::GetGLSLVersion()
 {
     return version;
 }
+
+float Window::GetViewPortRatio()
+{
+	return viewPortRatio;
+}
+
+void Window::SetViewPort(unsigned int pX, unsigned int pY, unsigned int pWidth, unsigned int pHeight)
+{
+	glViewport(pX, pY, pWidth, pHeight);
+	viewPortRatio = (float)pWidth / (float)pHeight;
+	Application::GetEditorCamera().SetRatio(viewPortRatio);
+}

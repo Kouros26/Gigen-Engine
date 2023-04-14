@@ -1,6 +1,10 @@
 #include "GameObjectInspector.h"
 #include "InterfaceManager.h"
+#include "FileDisplay.h"
 #include "imgui.h"
+#include "Application.h"
+#include "GameObject.h"
+#include "GameObjectManager.h"
 
 GameObjectInspector::GameObjectInspector()
 {
@@ -12,31 +16,57 @@ GameObjectInspector::~GameObjectInspector()
 
 void GameObjectInspector::Draw()
 {
-	ImGui::Begin("Scene");
+	height = InterfaceManager::GetHeight() - InterfaceManager::GetClassHeight<FileDisplay>() - g_menuBarSize;
+	bool open = true;
+	ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width, g_menuBarSize });
+	ImGui::SetNextWindowSize({ width, height });
 
-	GetGameObjects();
+	// noMove et NoCollapse
+	ImGui::Begin("Inspector", &open, 4 | 32);
+
+	LimitWidthResize();
+	ImGui::SetWindowSize("Inspector", { width, height });
+
+	DrawGameObject();
 
 	ImGui::End();
 }
 
-void GameObjectInspector::GetGameObjects()
+void GameObjectInspector::DrawGameObject()
 {
-
-	GameObject* object = GameObjectManager::GetGameObject(1);
+	GameObject* object = GameObjectManager::GetFocusedGameObject();
+	if (!object) return;
 
 	ImGui::Text(object->GetName().c_str());
-	ImGui::ShowDemoWindow();
 
-	static bool t = false;
-	ImGui::Checkbox("ScaleUp", &t);
+	ImGui::Separator();
 
-	if (t)
-		object->GetTransform().AddScale({ 0.02f });
+	DrawTransform(object);
+}
 
-	lm::FVec3 bob = object->GetTransform().GetWorldPosition();
-	ImGui::ColorEdit3("Position", test);
+void GameObjectInspector::DrawTransform(GameObject * object)
+{
+	ImGui::Text("Transform :");
 
-	lm::FVec3 bobTest(test[0], test[1], test[2]);
-	object->GetTransform().SetWorldPosition(bobTest * 1000);
+	lm::FVec3 rot = object->GetTransform().GetWorldRotation();
+	lm::FVec3 pos = object->GetTransform().GetWorldPosition();
+	lm::FVec3 scl = object->GetTransform().GetWorldScale();
 
+	float translation[] = { pos.x, pos.y, pos.z };
+	if (ImGui::SliderFloat3("Position", translation, -100, 100, "%.2f"))
+	{
+		object->GetTransform().SetWorldPosition(lm::FVec3(translation[0], translation[1], translation[2]));
+	}
+
+	float scale[] = { scl.x, scl.y, scl.z };
+	if (ImGui::SliderFloat3("Scale", scale, -100, 100, "%.2f"))
+	{
+		object->GetTransform().SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
+	}
+
+	float rotation[] = { rot.x, rot.y, rot.z };
+	if (ImGui::SliderFloat3("Rotation", rotation, -360.0f, 360.0f, "%.2f"))
+	{
+		object->GetTransform().SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
+	}
 }
