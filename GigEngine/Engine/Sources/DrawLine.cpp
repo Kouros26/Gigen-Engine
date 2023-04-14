@@ -107,20 +107,20 @@ void Lines::Clear()
 
 void Lines::DrawGuizmoLines()
 {
-	CreateTranslatedEditorTransform();
-	CreateGuizmo(&worldTransform);
+    CreateTranslatedEditorTransform();
+    CreateGuizmo(&worldTransform);
 
-	GameObject* obj = GameObjectManager::GetFocusedGameObject();
-	if (obj)
-	{
-		CreateGuizmo(&obj->GetTransform());
-	}
+    GameObject* obj = GameObjectManager::GetFocusedGameObject();
+    if (obj)
+    {
+        CreateGuizmo(&obj->GetTransform());
+    }
 
-	for (int i = 0; i < guizmoLines.size(); i++)
-	{
-		if (guizmoLines[i])
-		{
-			glUniform3fv(colorLocation, 1, guizmoLines[i]->GetColor());
+    for (int i = 0; i < guizmoLines.size(); i++)
+    {
+        if (guizmoLines[i])
+        {
+            RENDERER.SetUniformValue(colorLocation, UniformType::VEC3, guizmoLines[i]->GetColor());
 
             RENDERER.BindVertexArray(guizmoLines[i]->GetVAO());
 

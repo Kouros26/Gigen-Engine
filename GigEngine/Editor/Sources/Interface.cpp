@@ -3,13 +3,13 @@
 #include <imgui_impl_opengl3.h>
 #include "imgui_impl_glfw.h"
 
-Interface::Interface(GLFWwindow* window, const char* glslVersion)
+Interface::Interface(GLFWwindow* pWindow, const char* pGlslVersion)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init(glslVersion);
+    ImGui_ImplGlfw_InitForOpenGL(pWindow, true);
+    ImGui_ImplOpenGL3_Init(pGlslVersion);
     ImGui::StyleColorsDark();
 }
 

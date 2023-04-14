@@ -25,10 +25,10 @@ private:
 class Lines
 {
 public:
-	static void Init();
-	static void DrawLine(const lm::FVec3& start, const lm::FVec3& end, const lm::FVec3& color = lm::FVec3(1, 0, 0), float timer = 5.0f);
-	static void DrawLines();
-	static void Clear();
+    static void Init();
+    static void DrawLine(const lm::FVec3& start, const lm::FVec3& end, const lm::FVec3& color = lm::FVec3(1, 0, 0), float timer = 5.0f);
+    static void DrawLines();
+    static void Clear();
 
 private:
     static void DrawDebugLines();
@@ -36,7 +36,7 @@ private:
     static void CreateGuizmo(Transform* t);
     static void CreateTranslatedEditorTransform();
 
-	static inline Transform worldTransform;
+    static inline Transform worldTransform;
 
     static inline ShaderProgram shaderProgram;
     static inline std::vector<Line*> debugLines;

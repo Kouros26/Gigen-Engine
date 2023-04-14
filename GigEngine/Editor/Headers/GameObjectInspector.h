@@ -7,12 +7,12 @@ class GameObjectInspector : public Displayable
 {
 public:
 
-	GameObjectInspector();
-	~GameObjectInspector() override;
+    GameObjectInspector();
+    ~GameObjectInspector() override;
 
-	void Draw() override;
+    void Draw() override;
 
 private:
-	void DrawGameObject();
-	void DrawTransform(GameObject* object);
+    void DrawGameObject();
+    void DrawTransform(GameObject* pObject);
 };

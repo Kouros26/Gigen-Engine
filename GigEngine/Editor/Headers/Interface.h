@@ -14,7 +14,7 @@ class Interface
 {
 public:
 
-    Interface(GLFWwindow* window, const char* glslVersion);
+    Interface(GLFWwindow* pWindow, const char* pGlslVersion);
     ~Interface();
 
     void BeginFrame();
@@ -22,9 +22,9 @@ public:
 
 private:
 
-	FPSDisplay fps;
-	GameObjectInspector gameObjInspector;
-	HierarchyDisplay hierarchy;
-	FileDisplay fileDisplay;
-	MenuBarDisplay menuBar;
+    FPSDisplay fps;
+    GameObjectInspector gameObjInspector;
+    HierarchyDisplay hierarchy;
+    FileDisplay fileDisplay;
+    MenuBarDisplay menuBar;
 };
