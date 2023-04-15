@@ -14,17 +14,19 @@ class Interface
 {
 public:
 
-    Interface(GLFWwindow* pWindow, const char* pGlslVersion);
-    ~Interface();
+	Interface(GLFWwindow* pWindow, const char* pGlslVersion);
+	~Interface();
 
-    void BeginFrame();
-    void Draw();
+	void BeginFrame();
+	void Draw();
 
 private:
 
-    FPSDisplay fps;
-    GameObjectInspector gameObjInspector;
-    HierarchyDisplay hierarchy;
-    FileDisplay fileDisplay;
-    MenuBarDisplay menuBar;
+	void SetColorDark();
+
+	FPSDisplay fps;
+	GameObjectInspector gameObjInspector;
+	HierarchyDisplay hierarchy;
+	FileDisplay fileDisplay;
+	MenuBarDisplay menuBar;
 };
