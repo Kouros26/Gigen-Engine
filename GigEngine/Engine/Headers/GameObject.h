@@ -63,6 +63,11 @@ public:
 
 	Transform& GetTransform();
 
+	GameObject*& GetParent();
+	GameObject* GetChild(unsigned int index);
+	unsigned int GetChildrenCount();
+	std::list<GameObject*>& GetChildren();
+
 private:
 
 	std::string name;

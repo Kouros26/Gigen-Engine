@@ -12,6 +12,7 @@ Interface::Interface(GLFWwindow* pWindow, const char* pGlslVersion)
 	ImGui_ImplOpenGL3_Init(pGlslVersion);
 	ImGui::StyleColorsDark();
 	SetColorDark();
+	ImGui::GetStyle().FrameRounding = 5;
 }
 
 Interface::~Interface()

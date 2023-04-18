@@ -96,11 +96,15 @@ void Application::CreateGameObjects()
     chest->SetModel("Resources/Models/chest.obj");
     chest->SetTexture("Resources/Textures/test.png");
 
+    GameObject* clone1 = GameObjectManager::CreateGameObject(chest);
+    clone1->SetModel("Resources/Models/chest.obj");
+    clone1->SetTexture("Resources/Textures/test.png");
+
     GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
     GameObjectManager::SetFocusedGameObject(car);
     car->SetModel("Resources/Models/Car.fbx");
-    car->AddComponent<testComponent2>();
     car->AddChild(chest);
+    chest->AddChild(clone1);
 
     GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
     dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));

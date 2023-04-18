@@ -30,7 +30,6 @@ void GameObjectInspector::Draw()
     DrawGameObject();
 
     ImGui::End();
-    //ok
 }
 
 void GameObjectInspector::DrawGameObject()

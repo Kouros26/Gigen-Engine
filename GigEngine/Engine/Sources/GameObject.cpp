@@ -225,3 +225,29 @@ Transform& GameObject::GetTransform()
 {
 	return transform;
 }
+
+GameObject*& GameObject::GetParent()
+{
+	return parent;
+}
+
+std::list<GameObject*>& GameObject::GetChildren()
+{
+	return children;
+}
+
+GameObject* GameObject::GetChild(unsigned int index)
+{
+	if (index > children.size()) 
+	{
+		return nullptr;
+	}
+	auto c = children.begin();
+	std::advance(c, index);
+	return *c;
+}
+
+unsigned int GameObject::GetChildrenCount()
+{
+	return children.size();
+}

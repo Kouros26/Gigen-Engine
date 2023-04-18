@@ -52,7 +52,7 @@ public:
 	TestComponent(GameObject* obj) : Component(obj) {}
 
     virtual void Update() override {
-        gameObject->GetTransform().AddPosition(lm::FVec3(0, 0.5f, 0.f) * Time::GetDeltaTime());
+        gameObject->GetTransform().AddPosition(lm::FVec3(0, 50.0f, 0.f) * Time::GetDeltaTime());
     };
 
     virtual Component* Clone(GameObject* newGameObject) override {
