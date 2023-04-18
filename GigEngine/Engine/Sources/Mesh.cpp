@@ -6,6 +6,7 @@ using namespace GigRenderer;
 Mesh::Mesh(unsigned int verticesSize, unsigned int indicesSize)
     :verticesSize(verticesSize), indicesSize(indicesSize)
 {
+    materialIndex = 0;
 }
 
 Mesh::Mesh(const Mesh& other)
@@ -37,11 +38,14 @@ Mesh::Mesh(Mesh&& other) noexcept
     this->VBO = other.VBO;
     this->EBO = other.EBO;
 
+    this->materialIndex = other.materialIndex;
+
     other.vertices = nullptr;
     other.indices = nullptr;
     other.VAO = 0;
     other.VBO = 0;
     other.EBO = 0;
+    other.materialIndex = 0;
 
     other.verticesSize = 0;
     other.indicesSize = 0;
@@ -65,6 +69,7 @@ Mesh& Mesh::operator=(const Mesh& other)
 
         this->vertices = new float[verticesSize];
         this->indices = new unsigned int[indicesSize];
+        this->materialIndex = other.materialIndex;
 
         for (int i = 0; i < verticesSize; i++)
             this->vertices[i] = other.vertices[i];
@@ -90,12 +95,14 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept
         this->VAO = other.VAO;
         this->VBO = other.VBO;
         this->EBO = other.EBO;
+        this->materialIndex = other.materialIndex;
 
         other.vertices = nullptr;
         other.indices = nullptr;
         other.VAO = 0;
         other.VBO = 0;
         other.EBO = 0;
+        other.materialIndex = 0;
 
         other.verticesSize = 0;
         other.indicesSize = 0;

@@ -47,24 +47,30 @@ public:
 
 	static GameObject* CreateCamera();
 
-	static Camera* GetCurrentCamera();
-	static void SetCurrentCamera(Camera* camera);
-	//ok
-	static void SendLightsToShader();
-	static int GetDirLightSize();
-	static int GetPointLightSize();
-	static int GetSpotLightSize();
 	static void Remove(GameObject* object);
 
 	static std::vector<GameObject*> FindObjectsByName(std::string name);
 	static GameObject* FindObjectByName(std::string name);
 	static GameObject* FindObjectById(int id);
 
+	static Camera* GetCurrentCamera();
+	static void SetCurrentCamera(Camera* camera);
+
+	static void SendLightsToShader();
+	static int GetDirLightSize();
+	static int GetPointLightSize();
+	static int GetSpotLightSize();
+
+	static void SetFocusedGameObject(GameObject* obj);
+	static GameObject* GetFocusedGameObject();
+
 private:
 	static GameObject* AddGameObject(GameObject* object);
 
 	inline static Camera* currentCamera;
 	inline static std::vector<GameObject*> gameObjects;
+
+	inline static GameObject* focusedObject = nullptr;
 
 	inline static std::vector<DirLight*> dirLights;
 	inline static std::vector<SpotLight*> spotLights;
