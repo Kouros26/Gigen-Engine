@@ -5,6 +5,11 @@
 const float g_basicSize = 300;
 const float g_menuBarSize = 20;
 
+const float g_maxStep = 0.1f;
+const char* const g_floatFormat = "%.2f";
+const float g_floatMin = -1000000.0f;
+const float g_floatMax = 1000000.0f;
+
 class InterfaceManager
 {
 public:

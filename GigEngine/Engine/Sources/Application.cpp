@@ -97,17 +97,17 @@ void Application::CreateGameObjects()
     chest->SetTexture("Resources/Textures/test.png");
 
     GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
+    GameObjectManager::SetFocusedGameObject(car);
     car->SetModel("Resources/Models/Car.fbx");
-    car->AddComponent<TestComponent>();
     car->AddComponent<testComponent2>();
     car->AddChild(chest);
 
     GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
     dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
 
-    GameObject* sponza = GameObjectManager::CreateGameObject("sponza", { 0, 0, 0 }, { 0 }, { 0.05 });
+    GameObject* sponza = GameObjectManager::CreateGameObject("sponza", { 100, 0, 0 }, { 0 }, { 0.05 });
     sponza->SetModel("Resources/Models/sponza.obj");
-    GameObject* village = GameObjectManager::CreateGameObject("village", { 10,0,0 }, { 0 }, { 0.05 });
+    GameObject* village = GameObjectManager::CreateGameObject("village", { -20,0,0 }, { 0 }, { 0.05 });
     village->SetModel("Resources/Models/MinecraftVillage.fbx");
     //==================================================================
 }

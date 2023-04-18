@@ -37,7 +37,17 @@ void GameObjectInspector::DrawGameObject()
     GameObject* object = GameObjectManager::GetFocusedGameObject();
     if (!object) return;
 
-    ImGui::Text(object->GetName().c_str());
+    static char name[128];
+    strcpy(name, object->GetName().c_str());
+
+    ImGui::Text("Name"); ImGui::SameLine();
+
+    ImGui::PushItemWidth(-1);
+    if (ImGui::InputText("Name", name, 128)) 
+    {
+        object->SetName(name);
+    }
+    ImGui::PopItemWidth();
 
     ImGui::Separator();
 
@@ -46,27 +56,39 @@ void GameObjectInspector::DrawGameObject()
 
 void GameObjectInspector::DrawTransform(GameObject* pObject)
 {
-    ImGui::Text("Transform :");
-
-    lm::FVec3 rot = pObject->GetTransform().GetWorldRotation();
-    lm::FVec3 pos = pObject->GetTransform().GetWorldPosition();
-    lm::FVec3 scl = pObject->GetTransform().GetWorldScale();
-
-    float translation[] = { pos.x, pos.y, pos.z };
-    if (ImGui::SliderFloat3("Position", translation, -100, 100, "%.2f"))
+    if (ImGui::CollapsingHeader("Transform")) 
     {
-        pObject->GetTransform().SetWorldPosition(lm::FVec3(translation[0], translation[1], translation[2]));
-    }
+        lm::FVec3 rot = pObject->GetTransform().GetWorldRotation();
+        lm::FVec3 pos = pObject->GetTransform().GetWorldPosition();
+        lm::FVec3 scl = pObject->GetTransform().GetWorldScale();
 
-    float scale[] = { scl.x, scl.y, scl.z };
-    if (ImGui::SliderFloat3("Scale", scale, -100, 100, "%.2f"))
-    {
-        pObject->GetTransform().SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
-    }
+        float translation[] = { pos.x, pos.y, pos.z };
+        float scale[] = { scl.x, scl.y, scl.z };
+        float rotation[] = { rot.x, rot.y, rot.z };
 
-    float rotation[] = { rot.x, rot.y, rot.z };
-    if (ImGui::SliderFloat3("Rotation", rotation, -360.0f, 360.0f, "%.2f"))
-    {
-        pObject->GetTransform().SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
+        ImGui::Text("Position"); ImGui::SameLine();
+
+        ImGui::PushItemWidth(-1);
+        if (ImGui::DragFloat3("p", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+        {
+            pObject->GetTransform().SetWorldPosition(lm::FVec3(translation[0], translation[1], translation[2]));
+        }
+        ImGui::PopItemWidth();
+
+        ImGui::Text("Scale"); ImGui::SameLine();
+        ImGui::PushItemWidth(-1);
+        if (ImGui::DragFloat3("s", scale, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+        {
+            pObject->GetTransform().SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
+        }
+        ImGui::PopItemWidth();
+
+        ImGui::Text("Rotation"); ImGui::SameLine();
+        ImGui::PushItemWidth(-1);
+        if (ImGui::DragFloat3("r", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
+        {
+            pObject->GetTransform().SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
+        }
+        ImGui::PopItemWidth();
     }
 }

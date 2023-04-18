@@ -33,6 +33,7 @@ public:
 	void LateUpdate() const;
 
 	std::string GetName();
+	void SetName(const std::string& pName);
 	unsigned int GetId();
 
 	void AddChild(GameObject* child);

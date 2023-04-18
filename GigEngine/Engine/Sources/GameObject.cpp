@@ -110,6 +110,17 @@ std::string GameObject::GetName()
 	return name;
 }
 
+void GameObject::SetName(const std::string& pName)
+{
+	if (pName.length() == 0) 
+	{
+		name = "GameObject " + std::to_string(id);
+		return;
+	}
+
+	name = pName;
+}
+
 unsigned int GameObject::GetId()
 {
 	return id;
