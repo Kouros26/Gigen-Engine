@@ -97,7 +97,7 @@ GameObject::~GameObject()
 		delete component;
 
 	model = nullptr;
-	if(parent)
+	if (parent)
 	{
 		parent->RemoveChild(this);
 	}

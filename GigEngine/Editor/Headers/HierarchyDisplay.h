@@ -15,5 +15,10 @@ public:
 private:
 
 	void DisplayHierarchy();
+
+	void CreatePopUp();
+
 	void DisplayGameObject(GameObject* obj, bool isChild);
+	void GameObjectClicked(GameObject* obj);
+	void GameObjectPopUp(GameObject* obj);
 };
