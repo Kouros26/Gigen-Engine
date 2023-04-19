@@ -63,6 +63,7 @@ public:
 
 	Transform& GetTransform();
 
+	bool IsAParent(GameObject* obj);
 	GameObject*& GetParent();
 	GameObject* GetChild(unsigned int index);
 	unsigned int GetChildrenCount();

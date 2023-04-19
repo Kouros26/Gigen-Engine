@@ -1,6 +1,7 @@
 #include "HierarchyDisplay.h"
 #include "imgui.h"
 #include "GameObjectManager.h"
+#include "Application.h"
 #include "GameObject.h"
 #include "InterfaceManager.h"
 
@@ -27,7 +28,6 @@ void HierarchyDisplay::Draw()
 	LimitWidthResize();
 	ImGui::SetWindowSize("Scene", { width, height });
 
-	node_clicked = -1;
 	DisplayHierarchy();
 
 	ImGui::End();
@@ -35,7 +35,7 @@ void HierarchyDisplay::Draw()
 
 void HierarchyDisplay::DisplayHierarchy()
 {
-	for (int i = 0; i < GameObjectManager::GetSize(); i++) 
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		DisplayGameObject(GameObjectManager::GetGameObject(i), false);
 	}
@@ -48,50 +48,74 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 		return;
 	}
 
-	ImGui::PushID(obj->GetId());
 	bool treeNodeOpen = ImGui::TreeNode(obj->GetName().c_str());
 
-	for (int i = 0; i < obj->GetChildrenCount(); i++)
+	ImGui::PushID(obj->GetId());
+	ImGui::PopID();
+
+	if (ImGui::IsItemClicked(0))
 	{
-		DisplayGameObject(obj->GetChild(i), treeNodeOpen);
+		GameObjectManager::SetFocusedGameObject(obj);
 	}
-	if (ImGui::IsItemClicked(0)) 
+	if (ImGui::IsItemClicked(1))
 	{
-		if (node_clicked == -1) 
+		ImGui::OpenPopup(obj->GetName().c_str());
+	}
+	if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+	{
+		EditorCamera& cam = Application::GetEditorCamera();
+		cam.GetTransform().SetWorldPosition(obj->GetTransform().GetWorldPosition() - cam.GetFront() * 3);
+	}
+
+	if (ImGui::BeginPopup(obj->GetName().c_str()))
+	{
+		ImGui::SeparatorText(obj->GetName().c_str());
+		if (ImGui::Button("Destroy"))
 		{
-			node_clicked = obj->GetId();
-			GameObjectManager::SetFocusedGameObject(obj);
+			obj->Destroy();
 		}
+		if (ImGui::Button("UnParent"))
+		{
+			if (obj->GetParent())
+			{
+				obj->GetParent()->RemoveChild(obj);
+			}
+		}
+		ImGui::EndPopup();
 	}
-	
-	if(ImGui::BeginDragDropSource())
+
+	if (ImGui::BeginDragDropSource())
 	{
 		ImGui::SetDragDropPayload("HIERARCHY", (const void*)obj, sizeof(const void*));
 		ImGui::Text(obj->GetName().c_str());
+
 		ImGui::EndDragDropSource();
 	}
-	
+
 	if (ImGui::BeginDragDropTarget())
 	{
 		if (const ImGuiPayload* truc = ImGui::AcceptDragDropPayload("HIERARCHY"))
 		{
 			GameObject* drop = (GameObject*)truc->Data;
-			if (drop != obj && drop && obj)
+			if (drop != obj && drop && obj && !obj->IsAParent(drop))
 			{
-				if (drop->GetParent()) 
+				if (drop->GetParent())
 				{
 					drop->GetParent()->RemoveChild(drop);
 				}
 				obj->AddChild(drop);
 			}
 		}
+
 		ImGui::EndDragDropTarget();
 	}
 
-	ImGui::PopID();
-
-	if (treeNodeOpen) 
+	if (treeNodeOpen)
 	{
+		for (int i = 0; i < obj->GetChildrenCount(); i++)
+		{
+			DisplayGameObject(obj->GetChild(i), treeNodeOpen);
+		}
 		ImGui::TreePop();
 	}
 }

@@ -12,8 +12,7 @@ public:
 
 	void Draw() override;
 
-private :
-	int node_clicked = -1;
+private:
 
 	void DisplayHierarchy();
 	void DisplayGameObject(GameObject* obj, bool isChild);

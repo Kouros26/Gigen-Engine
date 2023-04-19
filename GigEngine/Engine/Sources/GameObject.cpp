@@ -97,6 +97,10 @@ GameObject::~GameObject()
 		delete component;
 
 	model = nullptr;
+	if(parent)
+	{
+		parent->RemoveChild(this);
+	}
 	GameObjectManager::Remove(this);
 }
 
@@ -112,7 +116,7 @@ std::string GameObject::GetName()
 
 void GameObject::SetName(const std::string& pName)
 {
-	if (pName.length() == 0) 
+	if (pName.length() == 0)
 	{
 		name = "GameObject " + std::to_string(id);
 		return;
@@ -226,6 +230,20 @@ Transform& GameObject::GetTransform()
 	return transform;
 }
 
+bool GameObject::IsAParent(GameObject* obj)
+{
+	GameObject* p = parent;
+	while (p != nullptr)
+	{
+		if (p == obj)
+		{
+			return true;
+		}
+		p = p->GetParent();
+	}
+	return false;
+}
+
 GameObject*& GameObject::GetParent()
 {
 	return parent;
@@ -238,7 +256,7 @@ std::list<GameObject*>& GameObject::GetChildren()
 
 GameObject* GameObject::GetChild(unsigned int index)
 {
-	if (index > children.size()) 
+	if (index > children.size())
 	{
 		return nullptr;
 	}
