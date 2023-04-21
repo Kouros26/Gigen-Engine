@@ -19,11 +19,10 @@ void HierarchyDisplay::Draw()
 	ImGui::ShowDemoWindow();
 
 	height = InterfaceManager::GetHeight();
-	bool open = true;
 	ImGui::SetNextWindowPos({ 0, g_menuBarSize });
 	ImGui::SetNextWindowSize({ width, height });
-	//noMove et NoCollapse
-	ImGui::Begin("Scene", &open, 4 | 32);
+	//noMove | NoCollapse
+	ImGui::Begin("Scene", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
 
 	LimitWidthResize();
 	ImGui::SetWindowSize("Scene", { width, height });

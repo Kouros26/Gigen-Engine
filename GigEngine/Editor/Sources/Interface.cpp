@@ -13,6 +13,7 @@ Interface::Interface(GLFWwindow* pWindow, const char* pGlslVersion)
 	ImGui::StyleColorsDark();
 	SetColorDark();
 	ImGui::GetStyle().FrameRounding = 5;
+	ImGui::GetStyle().WindowBorderSize = 0.0f;
 }
 
 Interface::~Interface()
