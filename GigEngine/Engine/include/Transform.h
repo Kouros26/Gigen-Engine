@@ -6,7 +6,7 @@
 class Transform
 {
 public:
-    Transform(const lm::FVec3& pos = { 0 }, const lm::FVec3& rot = {0}, const lm::FVec3& scl = {1});
+    Transform(const lm::FVec3& pos = { 0 }, const lm::FVec3& rot = { 0 }, const lm::FVec3& scl = { 1 });
     ~Transform();
 
     void SetWorldPosition(const lm::FVec3& pos);
@@ -38,23 +38,23 @@ public:
     void AddRotation(const lm::FVec3& rot);
     void AddScale(const lm::FVec3& scl);
 
-	lm::FVec3 GetFront();
+    lm::FVec3 GetFront();
     lm::FVec3 GetUp();
     lm::FVec3 GetRight();
 
     lm::FMat4 GetMatrix();
 
 private:
-	void UpdateMatrix();
-	void LimitRotation();
+    void UpdateMatrix();
+    void LimitRotation();
 
     lm::FVec3 worldPosition{ 0 };
     lm::FVec3 worldRotation{ 0 };
     lm::FVec3 worldScale{ 1 };
 
-    lm::FVec3 localPosition{0};
-    lm::FVec3 localRotation{0};
-    lm::FVec3 localScale{1};
+    lm::FVec3 localPosition{ 0 };
+    lm::FVec3 localRotation{ 0 };
+    lm::FVec3 localScale{ 1 };
 
     lm::FMat4 worldMatrix;
 

@@ -8,6 +8,7 @@ set(CMAKE_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
 set(THIRD_PARTY_DLL
 	${DEPENDS_DIR}/assimp/bin/assimp-vc143-mt.dll
 	${DEPENDS_DIR}/assimp/bin/assimp-vc143-mtd.dll
+	${DEPENDS_DIR}/Lua/bin/lua53.dll
 
 )
 
@@ -15,7 +16,7 @@ set(THIRD_PARTY_DLL
 set( THIRD_PARTY_PROJECT
    Editor
    Engine
-
+   Scripting
 )
 
 
@@ -44,12 +45,13 @@ FetchContent_MakeAvailable(LibMath)
 set(CMAKE_FOLDER ${CMAKE_FOLDER_OLD})
 
 set( THIRD_PARTY_INCLUDE
-assimp
+Assimp
 STB
+IMGUI
+Lua
 )
 
 include_directories(${MAIN_PROJECT_NAME} PRIVATE ${glfw_SOURCE_DIR}/include)
-include_directories(${MAIN_PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/Assimp/include)
 include_directories(${MAIN_PROJECT_NAME} PRIVATE ${LIBMATHS_INCLUDE_DIR})
 
 

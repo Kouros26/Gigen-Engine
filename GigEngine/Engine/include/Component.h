@@ -8,9 +8,10 @@ public:
     Component(GameObject* gameObject);
     virtual ~Component();
 
+    virtual void Awake();
     virtual void Start();
-    virtual void Update();
-
+    virtual void Update(float pDeltaTime);
+    virtual void LateUpdate(float pDeltaTime);
     virtual Component* Clone(GameObject* newGameObject) = 0;
 
     Component(const Component& other) = default;
@@ -22,36 +23,12 @@ protected:
     GameObject* gameObject;
 };
 
-class Script : public Component
-{
-public:
-	Script(GameObject* obj) : Component(obj) {}
-
-	virtual void Awake();
-	virtual void LateUpdate();
-};
-
-class TestScript : public Script
-{
-public:
-	TestScript(GameObject* obj) : Script(obj) {}
-
-	void Awake() override;
-	void Start() override;
-	void Update() override;
-	void LateUpdate() override;
-
-    virtual Component* Clone(GameObject* newGameObject) override {
-        return new TestScript(newGameObject);
-    };
-};
-
 class TestComponent : public Component
 {
 public:
-	TestComponent(GameObject* obj) : Component(obj) {}
+    TestComponent(GameObject* obj) : Component(obj) {}
 
-    virtual void Update() override {
+    virtual void Update(float pDeltaTime) override {
         gameObject->GetTransform().AddPosition(lm::FVec3(0, 0.5f, 0.f) * Time::GetDeltaTime());
     };
 
@@ -63,9 +40,9 @@ public:
 class testComponent2 : public Component
 {
 public:
-	testComponent2(GameObject* obj) : Component(obj) {};
+    testComponent2(GameObject* obj) : Component(obj) {};
 
-    virtual void Update() override {
+    virtual void Update(float pDeltaTime) override {
         gameObject->GetTransform().AddRotation(lm::FVec3(0, 0, 20.f) * Time::GetDeltaTime());
     };
 
