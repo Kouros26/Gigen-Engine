@@ -8,6 +8,7 @@
 #include "Skybox.h"
 #include "Component.h"
 #include <iostream>
+#include "WorldPhysics.h"
 
 using namespace GigRenderer;
 
@@ -15,13 +16,18 @@ Application::Application()
 {
     Init();
 
+    WorldPhysics::InitPhysicWorld();
     CreateGameObjects();
+    
+
+    
 }
 
 Application::~Application()
 {
     Lines::Clear();
     GameObjectManager::Cleanup();
+    WorldPhysics::DestroyPhysicWorld();
     delete skybox;
 }
 
@@ -70,6 +76,7 @@ void Application::Run()
     window.ProcessInput();
     Time::UpdateDeltaTime();
     Draw();
+    WorldPhysics::UpdatePhysics(Time::GetDeltaTime());
 }
 
 void Application::SwapFrames()
@@ -88,28 +95,35 @@ void Application::Init()
 
 void Application::CreateGameObjects()
 {
-    //to remove =====================================================
+   //to remove =====================================================
 
     skybox = new Skybox();
 
-    GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 0, 10 }, { 0 }, { 1 });
+    GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 10, 10 }, { 0 }, { 1 });
     chest->SetModel("Resources/Models/chest.obj");
     chest->SetTexture("Resources/Textures/test.png");
 
-    GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
-    GameObjectManager::SetFocusedGameObject(car);
+    GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 10, 10 }, { 0 }, { 1 });
     car->SetModel("Resources/Models/Car.fbx");
+    //car->AddComponent<TestComponent>();
     car->AddComponent<testComponent2>();
+    Lines::SetFocusedObjectTransform(&car->GetTransform());
     car->AddChild(chest);
+    car->CreateCapsuleRigidBody(1, 5, {1}, 10);
+
+    GameObject* ground = GameObjectManager::CreateGameObject("Ground");
+    ground->SetModel("Resources/Models/Basics/Cube.FBX");
+    ground->GetTransform().SetWorldScale({ 1, 0.05f, 0.5f });
+    ground->CreateBoxRigidBody({ 1 }, { 50 }, 0.f);
+
+    GameObject* TH = GameObjectManager::CreateGameObject("Thierry-Henri", {-5, 15, 8}, { 0, 90, 0 }, {20});
+    TH->SetModel("Resources/Models/Thierry-Henri.obj");
+    TH->CreateSphereRigidBody(2, { 0.05f }, 10.0f);
+
+    //chest->CreateBoxRigidBody({ 10 }, { 1 }, 10.f);
 
     GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
     dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
-
-    GameObject* sponza = GameObjectManager::CreateGameObject("sponza", { 100, 0, 0 }, { 0 }, { 0.05 });
-    sponza->SetModel("Resources/Models/sponza.obj");
-    GameObject* village = GameObjectManager::CreateGameObject("village", { -20,0,0 }, { 0 }, { 0.05 });
-    village->SetModel("Resources/Models/MinecraftVillage.fbx");
-    //==================================================================
 }
 
 void Application::InitMainShader()
@@ -202,8 +216,6 @@ void Application::UpdateLights()
 
 void Application::UpdateUniforms()
 {
-    mainShader.Use();
-
     viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
     viewPos = editorCamera.GetTransform().GetWorldPosition();
 

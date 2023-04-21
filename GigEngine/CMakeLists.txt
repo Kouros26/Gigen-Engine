@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
 
 set(CMAKE_FOLDER_OLD ${CMAKE_FOLDER})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CMAKE_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
@@ -15,7 +16,7 @@ set(THIRD_PARTY_DLL
 set( THIRD_PARTY_PROJECT
    Editor
    Engine
-
+   Physics
 )
 
 
@@ -43,9 +44,19 @@ FetchContent_MakeAvailable(LibMath)
 
 set(CMAKE_FOLDER ${CMAKE_FOLDER_OLD})
 
+
+#Add BULLET
+set(BULLET_BUILD_LIB_DIR "${DEPENDS_DIR}/BULLET/lib")
+set(BULLET_ROOT "${DEPENDS_DIR}/BULLET")
+
+find_package(Bullet REQUIRED)
+
+
 set( THIRD_PARTY_INCLUDE
 assimp
 STB
+BULLET
+
 )
 
 include_directories(${MAIN_PROJECT_NAME} PRIVATE ${glfw_SOURCE_DIR}/include)
@@ -90,7 +101,7 @@ target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${LIBMATHS_LIBRARY})
 
 
 set_target_properties(${MAIN_PROJECT_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
-target_compile_options(${MAIN_PROJECT_NAME} PRIVATE /W4 /WX)
+target_compile_options(${MAIN_PROJECT_NAME} PRIVATE /W4)
 #Copy resources Folder
 add_custom_command(TARGET ${MAIN_PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -129,7 +140,6 @@ add_custom_command(TARGET ${MAIN_PROJECT_NAME} PRE_BUILD
 		${dll_i}
 		$<TARGET_FILE_DIR:${MAIN_PROJECT_NAME}>)
 endforeach( dll_i )
-
 
 
 

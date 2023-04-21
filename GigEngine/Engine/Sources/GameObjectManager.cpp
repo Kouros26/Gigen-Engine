@@ -1,14 +1,14 @@
 #include "GameObjectManager.h"
 #include "Camera.h"
 #include "Light.h"
+#include "RigidBody.h"
+#include <algorithm>
 
 GameObjectManager::GameObjectManager()
-{
-}
+{}
 
 GameObjectManager::~GameObjectManager()
-{
-}
+{}
 
 unsigned int GameObjectManager::GetSize()
 {

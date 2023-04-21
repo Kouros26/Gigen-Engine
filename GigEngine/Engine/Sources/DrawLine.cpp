@@ -33,7 +33,7 @@ Line::~Line()
     RENDERER.DeleteBuffer(1, &VBO);
 }
 
-unsigned int Line::GetVAO()
+unsigned int Line::GetVAO() const
 {
     return VAO;
 }
@@ -45,8 +45,8 @@ float* Line::GetColor()
 
 void Lines::Init()
 {
-    VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/vertLine.vert");
-    FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/fragLine.frag");
+	auto* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/vertLine.vert");
+    auto* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/fragLine.frag");
 
     if (!shaderProgram.Link(mainVertex, mainFragment))
         std::cout << "Error linking drawLine shader" << std::endl;
@@ -78,29 +78,29 @@ void Lines::DrawDebugLines()
     {
         if (debugLines[i])
         {
-            debugLines[i]->timer -= Time::GetDeltaTime();
-            if (debugLines[i]->timer < 0)
-            {
-                delete debugLines[i];
-                debugLines.erase(debugLines.begin() + i);
-                i--;
-                continue;
-            }
-
             RENDERER.SetUniformValue(colorLocation, UniformType::VEC3, debugLines[i]->GetColor());
 
             RENDERER.BindVertexArray(debugLines[i]->GetVAO());
             RENDERER.DrawArray(RD_LINES, 0, 2);
             RENDERER.BindVertexArray(0);
+
+            debugLines[i]->timer -= Time::GetDeltaTime();
+
+            if (debugLines[i]->timer < 0)
+            {
+                delete debugLines[i];
+                debugLines.erase(debugLines.begin() + i);
+                i--;
+            }
         }
     }
 }
 
 void Lines::Clear()
 {
-    for (int i = 0; i < debugLines.size(); i++)
+    for (const auto& debugLine : debugLines)
     {
-        delete debugLines[i];
+        delete debugLine;
     }
     debugLines.clear();
 }
@@ -116,24 +116,15 @@ void Lines::DrawGuizmoLines()
         CreateGuizmo(&obj->GetTransform());
     }
 
-    for (int i = 0; i < guizmoLines.size(); i++)
+    for (const auto& guizmoLine : guizmoLines)
     {
-        if (guizmoLines[i])
-        {
-            RENDERER.SetUniformValue(colorLocation, UniformType::VEC3, guizmoLines[i]->GetColor());
-
-            RENDERER.BindVertexArray(guizmoLines[i]->GetVAO());
-
-            RENDERER.DrawArray(RD_LINES, 0, 2);
-
-            RENDERER.BindVertexArray(0);
-        }
+        RENDERER.SetUniformValue(colorLocation, UniformType::VEC3, guizmoLine->GetColor());
+        RENDERER.BindVertexArray(guizmoLine->GetVAO());
+        RENDERER.DrawArray(RD_LINES, 0, 2);
+        RENDERER.BindVertexArray(0);
+        delete guizmoLine;
     }
 
-    for (int i = 0; i < guizmoLines.size(); i++)
-    {
-        delete guizmoLines[i];
-    }
     guizmoLines.clear();
 }
 

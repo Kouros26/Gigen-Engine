@@ -40,15 +40,15 @@ Commentaire
 	utilisation de banderole	=> will not be necessary	
 
 Struct
-	PascalCase => typedef: t_PascalCase
+	PascalCase => typedef: t_PascalCase (optional)
 Enum
-	PascalCase => typedef: e_PascalCase
+	PascalCase => typedef: e_PascalCase (optional)
 Namespace
 	PascalCase => if Global input in Namespace 
 
 preprocesseur
-	alias	=> VAR_NAME or if collide with already existing C++ alias use __VAR_NAME or g_VAR_NAME 
-	macro	=> VAR_NAME or if collide with already existing C++ alias use __VAR_NAME or g_VAR_NAME 
+	alias	=>   VAR_NAME 
+	macro	=>   VAR_NAME 
 	variadique	=> use sparingly
 	pragma
 		once	=> at start of every header files

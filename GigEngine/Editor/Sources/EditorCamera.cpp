@@ -7,8 +7,11 @@
 #include "Vec3/FVec3.hpp"
 #include "Window.h"
 
+#include "WorldPhysics.h"
+
 EditorCamera::EditorCamera()
 {
+    GetTransform().SetWorldPosition({ 0,10,0 });
 }
 
 EditorCamera::~EditorCamera()
@@ -49,6 +52,17 @@ void EditorCamera::ChangeSpeed()
 
     if (!GigInput::Inputs::GetKey(GigInput::Keys::RIGHT_SHIFT))
         pressRightShift = false;
+
+    HitResult result;
+    std::vector<GameObject*> ignored;
+    ignored.push_back(this);
+    if (Inputs::GetKey(TAB))
+    {
+        if (WorldPhysics::RayCast(GetTransform().GetWorldPosition(), GetFront() * 100, result, RayCastDebug::Timer, 5, ignored))
+        {
+            std::cout << "Raycast hit " << result.hitObject->GetName() << std::endl;
+        }
+    }
 }
 
 void EditorCamera::Move()
