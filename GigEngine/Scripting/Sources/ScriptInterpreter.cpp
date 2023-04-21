@@ -1,5 +1,6 @@
 #include "ScriptInterpreter.h"
 #include "lua.h"
+#include "LuaBinder.h"
 
 GigScripting::ScriptInterpreter::~ScriptInterpreter()
 {
@@ -12,7 +13,8 @@ void GigScripting::ScriptInterpreter::CreateLuaContextAndBindGlobal()
     {
         luaState = std::make_unique<sol::state>();
         luaState->open_libraries(sol::lib::base, sol::lib::math);
-        //TODO: call binder
+
+        GigScripting::LuaBinder::Bind(*luaState);
         isOk = true;
 
         for (const auto& behaviour : behaviours)
@@ -77,6 +79,12 @@ void GigScripting::ScriptInterpreter::RefreshBehaviours()
 bool GigScripting::ScriptInterpreter::IsOk() const
 {
     return isOk;
+}
+
+GigScripting::ScriptInterpreter& GigScripting::ScriptInterpreter::GetInstance()
+{
+    static ScriptInterpreter instance;
+    return instance;
 }
 
 GigScripting::ScriptInterpreter::ScriptInterpreter(const std::string& pScriptFolderRoot)

@@ -12,14 +12,6 @@ void Component::Start()
 {
 }
 
-void Component::Update()
-{
-}
-
 void Component::Awake()
-{
-}
-
-void Component::LateUpdate()
 {
 }

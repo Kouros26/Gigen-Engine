@@ -12,6 +12,10 @@ namespace GigScripting
     {
     public:
 
+        static ScriptInterpreter& GetInstance();
+
+        ScriptInterpreter() = default;
+
         ScriptInterpreter(const std::string& pScriptFolderRoot);
 
         ScriptInterpreter(const ScriptInterpreter&) = delete;
