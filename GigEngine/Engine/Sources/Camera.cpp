@@ -19,6 +19,21 @@ lm::FMat4 Camera::CreateViewMatrix()
 	return lm::FMat4::LookAt(GetTransform().GetWorldPosition(), GetTransform().GetWorldPosition() + GetFront(), GetUp());
 }
 
+float Camera::GetFov()
+{
+	return currentFov;
+}
+
+float Camera::GetNear()
+{
+	return currentNear;
+}
+
+float Camera::GetFar()
+{
+	return currentFar;
+}
+
 void Camera::SetFov(float fov)
 {
 	if (fov != currentFov)
