@@ -30,6 +30,7 @@ public:
 
 	void SetModel(const std::string& filePath);
 	void SetTexture(const std::string& filePath);
+	Model* GetModel();
 	void LateUpdate() const;
 
 	std::string GetName();

@@ -112,7 +112,7 @@ std::string GameObject::GetName()
 
 void GameObject::SetName(const std::string& pName)
 {
-	if (pName.length() == 0) 
+	if (pName.length() == 0)
 	{
 		name = "GameObject " + std::to_string(id);
 		return;
@@ -129,6 +129,11 @@ unsigned int GameObject::GetId()
 void GameObject::SetModel(std::string const& filePath)
 {
 	model = ResourceManager::Get<Model>(filePath);
+}
+
+Model* GameObject::GetModel()
+{
+	return model;
 }
 
 void GameObject::SetTexture(const std::string& filePath)

@@ -5,7 +5,9 @@
 #include "Application.h"
 #include "Light.h"
 #include "Camera.h"
+#include "Model.h"
 #include "GameObjectManager.h"
+#include <windows.h>
 
 GameObjectInspector::GameObjectInspector()
 {
@@ -55,6 +57,7 @@ void GameObjectInspector::DrawGameObject()
 	DrawTransform(object);
 	DrawSpecials(object);
 	DrawComponents(object);
+	DrawModel(object);
 }
 
 void GameObjectInspector::DrawTransform(GameObject * pObject)
@@ -72,7 +75,7 @@ void GameObjectInspector::DrawTransform(GameObject * pObject)
 		ImGui::Text("Position"); ImGui::SameLine();
 
 		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat3("p", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat3("pos", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
 		{
 			pObject->GetTransform().SetWorldPosition(lm::FVec3(translation[0], translation[1], translation[2]));
 		}
@@ -80,7 +83,7 @@ void GameObjectInspector::DrawTransform(GameObject * pObject)
 
 		ImGui::Text("Scale"); ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat3("s", scale, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat3("sca", scale, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
 		{
 			pObject->GetTransform().SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
 		}
@@ -88,11 +91,46 @@ void GameObjectInspector::DrawTransform(GameObject * pObject)
 
 		ImGui::Text("Rotation"); ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat3("r", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
+		if (ImGui::DragFloat3("rot", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
 		{
 			pObject->GetTransform().SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
 		}
 		ImGui::PopItemWidth();
+	}
+}
+
+void GameObjectInspector::DrawModel(GameObject * pObject)
+{
+	if (ImGui::CollapsingHeader("Model"))
+	{
+		std::string path;
+		if (pObject->GetModel())
+		{
+			path = pObject->GetModel()->GetFilePath();
+		}
+
+		ImGui::Text("Path :"); ImGui::SameLine();
+		ImGui::TextColored({ 0,0,1,1 }, path.c_str());
+
+		if (ImGui::Button("Locate"))
+		{
+			OPENFILENAME ofn;
+			char fileName[1000] = "";
+			ZeroMemory(&ofn, sizeof(ofn));
+
+			ofn.lStructSize = sizeof(OPENFILENAME);
+			ofn.hwndOwner = NULL;
+			ofn.lpstrFilter = "*.obj\0 *.OBJ\0 *.fbx\0 *.FBX\0";
+			ofn.nMaxFile = 1000;
+			ofn.lpstrFile = fileName;
+			ofn.Flags = OFN_FILEMUSTEXIST;
+			ofn.lpstrDefExt = "";
+
+			std::string fileNameStr;
+
+			if (GetOpenFileName(&ofn))
+				pObject->SetModel(fileName);
+		}
 	}
 }
 
@@ -214,8 +252,8 @@ void GameObjectInspector::DrawLight(GameObject * pObject)
 void GameObjectInspector::DrawCamera(Camera * pObject)
 {
 	float fov = pObject->GetFov();
-	float near = pObject->GetNear();
-	float far = pObject->GetFar();
+	float tnear = pObject->GetNear();
+	float tfar = pObject->GetFar();
 
 	if (ImGui::CollapsingHeader("Camera"))
 	{
@@ -229,17 +267,17 @@ void GameObjectInspector::DrawCamera(Camera * pObject)
 
 		ImGui::Text("Near"); ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat("near", &near, g_maxStep, 0, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat("near", &tnear, g_maxStep, 0, g_floatMax, g_floatFormat))
 		{
-			pObject->SetNear(near);
+			pObject->SetNear(tnear);
 		}
 		ImGui::PopItemWidth();
 
 		ImGui::Text("Far"); ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat("far", &far, g_maxStep, 0, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat("far", &tfar, g_maxStep, 0, g_floatMax, g_floatFormat))
 		{
-			pObject->SetFar(far);
+			pObject->SetFar(tfar);
 		}
 		ImGui::PopItemWidth();
 	}

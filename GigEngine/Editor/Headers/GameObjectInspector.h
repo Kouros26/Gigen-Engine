@@ -15,7 +15,10 @@ public:
 
 private:
 	void DrawGameObject();
+
 	void DrawTransform(GameObject* pObject);
+	void DrawModel(GameObject* pObject);
+
 	void DrawSpecials(GameObject* pObject);
 	void DrawComponents(GameObject* pObject);
 
