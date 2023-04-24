@@ -73,6 +73,12 @@ public:
 	Transform& GetTransform();
 	[[nodiscard]] RigidBody* GetRigidBody() const;
 
+	bool IsAParent(GameObject* obj);
+	GameObject*& GetParent();
+	GameObject* GetChild(unsigned int index);
+	unsigned int GetChildrenCount();
+	std::list<GameObject*>& GetChildren();
+
 private:
 
 	std::string name{};

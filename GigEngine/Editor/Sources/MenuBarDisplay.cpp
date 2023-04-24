@@ -1,6 +1,7 @@
 #include "MenuBarDisplay.h"
 #include "InterfaceManager.h"
 #include "imgui.h"
+#include "Application.h"
 
 MenuBarDisplay::MenuBarDisplay()
 {
@@ -24,11 +25,16 @@ void MenuBarDisplay::Draw()
 	}
 	if (ImGui::BeginMenu("Edit"))
 	{
-		if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+		if (ImGui::MenuItem("test", "CTRL+Z")) {}
 		ImGui::Separator();
-		if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+		if (ImGui::MenuItem("test2", "CTRL+X")) {}
 
 		ImGui::EndMenu();
+	}
+
+	if (ImGui::Button("Close"))
+	{
+		Application::GetWindow().Close();
 	}
 
 	ImGui::EndMainMenuBar();
