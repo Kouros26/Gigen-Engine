@@ -309,7 +309,6 @@ unsigned int GameObject::GetChildrenCount()
 {
 	return children.size();
 }
-}
 
 RigidBody* GameObject::GetRigidBody() const
 {
