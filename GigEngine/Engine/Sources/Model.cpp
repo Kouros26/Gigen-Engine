@@ -57,9 +57,13 @@ Model& Model::operator=(Model&& other) noexcept
     return *this;
 }
 
-void Model::Draw() const
+void Model::Draw(Texture* texture) const
 {
-    texture->Bind();
+    if (texture) 
+    {
+        texture->Bind();
+    }
+
     for (int i = 0; i < meshes.size(); i++)
     {
         if (meshes[i])
@@ -85,16 +89,4 @@ void Model::Init()
 {
     for (const auto& mesh : meshes)
         mesh->SetupBuffers();
-
-    texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
-}
-
-void Model::SetTexture(const std::string& pFilePath)
-{
-    texture = ResourceManager::Get<Texture>(pFilePath);
-    if (!texture->isValid())
-    {
-        std::cout << "texture invalid for model" << std::endl;
-        texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
-    }
 }

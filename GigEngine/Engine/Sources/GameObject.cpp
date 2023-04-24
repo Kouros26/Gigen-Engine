@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "Model.h"
+#include "Texture.h"
 #include "ResourceManager.h"
 #include "GameObjectManager.h"
 #include "Component.h"
@@ -12,6 +13,7 @@ GameObject::GameObject()
 	id = gameObjectIndex;
 
 	name = "GameObject " + std::to_string(id);
+	texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
 }
 
 GameObject::GameObject(const std::string& name)
@@ -138,10 +140,17 @@ Model* GameObject::GetModel()
 
 void GameObject::SetTexture(const std::string& filePath)
 {
-	if (model)
+	texture = ResourceManager::Get<Texture>(filePath);
+	if (!texture->isValid())
 	{
-		model->SetTexture(filePath);
+		std::cout << "texture invalid" << std::endl;
+		texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
 	}
+}
+
+Texture* GameObject::GetTexture()
+{
+	return texture;
 }
 
 void GameObject::AddChild(GameObject* child)
@@ -175,7 +184,7 @@ void GameObject::RemoveChild(GameObject* child)
 void GameObject::UpdateRender() const
 {
 	if (model)
-		model->Draw();
+		model->Draw(texture);
 }
 
 void GameObject::UpdateComponents() const
