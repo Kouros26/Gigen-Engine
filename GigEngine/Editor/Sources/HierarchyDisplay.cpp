@@ -123,7 +123,7 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 		return;
 	}
 
-	bool treeNodeOpen = ImGui::TreeNode(obj->GetName().c_str());
+	bool treeNodeOpen = ImGui::TreeNodeEx(obj->GetName().c_str(), ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen);
 
 	ImGui::PushID(obj->GetId());
 	ImGui::PopID();
@@ -169,7 +169,7 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 
 void HierarchyDisplay::GameObjectClicked(GameObject* obj)
 {
-	if (ImGui::IsItemClicked(0))
+	if (ImGui::IsItemClicked(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 	{
 		GameObjectManager::SetFocusedGameObject(obj);
 	}
