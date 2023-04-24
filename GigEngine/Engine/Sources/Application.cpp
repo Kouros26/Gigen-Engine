@@ -8,6 +8,8 @@
 #include "Skybox.h"
 #include "Component.h"
 #include <iostream>
+
+#include "RigidBody.h"
 #include "WorldPhysics.h"
 
 using namespace GigRenderer;
@@ -116,6 +118,7 @@ void Application::CreateGameObjects()
 	GameObject* TH = GameObjectManager::CreateGameObject("Thierry-Henri", { -5, 15, 8 }, { 0, 90, 0 }, { 20 });
 	TH->SetModel("Resources/Models/Thierry-Henri.obj");
 	TH->CreateSphereRigidBody(2, { 0.05f }, 10.0f);
+	TH->GetRigidBody()->SetGravityEnabled(false);
 
 	//chest->CreateBoxRigidBody({ 10 }, { 1 }, 10.f);
 

@@ -67,4 +67,5 @@ public:
 	const lm::FVec3& GetScale();
 
 	void SetScale(const lm::FVec3& pNewScale);
+	void SetGravityEnabled(const bool pState) const;
 };
