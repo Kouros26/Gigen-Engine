@@ -7,6 +7,7 @@
 #include "Light.h"
 #include "Skybox.h"
 #include "Component.h"
+#include "Behaviour.h"
 #include <iostream>
 
 using namespace GigRenderer;
@@ -95,6 +96,7 @@ void Application::CreateGameObjects()
     GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 0, 10 }, { 0 }, { 1 });
     chest->SetModel("Resources/Models/chest.obj");
     chest->SetTexture("Resources/Textures/test.png");
+    chest->AddComponent<GigScripting::Behaviour>("test");
 
     GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
     GameObjectManager::SetFocusedGameObject(car);

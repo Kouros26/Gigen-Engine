@@ -3,6 +3,8 @@
 #include "ResourceManager.h"
 #include "GameObjectManager.h"
 #include "Component.h"
+#include "ScriptInterpreter.h"
+#include "Behaviour.h"
 
 unsigned int GameObject::gameObjectIndex = 0;
 
@@ -178,6 +180,15 @@ void GameObject::LateUpdate() const
         script->LateUpdate(Time::GetDeltaTime());
 }
 
+void GameObject::CheckForScript(Component* pComponent)
+{
+    if (const auto script = dynamic_cast<GigScripting::Behaviour*>(pComponent))
+    {
+        SCRIPT_INTERPRETER.RegisterBehaviour(script);
+        script->Awake();
+    }
+}
+
 void GameObject::UpdateHierarchy()
 {
     if (this->parent != nullptr)
@@ -204,7 +215,7 @@ void GameObject::AddComponent(Component* newComponent)
 
     if (const auto script = dynamic_cast<GigScripting::Behaviour*>(newComponent))
     {
-        scripts.push_back(script);
+        SCRIPT_INTERPRETER.RegisterBehaviour(script);
         script->Awake();
     }
 }

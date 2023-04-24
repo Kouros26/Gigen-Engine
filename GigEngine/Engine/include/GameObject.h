@@ -3,7 +3,6 @@
 
 #include "Transform.h"
 #include <vector>
-#include "Behaviour.h"
 
 class Component;
 class Script;
@@ -32,6 +31,7 @@ public:
     void SetModel(const std::string& filePath);
     void SetTexture(const std::string& filePath);
     void LateUpdate() const;
+    void CheckForScript(Component* pComponent);
 
     std::string GetName();
     void SetName(const std::string& pName);
@@ -43,6 +43,8 @@ public:
     void AddComponent(Component* newComponent);
 
     //create New component of type and return the new Component
+    template<class T, typename ...Args>
+    T* AddComponent(Args...  pArgs);
     template<class T>
     T* AddComponent();
 
@@ -82,17 +84,24 @@ private:
     static unsigned int gameObjectIndex;
 };
 
+template<class T, typename ...Args>
+T* GameObject::AddComponent(Args... pArgs)
+{
+    T* newComp = new T(this, pArgs...);
+    components.push_back(newComp);
+
+    CheckForScript(newComp);
+
+    return newComp;
+}
+
 template<class T>
 T* GameObject::AddComponent()
 {
     T* newComp = new T(this);
     components.push_back(newComp);
 
-    if (const auto script = dynamic_cast<Script*>(newComp))
-    {
-        scripts.push_back(script);
-        script->Awake();
-    }
+    CheckForScript(newComp);
 
     return newComp;
 }

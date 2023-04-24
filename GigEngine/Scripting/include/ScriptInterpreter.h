@@ -1,12 +1,12 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <sol.hpp>
 #include <memory>
-#include "Behaviour.h"
+#include <sol.hpp>
 
 namespace GigScripting
 {
+    class Behaviour;
     class ScriptInterpreter
 
     {
@@ -14,7 +14,7 @@ namespace GigScripting
 
         static ScriptInterpreter& GetInstance();
 
-        ScriptInterpreter() = default;
+        ScriptInterpreter();
 
         ScriptInterpreter(const std::string& pScriptFolderRoot);
 
@@ -44,3 +44,5 @@ namespace GigScripting
         bool isOk;
     };
 }
+
+#define SCRIPT_INTERPRETER GigScripting::ScriptInterpreter::GetInstance()

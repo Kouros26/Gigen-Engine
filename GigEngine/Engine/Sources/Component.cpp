@@ -4,6 +4,14 @@ Component::Component(GameObject* gameObject)
     :gameObject(gameObject)
 {}
 
+void Component::Update(float pDeltaTime)
+{
+}
+
+void Component::LateUpdate(float pDeltaTime)
+{
+}
+
 Component::~Component()
 {
 }

@@ -1,6 +1,7 @@
 #include "ScriptInterpreter.h"
-#include "lua.h"
+
 #include "LuaBinder.h"
+#include "Behaviour.h"
 
 GigScripting::ScriptInterpreter::~ScriptInterpreter()
 {
@@ -90,5 +91,11 @@ GigScripting::ScriptInterpreter& GigScripting::ScriptInterpreter::GetInstance()
 GigScripting::ScriptInterpreter::ScriptInterpreter(const std::string& pScriptFolderRoot)
 {
     scriptFolderRoot = pScriptFolderRoot;
+    CreateLuaContextAndBindGlobal();
+}
+
+GigScripting::ScriptInterpreter::ScriptInterpreter()
+{
+    scriptFolderRoot = "Resources/Scripts/";
     CreateLuaContextAndBindGlobal();
 }

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#define GIG_LOG(message) GigDebug::Logger::Log(pMessage)
+#define GIG_LOG(message) GigDebug::Logger::Log(message)
 
 namespace GigDebug
 {

@@ -30,11 +30,6 @@ GigScripting::Behaviour::Behaviour(GameObject* obj, const std::string& scriptNam
     scriptTable = sol::nil;
 }
 
-GigScripting::Behaviour::Behaviour(GameObject* obj, const std::string& scriptName) : Component(obj), scriptName(scriptName)
-{
-    scriptTable = sol::nil;
-}
-
 Component* GigScripting::Behaviour::Clone(GameObject* newGameObject)
 {
     return new Behaviour(newGameObject);
@@ -66,7 +61,7 @@ bool GigScripting::Behaviour::RegisterToLuaContext(const std::string& pScriptFol
         if (result.return_count() == 1 && result[0].is<sol::table>())
         {
             scriptTable = result[0];
-            scriptTable["owner"] = &gameObject;
+            scriptTable["owner"] = *gameObject;
             return true;
         }
         else
