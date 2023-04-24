@@ -7,6 +7,7 @@ struct Collision;
 class Component;
 class Script;
 class Model;
+class Texture;
 
 class GameObject
 {
@@ -34,7 +35,10 @@ public:
 	void Destroy();
 
 	void SetModel(const std::string& filePath);
-	void SetTexture(const std::string& filePath) const;
+	void SetTexture(const std::string& filePath);
+	Model* GetModel();
+	Texture* GetTexture();
+
 	void LateUpdate() const;
 
 	std::string GetName();
@@ -94,6 +98,7 @@ private:
 	std::vector<Script*> scripts{};
 
 	Model* model = nullptr;
+	Texture* texture = nullptr;
 
 	//use so every gameObject has a different id
 	static unsigned int gameObjectIndex;

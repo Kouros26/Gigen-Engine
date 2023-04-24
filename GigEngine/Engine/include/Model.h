@@ -17,8 +17,7 @@ public:
     Model(Model&& other) noexcept;
     Model& operator=(const Model& other);
     Model& operator=(Model&& other) noexcept;
-    void Draw() const;
-    void SetTexture(const std::string& pFilePath);
+    void Draw(Texture* texture) const;
 
     void Init() override;
 
@@ -26,5 +25,4 @@ private:
 
     std::vector<Mesh*> meshes;
     std::vector<Material*> materials;
-    Texture* texture = nullptr;
 };

@@ -32,6 +32,49 @@ void DirLight::SendToShader(const int& pos, const std::string& shaderName)
 	shader.SetFloat(specular, (str.append(g_specularShaderName)).c_str());
 }
 
+float* DirLight::GetColor()
+{
+	return color;
+}
+
+float DirLight::GetAmbient()
+{
+	return ambient;
+}
+
+float DirLight::GetDiffuse()
+{
+	return diffuse;
+}
+
+float DirLight::GetSpecular()
+{
+	return specular;
+}
+
+void DirLight::SetColor(lm::FVec3 pColor)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		color[i] = pColor[i];
+	}
+}
+
+void DirLight::SetAmbient(float pAmbient)
+{
+	ambient = pAmbient;
+}
+
+void DirLight::SetDiffuse(float pDiffuse)
+{
+	diffuse = pDiffuse;
+}
+
+void DirLight::SetSpecular(float pSpecular)
+{
+	specular = pSpecular;
+}
+
 PointLight::PointLight(float ambient, float diffuse, float specular, float constant, float linear, float quadratic, lm::FVec3 color)
 	:DirLight(ambient, diffuse, specular, color), constant(constant), linear(linear), quadratic(quadratic)
 {
@@ -59,6 +102,36 @@ void PointLight::SendToShader(const int& pos, const std::string& shaderName)
 	shader.SetFloat(quadratic, (str.append(g_quadraticShaderName)).c_str());
 }
 
+float PointLight::GetConstant()
+{
+	return constant;
+}
+
+float PointLight::GetLinear()
+{
+	return linear;
+}
+
+float PointLight::GetQuadratic()
+{
+	return quadratic;
+}
+
+void PointLight::SetConstant(float pConstant)
+{
+	constant = pConstant;
+}
+
+void PointLight::SetLinear(float pLinear)
+{
+	linear = pLinear;
+}
+
+void PointLight::SetQuadratic(float pQuadratic)
+{
+	quadratic = pQuadratic;
+}
+
 SpotLight::SpotLight(float ambient, float diffuse, float specular, float constant, float linear, float quadratic, float cutOff, float outerCutOff, lm::FVec3 color)
 	:PointLight(ambient, diffuse, specular, constant, linear, quadratic, color), cutOff(cutOff), outerCutOff(outerCutOff)
 {
@@ -75,4 +148,24 @@ void SpotLight::SendToShader(const int& pos, const std::string& shaderName)
 	shader.SetFloat(cutOff, (str.append(g_cutOffShaderName)).c_str());
 	str = temp;
 	shader.SetFloat(outerCutOff, (str.append(g_outerCutOffShaderName)).c_str());
+}
+
+float SpotLight::GetCutOff()
+{
+	return cutOff;
+}
+
+float SpotLight::GetOuterCutOff()
+{
+	return outerCutOff;
+}
+
+void SpotLight::SetCutOff(float pCutOff)
+{
+	cutOff = pCutOff;
+}
+
+void SpotLight::SetOuterCutOff(float pOuterCutOff)
+{
+	outerCutOff = pOuterCutOff;
 }

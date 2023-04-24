@@ -3,6 +3,7 @@
 #include "BoxRigidBody.h"
 #include "CapsuleRigidBody.h"
 #include "Model.h"
+#include "Texture.h"
 #include "ResourceManager.h"
 #include "GameObjectManager.h"
 #include "Component.h"
@@ -165,12 +166,30 @@ unsigned int GameObject::GetId() const
 void GameObject::SetModel(std::string const& filePath)
 {
 	model = ResourceManager::Get<Model>(filePath);
+	if (!texture) 
+	{
+		texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
+	}
 }
 
-void GameObject::SetTexture(const std::string& filePath) const
+Model* GameObject::GetModel()
 {
-	if (model)
-		model->SetTexture(filePath);
+	return model;
+}
+
+void GameObject::SetTexture(const std::string& filePath)
+{
+	texture = ResourceManager::Get<Texture>(filePath);
+	if (!texture->isValid())
+	{
+		std::cout << "texture invalid" << std::endl;
+		texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
+	}
+}
+
+Texture* GameObject::GetTexture()
+{
+	return texture;
 }
 
 void GameObject::AddChild(GameObject* child)
@@ -214,7 +233,7 @@ void GameObject::OnCollisionExit(const Collision& collision)
 void GameObject::UpdateRender() const
 {
 	if (model)
-		model->Draw();
+		model->Draw(texture);
 }
 
 void GameObject::UpdateComponents() const
