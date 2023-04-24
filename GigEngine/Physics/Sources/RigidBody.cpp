@@ -1,5 +1,7 @@
 #include "RigidBody.h"
 #include "WorldPhysics.h"
+#include "Utilities.h"
+#include "Mat3/FMat3.hpp"
 
 RigidBody::RigidBody(GameObject* pOwner)
 	: owner(pOwner) {}
@@ -36,13 +38,16 @@ void RigidBody::SetRigidBodyPosition(const lm::FVec3& pNewPos)
 	const btVector3 position(pNewPos.x, pNewPos.y, pNewPos.z);
 
 	transform.setOrigin(position);
+	body->setWorldTransform(transform);
+	body->activate(true);
 }
 
 void RigidBody::SetRigidBodyRotation(const lm::FVec3& pNewRotation)
 {
-	const btQuaternion orientation(pNewRotation.x, pNewRotation.y, pNewRotation.z);
+	const btQuaternion orientation(lm::degreesToRadians(pNewRotation.y), lm::degreesToRadians(pNewRotation.x), lm::degreesToRadians(pNewRotation.z));
 
 	transform.setRotation(orientation);
+	body->setWorldTransform(transform);
 }
 
 void RigidBody::SetRigidBodyRotation(const lm::FQuat& pNewRotation)
@@ -50,6 +55,7 @@ void RigidBody::SetRigidBodyRotation(const lm::FQuat& pNewRotation)
 	const btQuaternion orientation(pNewRotation.x, pNewRotation.y, pNewRotation.z, pNewRotation.w);
 
 	transform.setRotation(orientation);
+	body->setWorldTransform(transform);
 }
 
 void RigidBody::SetRigidBodyScale(const lm::FVec3& pNewScale) const
@@ -64,13 +70,16 @@ void RigidBody::AddRigidBodyPosition(const lm::FVec3& pAddedPosition)
 	const btVector3 position(pAddedPosition.x, pAddedPosition.y, pAddedPosition.z);
 
 	transform.setOrigin(transform.getOrigin() + position);
+	body->setWorldTransform(transform);
+	body->activate(true);
 }
 
 void RigidBody::AddRigidBodyRotation(const lm::FVec3& pAddedRotation)
 {
-	const btQuaternion orientation(pAddedRotation.x, pAddedRotation.y, pAddedRotation.z);
+	const btQuaternion orientation(lm::degreesToRadians(pAddedRotation.y), lm::degreesToRadians(pAddedRotation.x), lm::degreesToRadians(pAddedRotation.z));
 
-	transform.setRotation(transform.getRotation() + orientation);
+	transform.setRotation(transform.getRotation() * orientation);
+	body->setWorldTransform(transform);
 }
 
 void RigidBody::AddRigidBodyRotation(const lm::FQuat& pAddedRotation)
@@ -78,6 +87,7 @@ void RigidBody::AddRigidBodyRotation(const lm::FQuat& pAddedRotation)
 	const btQuaternion orientation(pAddedRotation.x, pAddedRotation.y, pAddedRotation.z, pAddedRotation.w);
 
 	transform.setRotation(transform.getRotation() + orientation);
+	body->setWorldTransform(transform);
 }
 
 void RigidBody::AddRigidBodyScale(const lm::FVec3& pAddedScale) const
