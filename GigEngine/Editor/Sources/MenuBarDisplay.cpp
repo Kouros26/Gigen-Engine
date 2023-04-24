@@ -9,8 +9,7 @@ MenuBarDisplay::MenuBarDisplay()
 }
 
 MenuBarDisplay::~MenuBarDisplay()
-{
-}
+= default;
 
 void MenuBarDisplay::Draw()
 {

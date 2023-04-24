@@ -18,11 +18,10 @@ public:
 	~Interface();
 
 	void BeginFrame();
-	void Draw();
+	static void Draw();
 
 private:
-
-	void SetColorDark();
+	static void SetColorDark();
 
 	FPSDisplay fps;
 	GameObjectInspector gameObjInspector;

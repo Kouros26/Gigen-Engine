@@ -5,7 +5,7 @@ class MenuBarDisplay : public Displayable
 {
 public:
 	MenuBarDisplay();
-	~MenuBarDisplay();
+	~MenuBarDisplay() override;
 
 	void Draw() override;
 };

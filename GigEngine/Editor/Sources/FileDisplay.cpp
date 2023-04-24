@@ -9,8 +9,7 @@ FileDisplay::FileDisplay()
 }
 
 FileDisplay::~FileDisplay()
-{
-}
+= default;
 
 void FileDisplay::Draw()
 {
@@ -18,7 +17,7 @@ void FileDisplay::Draw()
 	ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width,  InterfaceManager::GetHeight() - height });
 	ImGui::SetNextWindowSize({ width, height });
 	//noMove et NoCollapse
-	ImGui::Begin("Files", NULL, 4 | 32);
+	ImGui::Begin("Files", nullptr, 4 | 32);
 
 	LimitHeightResize();
 	ImGui::SetWindowSize("Files", { width, height });

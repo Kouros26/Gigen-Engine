@@ -8,7 +8,7 @@
 #include "Model.h"
 #include "Texture.h"
 #include "GameObjectManager.h"
-#include <windows.h>
+#include <Windows.h>
 
 GameObjectInspector::GameObjectInspector()
 {
@@ -42,7 +42,7 @@ void GameObjectInspector::DrawGameObject()
 	if (!object) return;
 
 	static char name[128];
-	strcpy(name, object->GetName().c_str());
+	strcpy_s(name, object->GetName().c_str());
 
 	ImGui::Text("Name"); ImGui::SameLine();
 
@@ -61,13 +61,13 @@ void GameObjectInspector::DrawGameObject()
 	DrawModel(object);
 }
 
-void GameObjectInspector::DrawTransform(GameObject * pObject)
+void GameObjectInspector::DrawTransform(GameObject * pObject) const
 {
 	if (ImGui::CollapsingHeader("Transform"))
 	{
-		lm::FVec3 rot = pObject->GetTransform().GetWorldRotation();
-		lm::FVec3 pos = pObject->GetTransform().GetWorldPosition();
-		lm::FVec3 scl = pObject->GetTransform().GetWorldScale();
+		const lm::FVec3 rot = pObject->GetTransform().GetWorldRotation();
+		const lm::FVec3 pos = pObject->GetTransform().GetWorldPosition();
+		const lm::FVec3 scl = pObject->GetTransform().GetWorldScale();
 
 		float translation[] = { pos.x, pos.y, pos.z };
 		float scale[] = { scl.x, scl.y, scl.z };
@@ -100,7 +100,7 @@ void GameObjectInspector::DrawTransform(GameObject * pObject)
 	}
 }
 
-void GameObjectInspector::DrawModel(GameObject * pObject)
+void GameObjectInspector::DrawModel(GameObject * pObject) const
 {
 	if (ImGui::CollapsingHeader("Model"))
 	{
@@ -115,7 +115,7 @@ void GameObjectInspector::DrawModel(GameObject * pObject)
 
 		if (ImGui::Button("Locate##1"))
 		{
-			std::string filePath = GetFilePathFromExplorer("3D object \0 *.obj\0 *.OBJ\0 *.fbx\0 *.FBX\0");
+			const std::string& filePath = GetFilePathFromExplorer("3D object \0 *.obj\0 *.OBJ\0 *.fbx\0 *.FBX\0");
 			
 			if(filePath.length() > 0)
 				pObject->SetModel(filePath);
@@ -128,7 +128,7 @@ void GameObjectInspector::DrawModel(GameObject * pObject)
 	}
 }
 
-void GameObjectInspector::DrawTexture(GameObject* pObject)
+void GameObjectInspector::DrawTexture(GameObject* pObject) const
 {
 	if (ImGui::CollapsingHeader("Texture"))
 	{
@@ -143,7 +143,7 @@ void GameObjectInspector::DrawTexture(GameObject* pObject)
 
 		if (ImGui::Button("Locate##2"))
 		{
-			std::string filePath = GetFilePathFromExplorer("image \0 *.png\0 *.jpeg\0 *.jpg\0");
+			const std::string& filePath = GetFilePathFromExplorer("image \0 *.png\0 *.jpeg\0 *.jpg\0");
 
 			if (filePath.length() > 0)
 				pObject->SetTexture(filePath);
@@ -151,20 +151,16 @@ void GameObjectInspector::DrawTexture(GameObject* pObject)
 	}
 }
 
-void GameObjectInspector::DrawSpecials(GameObject * pObject)
+void GameObjectInspector::DrawSpecials(GameObject * pObject) const
 {
-	DirLight* light = dynamic_cast<DirLight*>(pObject);
-	if (light)
+	if (auto light = dynamic_cast<DirLight*>(pObject))
 	{
 		DrawLight(pObject);
 		return;
 	}
 
-	Camera* cam = dynamic_cast<Camera*>(pObject);
-	if (cam)
-	{
+	if (const auto cam = dynamic_cast<Camera*>(pObject))
 		DrawCamera(cam);
-	}
 }
 
 void GameObjectInspector::DrawComponents(GameObject * pObject)
@@ -172,9 +168,9 @@ void GameObjectInspector::DrawComponents(GameObject * pObject)
 	//TO DO
 }
 
-void GameObjectInspector::DrawLight(GameObject * pObject)
+void GameObjectInspector::DrawLight(GameObject * pObject) const
 {
-	DirLight* dirlight = dynamic_cast<DirLight*>(pObject);
+	const auto dirlight = dynamic_cast<DirLight*>(pObject);
 	if (ImGui::CollapsingHeader("Light"))
 	{
 		float* color = dirlight->GetColor();
@@ -211,7 +207,7 @@ void GameObjectInspector::DrawLight(GameObject * pObject)
 		}
 		ImGui::PopItemWidth();
 
-		if (PointLight* pointLight = dynamic_cast<PointLight*>(pObject))
+		if (const auto pointLight = dynamic_cast<PointLight*>(pObject))
 		{
 			float constant = pointLight->GetConstant();
 			float linear = pointLight->GetLinear();
@@ -242,7 +238,7 @@ void GameObjectInspector::DrawLight(GameObject * pObject)
 			ImGui::PopItemWidth();
 		}
 
-		if (SpotLight* spotLight = dynamic_cast<SpotLight*>(pObject))
+		if (const auto spotLight = dynamic_cast<SpotLight*>(pObject))
 		{
 			float cutOff = spotLight->GetCutOff();
 			float outerCutOff = spotLight->GetOuterCutOff();
@@ -266,11 +262,11 @@ void GameObjectInspector::DrawLight(GameObject * pObject)
 	}
 }
 
-void GameObjectInspector::DrawCamera(Camera * pObject)
+void GameObjectInspector::DrawCamera(Camera * pObject) const
 {
 	float fov = pObject->GetFov();
-	float tnear = pObject->GetNear();
-	float tfar = pObject->GetFar();
+	float tNear = pObject->GetNear();
+	float tFar = pObject->GetFar();
 
 	if (ImGui::CollapsingHeader("Camera"))
 	{
@@ -284,17 +280,17 @@ void GameObjectInspector::DrawCamera(Camera * pObject)
 
 		ImGui::Text("Near"); ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat("near", &tnear, g_maxStep, 0, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat("near", &tNear, g_maxStep, 0, g_floatMax, g_floatFormat))
 		{
-			pObject->SetNear(tnear);
+			pObject->SetNear(tNear);
 		}
 		ImGui::PopItemWidth();
 
 		ImGui::Text("Far"); ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat("far", &tfar, g_maxStep, 0, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat("far", &tFar, g_maxStep, 0, g_floatMax, g_floatFormat))
 		{
-			pObject->SetFar(tfar);
+			pObject->SetFar(tFar);
 		}
 		ImGui::PopItemWidth();
 	}

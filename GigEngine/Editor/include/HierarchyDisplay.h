@@ -16,9 +16,9 @@ private:
 
 	void DisplayHierarchy();
 
-	void CreatePopUp();
+	void CreatePopUp() const;
 
 	void DisplayGameObject(GameObject* obj, bool isChild);
-	void GameObjectClicked(GameObject* obj);
-	void GameObjectPopUp(GameObject* obj);
+	void GameObjectClicked(GameObject* obj) const;
+	void GameObjectPopUp(GameObject* obj) const;
 };

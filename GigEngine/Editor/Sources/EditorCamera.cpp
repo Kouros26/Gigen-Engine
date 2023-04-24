@@ -15,8 +15,7 @@ EditorCamera::EditorCamera()
 }
 
 EditorCamera::~EditorCamera()
-{
-}
+= default;
 
 void EditorCamera::Update()
 {

@@ -11,8 +11,7 @@ HierarchyDisplay::HierarchyDisplay()
 }
 
 HierarchyDisplay::~HierarchyDisplay()
-{
-}
+= default;
 
 void HierarchyDisplay::Draw()
 {
@@ -41,7 +40,7 @@ void HierarchyDisplay::DisplayHierarchy()
 	}
 }
 
-void HierarchyDisplay::CreatePopUp()
+void HierarchyDisplay::CreatePopUp() const
 {
 	if (ImGui::Button("Create"))
 		ImGui::OpenPopup("createPopUp");
@@ -123,7 +122,7 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 		return;
 	}
 
-	bool treeNodeOpen = ImGui::TreeNodeEx(obj->GetName().c_str(), ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen);
+	const bool treeNodeOpen = ImGui::TreeNodeEx(obj->GetName().c_str(), ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen);
 
 	ImGui::PushID(obj->GetId());
 	ImGui::PopID();
@@ -141,9 +140,9 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 
 	if (ImGui::BeginDragDropTarget())
 	{
-		if (const ImGuiPayload* truc = ImGui::AcceptDragDropPayload("HIERARCHY"))
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY"))
 		{
-			GameObject* drop = (GameObject*)truc->Data;
+			const auto drop = static_cast<GameObject*>(payload->Data);
 			if (drop != obj && drop && obj && !obj->IsAParent(drop))
 			{
 				if (drop->GetParent())
@@ -167,7 +166,7 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 	}
 }
 
-void HierarchyDisplay::GameObjectClicked(GameObject* obj)
+void HierarchyDisplay::GameObjectClicked(GameObject* obj) const
 {
 	if (ImGui::IsItemClicked(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 	{
@@ -184,7 +183,7 @@ void HierarchyDisplay::GameObjectClicked(GameObject* obj)
 	}
 }
 
-void HierarchyDisplay::GameObjectPopUp(GameObject* obj)
+void HierarchyDisplay::GameObjectPopUp(GameObject* obj) const
 {
 	if (ImGui::BeginPopup(obj->GetName().c_str()))
 	{

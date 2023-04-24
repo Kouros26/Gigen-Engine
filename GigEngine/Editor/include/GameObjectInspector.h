@@ -17,15 +17,15 @@ public:
 private:
 	void DrawGameObject();
 
-	void DrawTransform(GameObject* pObject);
-	void DrawModel(GameObject* pObject);
-	void DrawTexture(GameObject* pObject);
+	void DrawTransform(GameObject* pObject) const;
+	void DrawModel(GameObject* pObject) const;
+	void DrawTexture(GameObject* pObject) const;
 
-	void DrawSpecials(GameObject* pObject);
+	void DrawSpecials(GameObject* pObject) const;
 	void DrawComponents(GameObject* pObject);
 
-	void DrawLight(GameObject* pObject);
-	void DrawCamera(Camera* pObject);
+	void DrawLight(GameObject* pObject) const;
+	void DrawCamera(Camera* pObject) const;
 
-	std::string GetFilePathFromExplorer(const char* filter);
+	static std::string GetFilePathFromExplorer(const char* filter);
 };
