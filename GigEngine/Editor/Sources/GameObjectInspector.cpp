@@ -6,6 +6,7 @@
 #include "Light.h"
 #include "Camera.h"
 #include "Model.h"
+#include "Texture.h"
 #include "GameObjectManager.h"
 #include <windows.h>
 
@@ -110,26 +111,42 @@ void GameObjectInspector::DrawModel(GameObject * pObject)
 		}
 
 		ImGui::Text("Path :"); ImGui::SameLine();
-		ImGui::TextColored({ 0,0,1,1 }, path.c_str());
+		ImGui::Text(path.c_str());
 
-		if (ImGui::Button("Locate"))
+		if (ImGui::Button("Locate##1"))
 		{
-			OPENFILENAME ofn;
-			char fileName[1000] = "";
-			ZeroMemory(&ofn, sizeof(ofn));
+			std::string filePath = GetFilePathFromExplorer("3D object \0 *.obj\0 *.OBJ\0 *.fbx\0 *.FBX\0");
+			
+			if(filePath.length() > 0)
+				pObject->SetModel(filePath);
+		}
 
-			ofn.lStructSize = sizeof(OPENFILENAME);
-			ofn.hwndOwner = NULL;
-			ofn.lpstrFilter = "*.obj\0 *.OBJ\0 *.fbx\0 *.FBX\0";
-			ofn.nMaxFile = 1000;
-			ofn.lpstrFile = fileName;
-			ofn.Flags = OFN_FILEMUSTEXIST;
-			ofn.lpstrDefExt = "";
+		if (pObject->GetModel()) 
+		{
+			DrawTexture(pObject);
+		}
+	}
+}
 
-			std::string fileNameStr;
+void GameObjectInspector::DrawTexture(GameObject* pObject)
+{
+	if (ImGui::CollapsingHeader("Texture"))
+	{
+		std::string path;
+		if (pObject->GetTexture())
+		{
+			path = pObject->GetTexture()->GetFilePath();
+		}
 
-			if (GetOpenFileName(&ofn))
-				pObject->SetModel(fileName);
+		ImGui::Text("Path :"); ImGui::SameLine();
+		ImGui::Text(path.c_str());
+
+		if (ImGui::Button("Locate##2"))
+		{
+			std::string filePath = GetFilePathFromExplorer("image \0 *.png\0 *.jpeg\0 *.jpg\0");
+
+			if (filePath.length() > 0)
+				pObject->SetTexture(filePath);
 		}
 	}
 }
@@ -281,4 +298,24 @@ void GameObjectInspector::DrawCamera(Camera * pObject)
 		}
 		ImGui::PopItemWidth();
 	}
+}
+
+std::string GameObjectInspector::GetFilePathFromExplorer(const char* filter)
+{
+	OPENFILENAME ofn;
+	char fileName[1000] = "";
+	ZeroMemory(&ofn, sizeof(ofn));
+
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = NULL;
+	ofn.lpstrFilter = filter;
+	ofn.nMaxFile = 1000;
+	ofn.lpstrFile = fileName;
+	ofn.Flags = OFN_FILEMUSTEXIST;
+	ofn.lpstrDefExt = "";
+
+	if (GetOpenFileName(&ofn))
+		return std::string(fileName);
+
+	return std::string();
 }
