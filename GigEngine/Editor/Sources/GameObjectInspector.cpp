@@ -83,7 +83,7 @@ void GameObjectInspector::DrawTransform(GameObject * pObject)
 
 		ImGui::Text("Scale"); ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat3("sca", scale, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat3("sca", scale, g_maxStep, 0, g_floatMax, g_floatFormat))
 		{
 			pObject->GetTransform().SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
 		}
