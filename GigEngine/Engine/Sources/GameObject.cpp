@@ -13,7 +13,6 @@ GameObject::GameObject()
 	id = gameObjectIndex;
 
 	name = "GameObject " + std::to_string(id);
-	texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
 }
 
 GameObject::GameObject(const std::string& name)
@@ -131,6 +130,10 @@ unsigned int GameObject::GetId()
 void GameObject::SetModel(std::string const& filePath)
 {
 	model = ResourceManager::Get<Model>(filePath);
+	if (!texture) 
+	{
+		texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
+	}
 }
 
 Model* GameObject::GetModel()
