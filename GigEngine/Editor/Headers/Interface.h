@@ -1,6 +1,6 @@
 #pragma once
 #include "FPSDisplay.h"
-#include "FileDisplay.h"
+#include "ToolsDisplay.h"
 #include "GameObjectInspector.h"
 #include "HierarchyDisplay.h"
 #include "MenuBarDisplay.h"
@@ -27,6 +27,6 @@ private:
 	FPSDisplay fps;
 	GameObjectInspector gameObjInspector;
 	HierarchyDisplay hierarchy;
-	FileDisplay fileDisplay;
+	ToolsDisplay fileDisplay;
 	MenuBarDisplay menuBar;
 };

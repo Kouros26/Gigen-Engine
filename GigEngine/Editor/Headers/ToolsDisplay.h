@@ -8,4 +8,8 @@ public:
 	~ToolsDisplay() override;
 
 	void Draw() override;
+
+private :
+	void DrawExplorer();
+	void DrawConsole();
 };

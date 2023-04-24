@@ -1,7 +1,7 @@
 #include "InterfaceManager.h"
 #include "Application.h"
 #include "GameObjectInspector.h"
-#include "FileDisplay.h"
+#include "ToolsDisplay.h"
 #include "HierarchyDisplay.h"
 
 void InterfaceManager::DrawEditor()
@@ -13,7 +13,7 @@ void InterfaceManager::DrawEditor()
         displayable->Draw();
 
     float posX = GetClassWidth<HierarchyDisplay>();
-    float posY = GetClassHeight<FileDisplay>();
+    float posY = GetClassHeight<ToolsDisplay>();
     Application::GetWindow().SetViewPort((int)posX, (int)posY, (int)(width - GetClassWidth<GameObjectInspector>() - posX), (int)(height - posY));
 }
 
