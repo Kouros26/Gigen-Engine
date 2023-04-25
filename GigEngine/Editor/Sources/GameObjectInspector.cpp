@@ -116,19 +116,19 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 		if (ImGui::Button("Locate##1"))
 		{
 			const std::string& filePath = GetFilePathFromExplorer("3D object \0 *.obj\0 *.OBJ\0 *.fbx\0 *.FBX\0");
-			
-			if(filePath.length() > 0)
+
+			if (filePath.length() > 0)
 				pObject->SetModel(filePath);
 		}
 
-		if (pObject->GetModel()) 
+		if (pObject->GetModel())
 		{
 			DrawTexture(pObject);
 		}
 	}
 }
 
-void GameObjectInspector::DrawTexture(GameObject* pObject) const
+void GameObjectInspector::DrawTexture(GameObject * pObject) const
 {
 	if (ImGui::CollapsingHeader("Texture"))
 	{
