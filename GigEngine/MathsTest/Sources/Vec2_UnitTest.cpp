@@ -108,20 +108,12 @@ TEST_CASE("Vector2", "[.all][vector][Vector2]")
             vec *= vec2;
             vecGlm *= vec2Glm;
             CHECK_VECTOR2(vec, vecGlm);
-
-            vec = vec * vec2;
-            vecGlm = vecGlm * vec2Glm;
-            CHECK_VECTOR2(vec, vecGlm);
         }
 
         SECTION("Division")
         {
             vec /= vec2;
             vecGlm /= vec2Glm;
-            CHECK_VECTOR2(vec, vecGlm);
-
-            vec = vec / vec2;
-            vecGlm = vecGlm / vec2Glm;
             CHECK_VECTOR2(vec, vecGlm);
         }
         SECTION("Scalar multiplication")

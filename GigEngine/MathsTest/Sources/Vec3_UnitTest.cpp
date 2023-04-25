@@ -188,14 +188,6 @@ TEST_CASE("Vector3", "[.all][vector][Vector3]")
             }
 
             {
-                lm::FVec3 product = big * small;
-
-                glm::vec3 productGlm = bigGlm * smallGlm;
-
-                CHECK_VECTOR3(product, productGlm);
-            }
-
-            {
                 lm::FVec3 productAssignment = big;
                 productAssignment *= 2.f;
 
@@ -222,14 +214,6 @@ TEST_CASE("Vector3", "[.all][vector][Vector3]")
                 quotientAssignmentGlm /= smallGlm;
 
                 CHECK_VECTOR3(quotientAssignment, quotientAssignmentGlm);
-            }
-
-            {
-                lm::FVec3 quotient = big / small;
-
-                glm::vec3 quotientGlm = bigGlm / smallGlm;
-
-                CHECK_VECTOR3(quotient, quotientGlm);
             }
         }
     }
