@@ -6,49 +6,55 @@
 class Application
 {
 public:
-    Application();
-    ~Application();
+	Application();
+	~Application();
 
-    static Window& GetWindow();
-    static EditorCamera& GetEditorCamera();
-    static ShaderProgram& GetMainShader();
+	static Window& GetWindow();
+	static EditorCamera& GetEditorCamera();
+	static ShaderProgram& GetMainShader();
 
-    static lm::FMat4& GetViewProj();
-    static lm::FVec3& GetViewPos();
+	static lm::FMat4& GetViewProj();
+	static lm::FVec3& GetViewPos();
 
-    static void StartGame();
-    static bool IsInEditor();
+	static void Play();
+	static void Pause();
+	static void Stop();
+	static bool IsInEditor();
+	static bool IsInPause();
 
-    void Run();
-    void SwapFrames();
+	void Run();
+	void SwapFrames();
 
 private:
-    class Skybox* skybox;
+	class Skybox* skybox;
 
-    static inline Window window;
-    static inline EditorCamera editorCamera;
+	static inline Window window;
+	static inline EditorCamera editorCamera;
 
-    static inline lm::FMat4 viewProj;
-    static inline lm::FVec3 viewPos;
+	static inline lm::FMat4 viewProj;
+	static inline lm::FVec3 viewPos;
 
-    static inline bool isEditor = true;
+	static inline bool isEditor = true;
+	static inline bool isPause = false;
 
-    //main shader
-    static inline ShaderProgram mainShader;
-    int viewProjLocation;
-    int ModelLocation;
-    int viewPosLocation;
-    int nbDirLightLocation;
-    int nbPointLightLocation;
-    int nbSpotLightLocation;
+	//main shader
+	static inline ShaderProgram mainShader;
+	int viewProjLocation;
+	int ModelLocation;
+	int viewPosLocation;
+	int nbDirLightLocation;
+	int nbPointLightLocation;
+	int nbSpotLightLocation;
 
-    void Init();
-    void CreateGameObjects();
-    void InitMainShader();
-    void Draw();
-    void ClearWindow();
-    void UpdateGameObjectComponent();
-    void UpdateGameObjectRender();
-    void UpdateLights();
-    void UpdateUniforms();
+	void Init();
+	void CreateGameObjects();
+	void InitMainShader();
+	void Draw();
+	void ClearWindow();
+	void UpdateGameObjectComponent();
+	void UpdateGameObjectRender();
+	void UpdateLights();
+	void UpdateUniforms();
+
+	static void StartGame();
 };

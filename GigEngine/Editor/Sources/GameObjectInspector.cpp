@@ -21,12 +21,11 @@ GameObjectInspector::~GameObjectInspector()
 void GameObjectInspector::Draw()
 {
 	height = InterfaceManager::GetHeight() - InterfaceManager::GetClassHeight<FileDisplay>() - g_menuBarSize;
-	bool open = true;
 	ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width, g_menuBarSize });
 	ImGui::SetNextWindowSize({ width, height });
 
 	// noMove et NoCollapse
-	ImGui::Begin("Inspector", &open, 4 | 32);
+	ImGui::Begin("Inspector", NULL, 4 | 32);
 
 	LimitWidthResize();
 	ImGui::SetWindowSize("Inspector", { width, height });
@@ -84,7 +83,7 @@ void GameObjectInspector::DrawTransform(GameObject * pObject) const
 
 		ImGui::Text("Scale"); ImGui::SameLine();
 		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat3("sca", scale, g_maxStep, 0, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat3("sca", scale, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
 		{
 			pObject->GetTransform().SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
 		}

@@ -55,9 +55,37 @@ lm::FVec3& Application::GetViewPos()
 	return viewPos;
 }
 
+void Application::Play()
+{
+	if (isEditor)
+	{
+		StartGame();
+		isEditor = false;
+	}
+	else
+	{
+		Stop();
+	}
+}
+
+void Application::Pause()
+{
+	isPause = !isPause;
+}
+
+void Application::Stop()
+{
+	//reload
+	isEditor = true;
+}
+
 bool Application::IsInEditor()
 {
 	return isEditor;
+}
+bool Application::IsInPause()
+{
+	return isPause;
 }
 void Application::StartGame()
 {
@@ -75,7 +103,11 @@ void Application::Run()
 	window.ProcessInput();
 	Time::UpdateDeltaTime();
 	Draw();
-	WorldPhysics::UpdatePhysics(Time::GetDeltaTime());
+
+	if (!isEditor && !isPause)
+	{
+		WorldPhysics::UpdatePhysics(Time::GetDeltaTime());
+	}
 }
 
 void Application::SwapFrames()
@@ -147,24 +179,30 @@ void Application::Draw()
 {
 	ClearWindow();
 
+	RENDERER.Disable(RD_DEPTH_TEST);
+	skybox->Draw();
+
 	if (isEditor)
 	{
-		RENDERER.Disable(RD_DEPTH_TEST);
-		skybox->Draw();
 		editorCamera.Update();
-		mainShader.Use(); //start using the main shader
-
-		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
-		UpdateUniforms(); //then send the global uniforms
-		UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
-
-		RENDERER.Enable(RD_DEPTH_TEST);
-		RENDERER.DepthFunction(RD_LESS);
-		UpdateGameObjectRender(); //render model if they have one
-		mainShader.UnUse(); //stop using the main shader
-
-		Lines::DrawLines(); //render debug lines or guizmos
 	}
+
+	mainShader.Use(); //start using the main shader
+
+	if (!isEditor && !isPause)
+	{
+		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
+	}
+
+	UpdateUniforms(); //then send the global uniforms
+	UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
+
+	RENDERER.Enable(RD_DEPTH_TEST);
+	RENDERER.DepthFunction(RD_LESS);
+	UpdateGameObjectRender(); //render model if they have one
+	mainShader.UnUse(); //stop using the main shader
+
+	Lines::DrawLines(); //render debug lines or guizmos
 }
 
 void Application::ClearWindow()
