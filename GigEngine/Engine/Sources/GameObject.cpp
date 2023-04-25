@@ -1,8 +1,13 @@
 #include "GameObject.h"
+#include "WorldPhysics.h"
+#include "BoxRigidBody.h"
+#include "CapsuleRigidBody.h"
 #include "Model.h"
+#include "Texture.h"
 #include "ResourceManager.h"
 #include "GameObjectManager.h"
 #include "Component.h"
+#include "SphereRigidBody.h"
 
 unsigned int GameObject::gameObjectIndex = 0;
 
@@ -67,7 +72,7 @@ GameObject::GameObject(const GameObject& other)
 		AddChild(GameObjectManager::CreateGameObject(*child));
 
 	if (other.model != nullptr)
-		model = new Model(*other.model);
+		model = ResourceManager::Get<Model>(other.model->GetFilePath());
 }
 
 GameObject& GameObject::operator=(const GameObject& other)
@@ -86,7 +91,7 @@ GameObject& GameObject::operator=(const GameObject& other)
 		AddChild(GameObjectManager::CreateGameObject(*child));
 
 	if (other.model != nullptr)
-		model = new Model(*other.model);
+		model = ResourceManager::Get<Model>(other.model->GetFilePath());
 
 	return *this;
 }
@@ -97,7 +102,38 @@ GameObject::~GameObject()
 		delete component;
 
 	model = nullptr;
+	if (parent)
+	{
+		parent->RemoveChild(this);
+	}
 	GameObjectManager::Remove(this);
+}
+
+void GameObject::CreateBoxRigidBody(const lm::FVec3& halfExtents = { 1.0f }, const lm::FVec3& scale = { 1.0f }, float mass = 1.0f)
+{
+	delete rigidBody;
+
+	rigidBody = new BoxRigidBody(halfExtents, scale * transform.GetWorldScale(), transform.GetWorldPosition(), mass, this);
+	rigidBody->GetShapeType() = RigidBodyType::BOX;
+	transform.SetOwnerRigidBody(rigidBody);
+}
+
+void GameObject::CreateCapsuleRigidBody(float radius, float height, const lm::FVec3& scale, float mass)
+{
+	delete rigidBody;
+
+	rigidBody = new CapsuleRigidBody(radius, height, scale * transform.GetWorldScale(), transform.GetWorldPosition(), mass, this);
+	rigidBody->GetShapeType() = RigidBodyType::CAPSULE;
+	transform.SetOwnerRigidBody(rigidBody);
+}
+
+void GameObject::CreateSphereRigidBody(float radius, const lm::FVec3& scale, float mass)
+{
+	delete rigidBody;
+
+	rigidBody = new SphereRigidBody(radius, scale * transform.GetWorldScale(), transform.GetWorldPosition(), mass, this);
+	rigidBody->GetShapeType() = RigidBodyType::SPHERE;
+	transform.SetOwnerRigidBody(rigidBody);
 }
 
 void GameObject::Destroy()
@@ -110,7 +146,19 @@ std::string GameObject::GetName()
 	return name;
 }
 
-unsigned int GameObject::GetId()
+void GameObject::SetName(const std::string& pName)
+{
+	if (pName.length() == 0)
+	{
+		name = "GameObject " + std::to_string(id);
+		return;
+	}
+
+	name = pName;
+}
+
+
+unsigned int GameObject::GetId() const
 {
 	return id;
 }
@@ -118,14 +166,30 @@ unsigned int GameObject::GetId()
 void GameObject::SetModel(std::string const& filePath)
 {
 	model = ResourceManager::Get<Model>(filePath);
+	if (!texture) 
+	{
+		texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
+	}
+}
+
+Model* GameObject::GetModel()
+{
+	return model;
 }
 
 void GameObject::SetTexture(const std::string& filePath)
 {
-	if (model)
+	texture = ResourceManager::Get<Texture>(filePath);
+	if (!texture->isValid())
 	{
-		model->SetTexture(filePath);
+		std::cout << "texture invalid" << std::endl;
+		texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
 	}
+}
+
+Texture* GameObject::GetTexture()
+{
+	return texture;
 }
 
 void GameObject::AddChild(GameObject* child)
@@ -156,10 +220,20 @@ void GameObject::RemoveChild(GameObject* child)
 	children.remove(child);
 }
 
+void GameObject::OnCollisionEnter(const Collision& collision)
+{
+	std::cout << this->GetName() << GetTransform().GetWorldPosition() << std::endl;
+	std::cout << this->GetName() << " collided with " << collision.other->GetName() << " at point " << collision.contactPoint << " with force of " << collision.collisionStrength << std::endl;
+}
+
+void GameObject::OnCollisionExit(const Collision& collision)
+{
+}
+
 void GameObject::UpdateRender() const
 {
 	if (model)
-		model->Draw();
+		model->Draw(texture);
 }
 
 void GameObject::UpdateComponents() const
@@ -213,4 +287,49 @@ unsigned GameObject::GetComponentCount() const
 Transform& GameObject::GetTransform()
 {
 	return transform;
+}
+
+bool GameObject::IsAParent(GameObject* obj)
+{
+	GameObject* p = parent;
+	while (p != nullptr)
+	{
+		if (p == obj)
+		{
+			return true;
+		}
+		p = p->GetParent();
+	}
+	return false;
+}
+
+GameObject*& GameObject::GetParent()
+{
+	return parent;
+}
+
+std::list<GameObject*>& GameObject::GetChildren()
+{
+	return children;
+}
+
+GameObject* GameObject::GetChild(unsigned int index)
+{
+	if (index > children.size())
+	{
+		return nullptr;
+	}
+	auto c = children.begin();
+	std::advance(c, index);
+	return *c;
+}
+
+unsigned int GameObject::GetChildrenCount()
+{
+	return children.size();
+}
+
+RigidBody* GameObject::GetRigidBody() const
+{
+	return rigidBody;
 }

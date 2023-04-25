@@ -1,8 +1,7 @@
 # set the project name
 get_filename_component(CURRENT_FOLDER_NAME ${CMAKE_CURRENT_LIST_DIR} NAME)
 set(PROJECT_NAME ${CURRENT_FOLDER_NAME})
-set(SOURCE_FOLDER "Sources")
-set(INCLUDE_FOLDER "Headers")
+
 
 ###############################
 #                             #

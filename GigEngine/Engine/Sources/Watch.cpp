@@ -25,7 +25,7 @@ void Time::FPS::UpdateFPS()
 
 	fpsVec.push_back(fps);
 
-	int size = fpsVec.size();
+	const int size = fpsVec.size();
 	if (size > MAX_FPS_VECTOR_SIZE)
 	{
 		fpsAddition -= fpsVec[0];
@@ -38,14 +38,6 @@ void Time::FPS::UpdateFPS()
 
 void Time::FPS::ToggleVSync(const bool input)
 {
-	//int result;
-
-	//if (input)
-	//	result = 1;
-
-	//else
-	//	result = 0;
-
 	Window::ToggleVSync(input);
 }
 
