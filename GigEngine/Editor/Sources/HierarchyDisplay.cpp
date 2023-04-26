@@ -120,7 +120,14 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 		return;
 	}
 
-	const bool treeNodeOpen = ImGui::TreeNodeEx(obj->GetName().c_str(), ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen);
+	int flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+
+	if (obj->GetChildrenCount() == 0) 
+	{
+		flags = flags | ImGuiTreeNodeFlags_Leaf;
+	}
+
+	const bool treeNodeOpen = ImGui::TreeNodeEx(obj->GetName().c_str(), flags);
 
 	ImGui::PushID(obj->GetId());
 	ImGui::PopID();
