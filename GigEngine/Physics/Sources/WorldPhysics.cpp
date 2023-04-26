@@ -108,6 +108,14 @@ void WorldPhysics::UpdatePhysics(double pDeltaTime)
 	}
 }
 
+void WorldPhysics::DrawDebug()
+{
+	if (world)
+	{
+		world->debugDrawWorld();
+	}
+}
+
 void WorldPhysics::CheckCollision()
 {
 	if (!dispatcher)

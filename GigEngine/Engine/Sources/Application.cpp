@@ -79,6 +79,11 @@ void Application::Stop()
 	isEditor = true;
 }
 
+void Application::UseEditorCam()
+{
+	useEditorCam = !useEditorCam;
+}
+
 bool Application::IsInEditor()
 {
 	return isEditor;
@@ -86,6 +91,10 @@ bool Application::IsInEditor()
 bool Application::IsInPause()
 {
 	return isPause;
+}
+bool Application::IsUsingEditorCam()
+{
+	return useEditorCam;
 }
 void Application::StartGame()
 {
@@ -108,6 +117,7 @@ void Application::Run()
 	{
 		WorldPhysics::UpdatePhysics(Time::GetDeltaTime());
 	}
+	WorldPhysics::DrawDebug();
 }
 
 void Application::SwapFrames()
@@ -182,7 +192,7 @@ void Application::Draw()
 	RENDERER.Disable(RD_DEPTH_TEST);
 	skybox->Draw();
 
-	if (isEditor)
+	if (isEditor || useEditorCam)
 	{
 		editorCamera.Update();
 	}
@@ -254,8 +264,21 @@ void Application::UpdateLights()
 
 void Application::UpdateUniforms()
 {
-	viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
-	viewPos = editorCamera.GetTransform().GetWorldPosition();
+	if (isEditor || useEditorCam) 
+	{
+		viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
+		viewPos = editorCamera.GetTransform().GetWorldPosition();
+	}
+	else if(Camera* cam = GameObjectManager::GetCurrentCamera())
+	{
+		viewProj = cam->GetProjectionMatrix() * cam->CreateViewMatrix();
+		viewPos = cam->GetTransform().GetWorldPosition();
+	}
+	else
+	{
+		viewProj = lm::FMat4(0);
+		viewPos = lm::FVec3(0);
+	}
 
 	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(viewProj));
 

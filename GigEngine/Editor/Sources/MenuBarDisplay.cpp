@@ -48,6 +48,7 @@ void MenuBarDisplay::DrawPlayPause()
 
 	bool isPause = Application::IsInPause();
 	bool isPlaying = !Application::IsInEditor();
+	bool isUsingEditorCam = Application::IsUsingEditorCam();
 
 	if (isPlaying)
 	{
@@ -75,6 +76,21 @@ void MenuBarDisplay::DrawPlayPause()
 	}
 
 	if (isPause)
+	{
+		ImGui::PopStyleVar();
+	}
+
+	if (isUsingEditorCam)
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+	}
+
+	if (ImGui::Button("Editor camera"))
+	{
+		Application::UseEditorCam();
+	}
+
+	if (isUsingEditorCam)
 	{
 		ImGui::PopStyleVar();
 	}

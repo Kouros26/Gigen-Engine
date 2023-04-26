@@ -19,8 +19,10 @@ public:
 	static void Play();
 	static void Pause();
 	static void Stop();
+	static void UseEditorCam();
 	static bool IsInEditor();
 	static bool IsInPause();
+	static bool IsUsingEditorCam();
 
 	void Run();
 	void SwapFrames();
@@ -36,6 +38,7 @@ private:
 
 	static inline bool isEditor = true;
 	static inline bool isPause = false;
+	static inline bool useEditorCam = false;
 
 	//main shader
 	static inline ShaderProgram mainShader;

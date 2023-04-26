@@ -15,8 +15,6 @@ HierarchyDisplay::~HierarchyDisplay()
 
 void HierarchyDisplay::Draw()
 {
-	ImGui::ShowDemoWindow();
-
 	height = InterfaceManager::GetHeight();
 	ImGui::SetNextWindowPos({ 0, g_menuBarSize });
 	ImGui::SetNextWindowSize({ width, height });

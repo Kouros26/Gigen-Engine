@@ -44,6 +44,7 @@ public:
 	static void AddRigidBodyInWorld(btRigidBody* pRigidBody);
 	static void RemoveRigidBodyFromWorld(btRigidBody* pRigidBody);
 	static void UpdatePhysics(double pDeltaTime);
+	static void DrawDebug();
 
 private:
 
