@@ -12,6 +12,7 @@ Interface::Interface(GLFWwindow* pWindow, const char* pGlslVersion)
 	ImGui_ImplOpenGL3_Init(pGlslVersion);
 	ImGui::StyleColorsDark();
 	SetColorDark();
+	SetFont();
 }
 
 Interface::~Interface()
@@ -67,4 +68,11 @@ void Interface::SetColorDark()
 	colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 	colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 	colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+}
+
+void Interface::SetFont()
+{
+	ImGuiIO& io = ImGui::GetIO();
+	io.Fonts->AddFontFromFileTTF("Resources/Fonts/Ruda-Bold.ttf", 16.0f);
+	io.FontDefault = io.Fonts->AddFontFromFileTTF("Resources/Fonts/Ruda-Bold.ttf", 16.0f);
 }

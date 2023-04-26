@@ -23,6 +23,7 @@ public:
 private:
 
 	void SetColorDark();
+	void SetFont();
 
 	FPSDisplay fps;
 	GameObjectInspector gameObjInspector;
