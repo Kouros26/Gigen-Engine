@@ -120,6 +120,7 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 		return;
 	}
 
+	bool isFocused = (obj == GameObjectManager::GetFocusedGameObject());
 	int flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 
 	if (obj->GetChildrenCount() == 0) 
@@ -127,7 +128,17 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 		flags = flags | ImGuiTreeNodeFlags_Leaf;
 	}
 
+	if (isFocused) 
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, {1,1,0.5f,1});
+	}
+
 	const bool treeNodeOpen = ImGui::TreeNodeEx(obj->GetName().c_str(), flags);
+
+	if (isFocused)
+	{
+		ImGui::PopStyleColor();
+	}
 
 	ImGui::PushID(obj->GetId());
 	ImGui::PopID();

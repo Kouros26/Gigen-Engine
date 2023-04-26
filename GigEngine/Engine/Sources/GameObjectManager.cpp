@@ -265,5 +265,6 @@ GameObject* GameObjectManager::GetFocusedGameObject()
 GameObject* GameObjectManager::AddGameObject(GameObject* object)
 {
 	gameObjects.push_back(object);
+	SetFocusedGameObject(object);
 	return object;
 }

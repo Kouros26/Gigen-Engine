@@ -267,35 +267,33 @@ void Application::UpdateLights()
 
 void Application::UpdateUniforms()
 {
+	Camera* cam = nullptr;
 	if (isEditor || useEditorCam) 
 	{
-		viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
-		viewPos = editorCamera.GetTransform().GetWorldPosition();
+		cam = &editorCamera;
 	}
 	else
 	{
-		if (Camera* cam = GameObjectManager::GetCurrentCamera())
+		if (GameObjectManager::GetCurrentCamera())
 		{
-			if (cam->IsActive() && !cam->IsOneParentInactive()) 
+			if (GameObjectManager::GetCurrentCamera()->IsActiveForReal())
 			{
-				viewProj = cam->GetProjectionMatrix() * cam->CreateViewMatrix();
-				viewPos = cam->GetTransform().GetWorldPosition();
+				cam = GameObjectManager::GetCurrentCamera();
 			}
-			else
-			{
-				viewProj = lm::FMat4(0);
-				viewPos = lm::FVec3(0);
-			}
-		}
-		else
-		{
-			viewProj = lm::FMat4(0);
-			viewPos = lm::FVec3(0);
 		}
 	}
 
+	if (cam) 
+	{
+		viewProj = cam->GetProjectionMatrix() * cam->CreateViewMatrix();
+		viewPos = cam->GetTransform().GetWorldPosition();
+	}
+	else
+	{
+		viewProj = lm::FMat4(0);
+		viewPos = lm::FVec3(0);
+	}
 
 	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(viewProj));
-
 	RENDERER.SetUniformValue(viewPosLocation, UniformType::VEC3, &viewPos);
 }
