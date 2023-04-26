@@ -77,14 +77,23 @@ public:
 	Transform& GetTransform();
 	[[nodiscard]] RigidBody* GetRigidBody() const;
 
-	bool IsAParent(GameObject* obj);
 	GameObject*& GetParent();
 	GameObject* GetChild(unsigned int index);
 	unsigned int GetChildrenCount();
 	std::list<GameObject*>& GetChildren();
 
+	//used only in editor
+	bool* IsActiveP();
+
+	bool IsAParent(GameObject* obj) const;
+	bool IsOneParentInactive() const;
+	bool IsActive() const;
+	bool IsActiveForReal() const;
+	void SetActive(bool b);
+
 private:
 
+	bool isActive;
 	std::string name{};
 	unsigned int id{};
 

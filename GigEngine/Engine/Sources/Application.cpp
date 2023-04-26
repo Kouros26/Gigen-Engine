@@ -102,8 +102,11 @@ void Application::StartGame()
 	{
 		const GameObject* object = GameObjectManager::GetGameObject(i);
 
-		for (int j = 0; j < object->GetComponentCount(); j++)
-			object->GetComponentByID(j)->Start();
+		if (object->IsActive() && !object->IsOneParentInactive()) 
+		{
+			for (int j = 0; j < object->GetComponentCount(); j++)
+				object->GetComponentByID(j)->Start();
+		}
 	}
 }
 
@@ -269,16 +272,28 @@ void Application::UpdateUniforms()
 		viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
 		viewPos = editorCamera.GetTransform().GetWorldPosition();
 	}
-	else if(Camera* cam = GameObjectManager::GetCurrentCamera())
-	{
-		viewProj = cam->GetProjectionMatrix() * cam->CreateViewMatrix();
-		viewPos = cam->GetTransform().GetWorldPosition();
-	}
 	else
 	{
-		viewProj = lm::FMat4(0);
-		viewPos = lm::FVec3(0);
+		if (Camera* cam = GameObjectManager::GetCurrentCamera())
+		{
+			if (cam->IsActive() && !cam->IsOneParentInactive()) 
+			{
+				viewProj = cam->GetProjectionMatrix() * cam->CreateViewMatrix();
+				viewPos = cam->GetTransform().GetWorldPosition();
+			}
+			else
+			{
+				viewProj = lm::FMat4(0);
+				viewPos = lm::FVec3(0);
+			}
+		}
+		else
+		{
+			viewProj = lm::FMat4(0);
+			viewPos = lm::FVec3(0);
+		}
 	}
+
 
 	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(viewProj));
 

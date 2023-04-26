@@ -232,20 +232,40 @@ void GameObject::OnCollisionExit(const Collision& collision)
 
 void GameObject::UpdateRender() const
 {
-	if (model)
+	if (model && IsActiveForReal())
 		model->Draw(texture);
+}
+
+bool GameObject::IsOneParentInactive() const
+{
+	GameObject* p = parent;
+	while (p != nullptr) 
+	{
+		if (!p->IsActive()) 
+		{
+			return true;
+		}
+		p = p->GetParent();
+	}
+	return false;
 }
 
 void GameObject::UpdateComponents() const
 {
-	for (const auto& component : components)
-		component->Update();
+	if (IsActiveForReal())
+	{
+		for (const auto& component : components)
+			component->Update();
+	}
 }
 
 void GameObject::LateUpdate() const
 {
-	for (const auto& script : scripts)
-		script->LateUpdate();
+	if (IsActiveForReal())
+	{
+		for (const auto& script : scripts)
+			script->LateUpdate();
+	}
 }
 
 void GameObject::UpdateHierarchy()
@@ -289,7 +309,7 @@ Transform& GameObject::GetTransform()
 	return transform;
 }
 
-bool GameObject::IsAParent(GameObject* obj)
+bool GameObject::IsAParent(GameObject* obj) const
 {
 	GameObject* p = parent;
 	while (p != nullptr)
@@ -332,4 +352,24 @@ unsigned int GameObject::GetChildrenCount()
 RigidBody* GameObject::GetRigidBody() const
 {
 	return rigidBody;
+}
+
+bool* GameObject::IsActiveP() 
+{
+	return &isActive;
+}
+
+bool GameObject::IsActive() const
+{
+	return isActive;
+}
+
+bool GameObject::IsActiveForReal() const
+{
+	return isActive && !IsOneParentInactive();
+}
+
+void GameObject::SetActive(bool b) 
+{
+	isActive = b;
 }
