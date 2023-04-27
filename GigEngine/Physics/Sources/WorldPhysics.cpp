@@ -104,6 +104,13 @@ void WorldPhysics::UpdatePhysics(double pDeltaTime)
 	if (world)
 	{
 		world->stepSimulation(static_cast<float>(pDeltaTime));
+	}
+}
+
+void WorldPhysics::DrawDebug()
+{
+	if (world)
+	{
 		world->debugDrawWorld();
 	}
 }

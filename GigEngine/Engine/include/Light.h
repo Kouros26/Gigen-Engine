@@ -35,7 +35,7 @@ public:
 	float GetDiffuse();
 	float GetSpecular();
 
-	void SetColor(lm::FVec3 pColor);
+	void SetColor(const lm::FVec3& pColor);
 	void SetAmbient(float pAmbient);
 	void SetDiffuse(float pDiffuse);
 	void SetSpecular(float pSpecular);

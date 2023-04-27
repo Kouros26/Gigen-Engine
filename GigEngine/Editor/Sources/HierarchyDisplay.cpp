@@ -15,8 +15,6 @@ HierarchyDisplay::~HierarchyDisplay()
 
 void HierarchyDisplay::Draw()
 {
-	ImGui::ShowDemoWindow();
-
 	height = InterfaceManager::GetHeight();
 	ImGui::SetNextWindowPos({ 0, g_menuBarSize });
 	ImGui::SetNextWindowSize({ width, height });
@@ -27,6 +25,7 @@ void HierarchyDisplay::Draw()
 	ImGui::SetWindowSize("Scene", { width, height });
 
 	CreatePopUp();
+	ImGui::Separator();
 	DisplayHierarchy();
 
 	ImGui::End();
@@ -115,14 +114,32 @@ void HierarchyDisplay::CreatePopUp() const
 	}
 }
 
-void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
+void HierarchyDisplay::DisplayGameObject(GameObject * obj, bool isChild)
 {
 	if (obj->GetParent() && !isChild)
 	{
 		return;
 	}
 
-	const bool treeNodeOpen = ImGui::TreeNodeEx(obj->GetName().c_str(), ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen);
+	bool isFocused = (obj == GameObjectManager::GetFocusedGameObject());
+	int flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+
+	if (obj->GetChildrenCount() == 0)
+	{
+		flags = flags | ImGuiTreeNodeFlags_Leaf;
+	}
+
+	if (isFocused)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, { 1,1,0.5f,1 });
+	}
+
+	const bool treeNodeOpen = ImGui::TreeNodeEx(obj->GetName().c_str(), flags);
+
+	if (isFocused)
+	{
+		ImGui::PopStyleColor();
+	}
 
 	ImGui::PushID(obj->GetId());
 	ImGui::PopID();
@@ -166,7 +183,7 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 	}
 }
 
-void HierarchyDisplay::GameObjectClicked(GameObject* obj) const
+void HierarchyDisplay::GameObjectClicked(GameObject * obj) const
 {
 	if (ImGui::IsItemClicked(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 	{
@@ -183,7 +200,7 @@ void HierarchyDisplay::GameObjectClicked(GameObject* obj) const
 	}
 }
 
-void HierarchyDisplay::GameObjectPopUp(GameObject* obj) const
+void HierarchyDisplay::GameObjectPopUp(GameObject * obj) const
 {
 	if (ImGui::BeginPopup(obj->GetName().c_str()))
 	{

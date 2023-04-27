@@ -55,9 +55,46 @@ lm::FVec3& Application::GetViewPos()
 	return viewPos;
 }
 
+void Application::Play()
+{
+	if (isEditor)
+	{
+		StartGame();
+		isEditor = false;
+	}
+	else
+	{
+		Stop();
+	}
+}
+
+void Application::Pause()
+{
+	isPause = !isPause;
+}
+
+void Application::Stop()
+{
+	//reload
+	isEditor = true;
+}
+
+void Application::UseEditorCam()
+{
+	useEditorCam = !useEditorCam;
+}
+
 bool Application::IsInEditor()
 {
 	return isEditor;
+}
+bool Application::IsInPause()
+{
+	return isPause;
+}
+bool Application::IsUsingEditorCam()
+{
+	return useEditorCam;
 }
 void Application::StartGame()
 {
@@ -65,8 +102,11 @@ void Application::StartGame()
 	{
 		const GameObject* object = GameObjectManager::GetGameObject(i);
 
-		for (int j = 0; j < object->GetComponentCount(); j++)
-			object->GetComponentByID(j)->Start();
+		if (object->IsActive())
+		{
+			for (int j = 0; j < object->GetComponentCount(); j++)
+				object->GetComponentByID(j)->Start();
+		}
 	}
 }
 
@@ -75,7 +115,12 @@ void Application::Run()
 	window.ProcessInput();
 	Time::UpdateDeltaTime();
 	Draw();
-	WorldPhysics::UpdatePhysics(Time::GetDeltaTime());
+
+	if (!isEditor && !isPause)
+	{
+		WorldPhysics::UpdatePhysics(Time::GetDeltaTime());
+	}
+	WorldPhysics::DrawDebug();
 }
 
 void Application::SwapFrames()
@@ -147,24 +192,30 @@ void Application::Draw()
 {
 	ClearWindow();
 
-	if (isEditor)
+	RENDERER.Disable(RD_DEPTH_TEST);
+	skybox->Draw();
+
+	if (isEditor || useEditorCam)
 	{
-		RENDERER.Disable(RD_DEPTH_TEST);
-		skybox->Draw();
 		editorCamera.Update();
-		mainShader.Use(); //start using the main shader
-
-		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
-		UpdateUniforms(); //then send the global uniforms
-		UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
-
-		RENDERER.Enable(RD_DEPTH_TEST);
-		RENDERER.DepthFunction(RD_LESS);
-		UpdateGameObjectRender(); //render model if they have one
-		mainShader.UnUse(); //stop using the main shader
-
-		Lines::DrawLines(); //render debug lines or guizmos
 	}
+
+	mainShader.Use(); //start using the main shader
+
+	if (!isEditor && !isPause)
+	{
+		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
+	}
+
+	UpdateUniforms(); //then send the global uniforms
+	UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
+
+	RENDERER.Enable(RD_DEPTH_TEST);
+	RENDERER.DepthFunction(RD_LESS);
+	UpdateGameObjectRender(); //render model if they have one
+	mainShader.UnUse(); //stop using the main shader
+
+	Lines::DrawLines(); //render debug lines or guizmos
 }
 
 void Application::ClearWindow()
@@ -216,10 +267,33 @@ void Application::UpdateLights()
 
 void Application::UpdateUniforms()
 {
-	viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
-	viewPos = editorCamera.GetTransform().GetWorldPosition();
+	Camera* cam = nullptr;
+	if (isEditor || useEditorCam)
+	{
+		cam = &editorCamera;
+	}
+	else
+	{
+		if (GameObjectManager::GetCurrentCamera())
+		{
+			if (GameObjectManager::GetCurrentCamera()->IsActive())
+			{
+				cam = GameObjectManager::GetCurrentCamera();
+			}
+		}
+	}
+
+	if (cam)
+	{
+		viewProj = cam->GetProjectionMatrix() * cam->CreateViewMatrix();
+		viewPos = cam->GetTransform().GetWorldPosition();
+	}
+	else
+	{
+		viewProj = lm::FMat4(0);
+		viewPos = lm::FVec3(0);
+	}
 
 	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(viewProj));
-
 	RENDERER.SetUniformValue(viewPosLocation, UniformType::VEC3, &viewPos);
 }

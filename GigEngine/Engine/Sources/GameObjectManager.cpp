@@ -120,44 +120,35 @@ GameObject* GameObjectManager::CreateCamera()
 {
 	Camera* object = new Camera();
 
+	if (!currentCamera)
+	{
+		currentCamera = object;
+	}
+
 	return AddGameObject(object);
 }
 
 void GameObjectManager::Remove(GameObject* object)
 {
-	auto it = std::find(gameObjects.begin(), gameObjects.end(), object);
+	const auto it = std::find(gameObjects.begin(), gameObjects.end(), object);
 
 	if (it != gameObjects.end())
 		gameObjects.erase(it);
 
-	PointLight* point = dynamic_cast<PointLight*>(object);
-	if (point)
-	{
-		auto temp = std::find(pointLights.begin(), pointLights.end(), point);
+	const auto pointsTemp = std::find(pointLights.begin(), pointLights.end(), object);
 
-		if (temp != pointLights.end())
-			pointLights.erase(temp);
-		return;
-	}
+	if (pointsTemp != pointLights.end())
+		pointLights.erase(pointsTemp);
 
-	SpotLight* spot = dynamic_cast<SpotLight*>(object);
-	if (spot)
-	{
-		auto temp = std::find(spotLights.begin(), spotLights.end(), spot);
+	const auto spotTemp = std::find(spotLights.begin(), spotLights.end(), object);
 
-		if (temp != spotLights.end())
-			spotLights.erase(temp);
-		return;
-	}
+	if (spotTemp != spotLights.end())
+		spotLights.erase(spotTemp);
 
-	DirLight* dir = dynamic_cast<DirLight*>(object);
-	if (dir)
-	{
-		auto temp = std::find(dirLights.begin(), dirLights.end(), dir);
+	const auto dirTemp = std::find(dirLights.begin(), dirLights.end(), object);
 
-		if (temp != dirLights.end())
-			dirLights.erase(temp);
-	}
+	if (dirTemp != dirLights.end())
+		dirLights.erase(dirTemp);
 }
 
 std::vector<GameObject*> GameObjectManager::FindObjectsByName(std::string name)
@@ -223,17 +214,41 @@ void GameObjectManager::SendLightsToShader()
 
 int GameObjectManager::GetDirLightSize()
 {
-	return dirLights.size();
+	int nbLight = 0;
+	for (DirLight* l : dirLights)
+	{
+		if (l->IsActive())
+		{
+			nbLight++;
+		}
+	}
+	return nbLight;
 }
 
 int GameObjectManager::GetPointLightSize()
 {
-	return pointLights.size();
+	int nbLight = 0;
+	for (PointLight* l : pointLights)
+	{
+		if (l->IsActive())
+		{
+			nbLight++;
+		}
+	}
+	return nbLight;
 }
 
 int GameObjectManager::GetSpotLightSize()
 {
-	return spotLights.size();
+	int nbLight = 0;
+	for (SpotLight* l : spotLights)
+	{
+		if (l->IsActive())
+		{
+			nbLight++;
+		}
+	}
+	return nbLight;
 }
 
 void GameObjectManager::SetFocusedGameObject(GameObject* obj)
@@ -249,5 +264,6 @@ GameObject* GameObjectManager::GetFocusedGameObject()
 GameObject* GameObjectManager::AddGameObject(GameObject* object)
 {
 	gameObjects.push_back(object);
+	SetFocusedGameObject(object);
 	return object;
 }
