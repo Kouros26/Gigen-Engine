@@ -46,9 +46,9 @@ void MenuBarDisplay::DrawPlayPause()
 {
 	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() / 2 - 40);
 
-	bool isPause = Application::IsInPause();
-	bool isPlaying = !Application::IsInEditor();
-	bool isUsingEditorCam = Application::IsUsingEditorCam();
+	const bool isPause = Application::IsInPause();
+	const bool isPlaying = !Application::IsInEditor();
+	const bool isUsingEditorCam = Application::IsUsingEditorCam();
 
 	if (isPlaying)
 	{

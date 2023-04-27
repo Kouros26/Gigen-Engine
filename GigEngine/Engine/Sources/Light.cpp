@@ -56,7 +56,7 @@ float DirLight::GetSpecular()
 	return specular;
 }
 
-void DirLight::SetColor(lm::FVec3 pColor)
+void DirLight::SetColor(const lm::FVec3& pColor)
 {
 	for (int i = 0; i < 3; i++)
 	{
