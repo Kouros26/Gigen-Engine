@@ -82,13 +82,8 @@ public:
 	unsigned int GetChildrenCount();
 	std::list<GameObject*>& GetChildren();
 
-	//used only in editor
-	bool* IsActiveP();
-
 	bool IsAParent(GameObject* obj) const;
-	bool IsOneParentInactive() const;
 	bool IsActive() const;
-	bool IsActiveForReal() const;
 	void SetActive(bool b);
 
 private:

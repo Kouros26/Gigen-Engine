@@ -50,8 +50,13 @@ void GameObjectInspector::DrawGameObject()
 		object->SetName(name);
 	}
 
-	ImGui::SameLine(); 
-	ImGui::Checkbox("##2", object->IsActiveP());
+	bool isActive = object->IsActive();
+	ImGui::SameLine();
+	ImGui::Checkbox("##2", &isActive);
+	if (isActive != object->IsActive())
+	{
+		object->SetActive(isActive);
+	}
 
 	ImGui::Separator();
 

@@ -12,7 +12,7 @@ DirLight::DirLight(float ambient, float diffuse, float specular, lm::FVec3 color
 
 void DirLight::SendToShader(const int& pos, const std::string& shaderName)
 {
-	if (!IsActiveForReal())
+	if (!IsActive())
 	{
 		return;
 	}
@@ -86,7 +86,7 @@ PointLight::PointLight(float ambient, float diffuse, float specular, float const
 
 void PointLight::SendToShader(const int& pos, const std::string& shaderName)
 {
-	if (!IsActiveForReal())
+	if (!IsActive())
 	{
 		return;
 	}
@@ -147,7 +147,7 @@ SpotLight::SpotLight(float ambient, float diffuse, float specular, float constan
 
 void SpotLight::SendToShader(const int& pos, const std::string& shaderName)
 {
-	if (!IsActiveForReal())
+	if (!IsActive())
 	{
 		return;
 	}

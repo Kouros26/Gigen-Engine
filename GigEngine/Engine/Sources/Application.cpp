@@ -102,7 +102,7 @@ void Application::StartGame()
 	{
 		const GameObject* object = GameObjectManager::GetGameObject(i);
 
-		if (object->IsActive() && !object->IsOneParentInactive()) 
+		if (object->IsActive())
 		{
 			for (int j = 0; j < object->GetComponentCount(); j++)
 				object->GetComponentByID(j)->Start();
@@ -268,7 +268,7 @@ void Application::UpdateLights()
 void Application::UpdateUniforms()
 {
 	Camera* cam = nullptr;
-	if (isEditor || useEditorCam) 
+	if (isEditor || useEditorCam)
 	{
 		cam = &editorCamera;
 	}
@@ -276,14 +276,14 @@ void Application::UpdateUniforms()
 	{
 		if (GameObjectManager::GetCurrentCamera())
 		{
-			if (GameObjectManager::GetCurrentCamera()->IsActiveForReal())
+			if (GameObjectManager::GetCurrentCamera()->IsActive())
 			{
 				cam = GameObjectManager::GetCurrentCamera();
 			}
 		}
 	}
 
-	if (cam) 
+	if (cam)
 	{
 		viewProj = cam->GetProjectionMatrix() * cam->CreateViewMatrix();
 		viewPos = cam->GetTransform().GetWorldPosition();

@@ -157,7 +157,6 @@ void GameObject::SetName(const std::string& pName)
 	name = pName;
 }
 
-
 unsigned int GameObject::GetId() const
 {
 	return id;
@@ -166,7 +165,7 @@ unsigned int GameObject::GetId() const
 void GameObject::SetModel(std::string const& filePath)
 {
 	model = ResourceManager::Get<Model>(filePath);
-	if (!texture) 
+	if (!texture)
 	{
 		texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
 	}
@@ -232,27 +231,13 @@ void GameObject::OnCollisionExit(const Collision& collision)
 
 void GameObject::UpdateRender() const
 {
-	if (model && IsActiveForReal())
+	if (model && IsActive())
 		model->Draw(texture);
-}
-
-bool GameObject::IsOneParentInactive() const
-{
-	GameObject* p = parent;
-	while (p != nullptr) 
-	{
-		if (!p->IsActive()) 
-		{
-			return true;
-		}
-		p = p->GetParent();
-	}
-	return false;
 }
 
 void GameObject::UpdateComponents() const
 {
-	if (IsActiveForReal())
+	if (IsActive())
 	{
 		for (const auto& component : components)
 			component->Update();
@@ -261,7 +246,7 @@ void GameObject::UpdateComponents() const
 
 void GameObject::LateUpdate() const
 {
-	if (IsActiveForReal())
+	if (IsActive())
 	{
 		for (const auto& script : scripts)
 			script->LateUpdate();
@@ -354,22 +339,16 @@ RigidBody* GameObject::GetRigidBody() const
 	return rigidBody;
 }
 
-bool* GameObject::IsActiveP() 
-{
-	return &isActive;
-}
-
 bool GameObject::IsActive() const
 {
 	return isActive;
 }
 
-bool GameObject::IsActiveForReal() const
-{
-	return isActive && !IsOneParentInactive();
-}
-
-void GameObject::SetActive(bool b) 
+void GameObject::SetActive(bool b)
 {
 	isActive = b;
+	for (GameObject* child : children)
+	{
+		child->SetActive(b);
+	}
 }

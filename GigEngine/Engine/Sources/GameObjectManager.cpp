@@ -217,7 +217,7 @@ int GameObjectManager::GetDirLightSize()
 	int nbLight = 0;
 	for (DirLight* l : dirLights)
 	{
-		if (l->IsActiveForReal())
+		if (l->IsActive())
 		{
 			nbLight++;
 		}
@@ -230,7 +230,7 @@ int GameObjectManager::GetPointLightSize()
 	int nbLight = 0;
 	for (PointLight* l : pointLights)
 	{
-		if (l->IsActiveForReal())
+		if (l->IsActive())
 		{
 			nbLight++;
 		}
@@ -243,7 +243,7 @@ int GameObjectManager::GetSpotLightSize()
 	int nbLight = 0;
 	for (SpotLight* l : spotLights)
 	{
-		if (l->IsActiveForReal())
+		if (l->IsActive())
 		{
 			nbLight++;
 		}
