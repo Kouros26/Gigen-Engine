@@ -112,8 +112,8 @@ void Application::CreateGameObjects()
 
 	GameObject* ground = GameObjectManager::CreateGameObject("Ground");
 	ground->SetModel("Resources/Models/Basics/Cube.FBX");
-	ground->GetTransform().SetWorldScale({ 1, 0.05f, 0.5f });
-	ground->CreateBoxRigidBody({ 1 }, { 50 }, 0.f);
+	ground->GetTransform().SetWorldScale({ 50, 1, 50 });
+	ground->CreateBoxRigidBody({ 1 }, { 1 }, 0.f);
 
 	GameObject* TH = GameObjectManager::CreateGameObject("Thierry-Henri", { -5, 15, 8 }, { 0, 90, 0 }, { 20 });
 	TH->SetModel("Resources/Models/Thierry-Henri.obj");
