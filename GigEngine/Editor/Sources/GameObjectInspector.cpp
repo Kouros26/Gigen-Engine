@@ -1,6 +1,6 @@
 #include "GameObjectInspector.h"
 #include "InterfaceManager.h"
-#include "FileDisplay.h"
+#include "ToolsDisplay.h"
 #include "imgui.h"
 #include "Application.h"
 #include "GameObject.h"
@@ -16,7 +16,7 @@ GameObjectInspector::~GameObjectInspector()
 
 void GameObjectInspector::Draw()
 {
-    height = InterfaceManager::GetHeight() - InterfaceManager::GetClassHeight<FileDisplay>() - g_menuBarSize;
+    height = InterfaceManager::GetHeight() - InterfaceManager::GetClassHeight<ToolsDisplay>() - g_menuBarSize;
     bool open = true;
     ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width, g_menuBarSize });
     ImGui::SetNextWindowSize({ width, height });

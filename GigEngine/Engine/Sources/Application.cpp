@@ -7,6 +7,7 @@
 #include "Light.h"
 #include "Skybox.h"
 #include "Component.h"
+#include "Log.h"
 #include "Behaviour.h"
 #include <iostream>
 
@@ -111,6 +112,10 @@ void Application::CreateGameObjects()
     sponza->SetModel("Resources/Models/sponza.obj");
     GameObject* village = GameObjectManager::CreateGameObject("village", { -20,0,0 }, { 0 }, { 0.05 });
     village->SetModel("Resources/Models/MinecraftVillage.fbx");
+
+    GIG_LOG("hello");
+    GIG_LOGWARNING("hello");
+    GIG_LOGERROR("hello");
     //==================================================================
 }
 
