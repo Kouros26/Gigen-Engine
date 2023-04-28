@@ -25,7 +25,7 @@ FetchContent_Declare(
 	GLFW
 	GIT_REPOSITORY https://github.com/glfw/glfw.git
 	GIT_TAG 3.3.8)
-	
+
 set(CMAKE_FOLDER "${CMAKE_FOLDER_OLD}/vendor/glfw")
 set(GLFW_BUILD_TESTS OFF)
 set(GLFW_BUILD_EXAMPLES OFF)
@@ -69,7 +69,7 @@ add_subdirectory(MathsTest)
 
 
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${MAIN_PROJECT_NAME}/${SOURCE_FOLDER})
-file(GLOB_RECURSE SOURCE_FILES 
+file(GLOB_RECURSE SOURCE_FILES
 ${PROJECT_SOURCE_DIR}/*.c
 ${PROJECT_SOURCE_DIR}/*.cc
 ${PROJECT_SOURCE_DIR}/*.cpp
@@ -77,7 +77,7 @@ ${PROJECT_SOURCE_DIR}/*.cxx
 ${PROJECT_SOURCE_DIR}/*.c++)
 
 set(PROJECT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${MAIN_PROJECT_NAME}/${INCLUDE_FOLDER})
-file(GLOB_RECURSE HEADER_FILES 
+file(GLOB_RECURSE HEADER_FILES
 ${PROJECT_INCLUDE_DIR}/*.h
 ${PROJECT_INCLUDE_DIR}/*.hpp
 ${PROJECT_INCLUDE_DIR}/*.inl)
@@ -92,16 +92,17 @@ target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${LIBMATHS_LIBRARY})
 
 
 set_target_properties(${MAIN_PROJECT_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))
-target_compile_options(${MAIN_PROJECT_NAME} PRIVATE /W4 /WX)
+target_compile_options(${MAIN_PROJECT_NAME} PRIVATE /W4 /WX )
+
 #Copy resources Folder
 add_custom_command(TARGET ${MAIN_PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${RESOURCES_DIR}
         $<TARGET_FILE_DIR:${MAIN_PROJECT_NAME}>/Resources)
-		
+
 
 #look for shader
-file(GLOB_RECURSE TARGET_SHADER_FILES #any name for extentions --> choice 
+file(GLOB_RECURSE TARGET_SHADER_FILES #any name for extentions --> choice
 	${RESOURCES_DIR}/*.vert
 	${RESOURCES_DIR}/*.frag
 	${RESOURCES_DIR}/*.geom

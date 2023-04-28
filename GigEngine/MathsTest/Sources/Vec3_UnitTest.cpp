@@ -299,6 +299,9 @@ TEST_CASE("Vector3", "[.all][vector][Vector3]")
             glm::vec3 reflectGlm = glm::reflect(baseGlm, glm::normalize(otherGlm));
 
             CHECK_VECTOR3(reflect, reflectGlm);
+
+
+           
         }
 
         SECTION("Refract")
@@ -361,4 +364,5 @@ TEST_CASE("Vector3", "[.all][vector][Vector3]")
             CHECK(buffer.str() == "FVec3(2.5, -0.5, 2)");
         }
     }
+
 }

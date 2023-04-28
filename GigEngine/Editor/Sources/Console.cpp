@@ -31,9 +31,9 @@ void Console::Draw()
 	}
 
 	ImGui::BeginGroup();
-	for (int i = logs.size(); i > 0; i--)
+	for (int i = 0; i < logs.size(); i++)
 	{
-		LogMessage logmsg = logs[i - 1];
+		LogMessage logmsg = logs[i];
 		switch (logmsg.type)
 		{
 		case logType::WARNING:
@@ -62,7 +62,7 @@ void Console::AddLog(const char* log, logType type)
 	LogMessage temp;
 	temp.log = log;
 
-	if (temp.log.length() == 0) 
+	if (temp.log.length() == 0)
 	{
 		return;
 	}
