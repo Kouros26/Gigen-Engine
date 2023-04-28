@@ -1,11 +1,11 @@
 #pragma once
 #include "Displayable.h"
 
-class ToolsDisplay : public Displayable
+class FileDisplay : public Displayable
 {
 public:
-	ToolsDisplay();
-	~ToolsDisplay() override;
+	FileDisplay();
+	~FileDisplay() override;
 
 	void Draw() override;
 };

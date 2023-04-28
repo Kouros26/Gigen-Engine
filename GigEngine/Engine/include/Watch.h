@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-const int MAX_FPS_VECTOR_SIZE = 10;
+constexpr int MAX_FPS_VECTOR_SIZE = 10;
 
 class Time
 {

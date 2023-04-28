@@ -11,12 +11,16 @@
 #include "Behaviour.h"
 #include <iostream>
 
+#include "RigidBody.h"
+#include "WorldPhysics.h"
+
 using namespace GigRenderer;
 
 Application::Application()
 {
 	Init();
 
+	WorldPhysics::InitPhysicWorld();
 	CreateGameObjects();
 }
 
@@ -24,6 +28,7 @@ Application::~Application()
 {
 	Lines::Clear();
 	GameObjectManager::Cleanup();
+	WorldPhysics::DestroyPhysicWorld();
 	delete skybox;
 }
 
@@ -52,9 +57,46 @@ lm::FVec3& Application::GetViewPos()
 	return viewPos;
 }
 
+void Application::Play()
+{
+	if (isEditor)
+	{
+		StartGame();
+		isEditor = false;
+	}
+	else
+	{
+		Stop();
+	}
+}
+
+void Application::Pause()
+{
+	isPause = !isPause;
+}
+
+void Application::Stop()
+{
+	//reload
+	isEditor = true;
+}
+
+void Application::UseEditorCam()
+{
+	useEditorCam = !useEditorCam;
+}
+
 bool Application::IsInEditor()
 {
 	return isEditor;
+}
+bool Application::IsInPause()
+{
+	return isPause;
+}
+bool Application::IsUsingEditorCam()
+{
+	return useEditorCam;
 }
 void Application::StartGame()
 {
@@ -62,8 +104,11 @@ void Application::StartGame()
 	{
 		const GameObject* object = GameObjectManager::GetGameObject(i);
 
-		for (int j = 0; j < object->GetComponentCount(); j++)
-			object->GetComponentByID(j)->Start();
+		if (object->IsActive())
+		{
+			for (int j = 0; j < object->GetComponentCount(); j++)
+				object->GetComponentByID(j)->Start();
+		}
 	}
 }
 
@@ -72,6 +117,12 @@ void Application::Run()
 	window.ProcessInput();
 	Time::UpdateDeltaTime();
 	Draw();
+
+	if (!isEditor && !isPause)
+	{
+		WorldPhysics::UpdatePhysics(Time::GetDeltaTime());
+	}
+	WorldPhysics::DrawDebug();
 }
 
 void Application::SwapFrames()
@@ -94,29 +145,32 @@ void Application::CreateGameObjects()
 
 	skybox = new Skybox();
 
-	GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 0, 10 }, { 0 }, { 1 });
+	GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 10, 10 }, { 0 }, { 1 });
 	chest->SetModel("Resources/Models/chest.obj");
 	chest->SetTexture("Resources/Textures/test.png");
-	chest->AddComponent<GigScripting::Behaviour>("test");
 
-	GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 0, 10 }, { 0 }, { 1 });
-	GameObjectManager::SetFocusedGameObject(car);
+	GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 10, 10 }, { 0 }, { 1 });
 	car->SetModel("Resources/Models/Car.fbx");
+	//car->AddComponent<TestComponent>();
 	car->AddComponent<testComponent2>();
+	GameObjectManager::SetFocusedGameObject(car);
 	car->AddChild(chest);
+	car->CreateCapsuleRigidBody(1, 5, { 1 }, 10);
+
+	GameObject* ground = GameObjectManager::CreateGameObject("Ground");
+	ground->SetModel("Resources/Models/Basics/Cube.FBX");
+	ground->GetTransform().SetWorldScale({ 50, 1, 50 });
+	ground->CreateBoxRigidBody({ 1 }, { 1 }, 0.f);
+
+	GameObject* TH = GameObjectManager::CreateGameObject("Thierry-Henri", { -5, 15, 8 }, { 0, 90, 0 }, { 20 });
+	TH->SetModel("Resources/Models/Thierry-Henri.obj");
+	TH->CreateSphereRigidBody(2, { 0.05f }, 10.0f);
+	TH->GetRigidBody()->SetGravityEnabled(false);
+
+	//chest->CreateBoxRigidBody({ 10 }, { 1 }, 10.f);
 
 	GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
 	dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
-
-	GameObject* sponza = GameObjectManager::CreateGameObject("sponza", { 100, 0, 0 }, { 0 }, { 0.05 });
-	sponza->SetModel("Resources/Models/sponza.obj");
-	GameObject* village = GameObjectManager::CreateGameObject("village", { -20,0,0 }, { 0 }, { 0.05 });
-	village->SetModel("Resources/Models/MinecraftVillage.fbx");
-
-	GIG_LOG("hello");
-	GIG_WARNING("hello");
-	GIG_ERROR("hello");
-	//==================================================================
 }
 
 void Application::InitMainShader()
@@ -140,24 +194,30 @@ void Application::Draw()
 {
 	ClearWindow();
 
-	if (isEditor)
+	RENDERER.Disable(RD_DEPTH_TEST);
+	skybox->Draw();
+
+	if (isEditor || useEditorCam)
 	{
-		RENDERER.Disable(RD_DEPTH_TEST);
-		skybox->Draw();
 		editorCamera.Update();
-		mainShader.Use(); //start using the main shader
-
-		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
-		UpdateUniforms(); //then send the global uniforms
-		UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
-
-		RENDERER.Enable(RD_DEPTH_TEST);
-		RENDERER.DepthFunction(RD_LESS);
-		UpdateGameObjectRender(); //render model if they have one
-		mainShader.UnUse(); //stop using the main shader
-
-		Lines::DrawLines(); //render debug lines or guizmos
 	}
+
+	mainShader.Use(); //start using the main shader
+
+	if (!isEditor && !isPause)
+	{
+		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
+	}
+
+	UpdateUniforms(); //then send the global uniforms
+	UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
+
+	RENDERER.Enable(RD_DEPTH_TEST);
+	RENDERER.DepthFunction(RD_LESS);
+	UpdateGameObjectRender(); //render model if they have one
+	mainShader.UnUse(); //stop using the main shader
+
+	Lines::DrawLines(); //render debug lines or guizmos
 }
 
 void Application::ClearWindow()
@@ -209,12 +269,33 @@ void Application::UpdateLights()
 
 void Application::UpdateUniforms()
 {
-	mainShader.Use();
+	Camera* cam = nullptr;
+	if (isEditor || useEditorCam)
+	{
+		cam = &editorCamera;
+	}
+	else
+	{
+		if (GameObjectManager::GetCurrentCamera())
+		{
+			if (GameObjectManager::GetCurrentCamera()->IsActive())
+			{
+				cam = GameObjectManager::GetCurrentCamera();
+			}
+		}
+	}
 
-	viewProj = editorCamera.GetProjectionMatrix() * editorCamera.CreateViewMatrix();
-	viewPos = editorCamera.GetTransform().GetWorldPosition();
+	if (cam)
+	{
+		viewProj = cam->GetProjectionMatrix() * cam->CreateViewMatrix();
+		viewPos = cam->GetTransform().GetWorldPosition();
+	}
+	else
+	{
+		viewProj = lm::FMat4(0);
+		viewPos = lm::FVec3(0);
+	}
 
 	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(viewProj));
-
 	RENDERER.SetUniformValue(viewPosLocation, UniformType::VEC3, &viewPos);
 }

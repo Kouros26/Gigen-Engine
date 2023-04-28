@@ -4,125 +4,112 @@
 
 namespace GigInput
 {
-    enum class MouseButton
-    {
-        LEFT = 0,
-        RIGHT = 1,
-        MIDDLE = 2
-    };
+	enum class MouseButton
+	{
+		LEFT = 0,
+		RIGHT = 1,
+		MIDDLE = 2
+	};
 
-    enum class MouseState
-    {
-        RELEASE = 0,
-        PRESS = 1
-    };
+	enum class MouseState
+	{
+		RELEASE = 0,
+		PRESS = 1
+	};
 
-    enum class KeyState
-    {
-        RELEASE = 0,
-        PRESS = 1
-    };
+	enum class Keys
+	{
+		ESCAPE = 256,
+		A = 65,
+		B = 66,
+		C = 67,
+		D = 68,
+		E = 69,
+		F = 70,
+		G = 71,
+		H = 72,
+		I = 73,
+		J = 74,
+		K = 75,
+		L = 76,
+		M = 77,
+		N = 78,
+		O = 79,
+		P = 80,
+		Q = 81,
+		R = 82,
+		S = 83,
+		T = 84,
+		U = 85,
+		V = 86,
+		W = 87,
+		X = 88,
+		Y = 89,
+		Z = 90,
+		SPACE = 32,
+		LEFT_SHIFT = 340,
+		LEFT_CONTROL = 341,
+		LEFT_ALT = 342,
+		RIGHT_SHIFT = 344,
+		RIGHT_CONTROL = 345,
+		RIGHT_ALT = 346,
+		LEFT = 263,
+		RIGHT = 262,
+		DOWN = 264,
+		UP = 265,
+		F1 = 290,
+		F2 = 291,
+		F3 = 292,
+		F4 = 293,
+		F5 = 294,
+		F6 = 295,
+		F7 = 296,
+		F8 = 297,
+		F9 = 298,
+		F10 = 299,
+		F11 = 300,
+		F12 = 301,
+		LAST = 348,
+		TAB = 258,
+	};
 
-    enum class Keys
-    {
-        ESCAPE = 256,
-        TAB = 258,
-        ENTER = 257,
-        BACKSPACE = 259,
+	struct Mouse
+	{
+		double x;
+		double y;
 
-        A = 65,
-        B = 66,
-        C = 67,
-        D = 68,
-        E = 69,
-        F = 70,
-        G = 71,
-        H = 72,
-        I = 73,
-        J = 74,
-        K = 75,
-        L = 76,
-        M = 77,
-        N = 78,
-        O = 79,
-        P = 80,
-        Q = 81,
-        R = 82,
-        S = 83,
-        T = 84,
-        U = 85,
-        V = 86,
-        W = 87,
-        X = 88,
-        Y = 89,
-        Z = 90,
-        SPACE = 32,
-        LEFT_SHIFT = 340,
-        LEFT_CONTROL = 341,
-        LEFT_ALT = 342,
-        RIGHT_SHIFT = 344,
-        RIGHT_CONTROL = 345,
-        RIGHT_ALT = 346,
-        LEFT = 263,
-        RIGHT = 262,
-        DOWN = 264,
-        UP = 265,
-        F1 = 290,
-        F2 = 291,
-        F3 = 292,
-        F4 = 293,
-        F5 = 294,
-        F6 = 295,
-        F7 = 296,
-        F8 = 297,
-        F9 = 298,
-        F10 = 299,
-        F11 = 300,
-        F12 = 301,
-        LAST = 348,
-    };
+		double lastX;
+		double lastY;
 
-    struct Mouse
-    {
-        double x;
-        double y;
+		double mouseOffsetX;
+		double mouseOffsetY;
 
-        double lastX;
-        double lastY;
+		double wheelOffsetY;
 
-        double mouseOffsetX;
-        double mouseOffsetY;
+		bool rightClick;
+		bool leftClick;
 
-        double wheelOffsetY;
+		bool wheelClick;
+	};
 
-        bool rightClick;
-        bool leftClick;
+	class Inputs
+	{
+	public:
+		Inputs() = delete;
 
-        bool wheelClick;
-    };
+		static bool GetKey(Keys pKey);
 
-    class Inputs
-    {
-    public:
-        Inputs() = delete;
+		static Mouse GetMouse();
 
-        static bool GetKey(Keys pKey);
+		static void UpdateKey(int key, int action);
 
-        static bool GetKeyDown(Keys pKey);
+		static void UpdateMousePosition();
 
-        static bool GetKeyUp(Keys pKey);
+		static void UpdateMouseButton(int button, int action);
+		static void UpdateMouseWheelOffset(double offset);
 
-        static Mouse GetMouse();
-
-        static void UpdateKey(int key, int action);
-
-        static void UpdateMousePosition();
-
-        static void UpdateMouseButton(int button, int action);
-        static void UpdateMouseWheelOffset(double offset);
-
-    private:
-        inline static Mouse mouse;
-        inline static std::vector<bool> inputs = std::vector<bool>((int)Keys::LAST + 1, false);
-    };
+	private:
+		inline static Mouse mouse;
+		inline static std::vector<bool> inputs = std::vector<bool>((int)Keys::LAST + 1, false);
+	};
 }

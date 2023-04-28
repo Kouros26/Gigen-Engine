@@ -30,6 +30,16 @@ public:
 
 	virtual void SendToShader(const int& pos, const std::string& shaderName);
 
+	float* GetColor();
+	float GetAmbient();
+	float GetDiffuse();
+	float GetSpecular();
+
+	void SetColor(const lm::FVec3& pColor);
+	void SetAmbient(float pAmbient);
+	void SetDiffuse(float pDiffuse);
+	void SetSpecular(float pSpecular);
+
 private:
 	float direction[3];
 	float color[3];
@@ -48,6 +58,14 @@ public:
 
 	virtual void SendToShader(const int& pos, const std::string& shaderName) override;
 
+	float GetConstant();
+	float GetLinear();
+	float GetQuadratic();
+
+	void SetConstant(float pConstant);
+	void SetLinear(float pLinear);
+	void SetQuadratic(float pQuadratic);
+
 private:
 	float position[3];
 
@@ -65,6 +83,12 @@ public:
 		lm::FVec3 color = lm::FVec3(1));
 
 	virtual void SendToShader(const int& pos, const std::string& shaderName) override;
+
+	float GetCutOff();
+	float GetOuterCutOff();
+
+	void SetCutOff(float pCutOff);
+	void SetOuterCutOff(float pOuterCutOff);
 
 private:
 	float cutOff;

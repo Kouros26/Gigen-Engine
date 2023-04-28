@@ -34,7 +34,7 @@ public:
 
     virtual Component* Clone(GameObject* newGameObject) override {
         return new TestComponent(newGameObject);
-    };
+    }
 };
 
 class testComponent2 : public Component
@@ -48,5 +48,5 @@ public:
 
     virtual Component* Clone(GameObject* newGameObject) override {
         return new testComponent2(newGameObject);
-    };
+    }
 };

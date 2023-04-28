@@ -5,7 +5,7 @@ class EditorCamera : public Camera
 {
 public:
 	EditorCamera();
-	~EditorCamera();
+	~EditorCamera() override;
 
 	void Update();
 

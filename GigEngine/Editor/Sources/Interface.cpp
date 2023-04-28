@@ -8,6 +8,7 @@ Interface::Interface(GLFWwindow* pWindow, const char* pGlslVersion)
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
+	io.IniFilename = NULL;
 	ImGui_ImplGlfw_InitForOpenGL(pWindow, true);
 	ImGui_ImplOpenGL3_Init(pGlslVersion);
 	ImGui::StyleColorsDark();

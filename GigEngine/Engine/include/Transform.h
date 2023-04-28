@@ -3,6 +3,7 @@
 #include "Mat4/FMat4.hpp"
 #include <Quaternion/FQuat.hpp>
 
+class RigidBody;
 class Transform
 {
 public:
@@ -38,15 +39,20 @@ public:
     void AddRotation(const lm::FVec3& rot);
     void AddScale(const lm::FVec3& scl);
 
-    lm::FVec3 GetFront();
+    void SetOwnerRigidBody(RigidBody* rigidBody);
+
+	lm::FVec3 GetFront();
     lm::FVec3 GetUp();
     lm::FVec3 GetRight();
 
     lm::FMat4 GetMatrix();
+    lm::FMat4& MatrixGetter();
 
 private:
     void UpdateMatrix();
     void LimitRotation();
+
+    RigidBody* ownerRigidBody = nullptr;
 
     lm::FVec3 worldPosition{ 0 };
     lm::FVec3 worldRotation{ 0 };

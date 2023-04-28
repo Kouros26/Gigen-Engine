@@ -18,7 +18,7 @@ public:
 	~Interface();
 
 	void BeginFrame();
-	void Draw();
+	static void Draw();
 
 private:
 

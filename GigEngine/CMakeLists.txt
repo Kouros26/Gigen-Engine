@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
 
 set(CMAKE_FOLDER_OLD ${CMAKE_FOLDER})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CMAKE_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
@@ -17,6 +18,7 @@ set( THIRD_PARTY_PROJECT
    Editor
    Engine
    Scripting
+   Physics
 )
 
 
@@ -44,11 +46,21 @@ FetchContent_MakeAvailable(LibMath)
 
 set(CMAKE_FOLDER ${CMAKE_FOLDER_OLD})
 
+
+#Add BULLET
+set(BULLET_BUILD_LIB_DIR "${DEPENDS_DIR}/BULLET/lib")
+set(BULLET_ROOT "${DEPENDS_DIR}/BULLET")
+
+find_package(Bullet REQUIRED)
+
+
 set( THIRD_PARTY_INCLUDE
 Assimp
 STB
 IMGUI
 Lua
+BULLET
+
 )
 
 include_directories(${MAIN_PROJECT_NAME} PRIVATE ${glfw_SOURCE_DIR}/include)

@@ -1,7 +1,11 @@
 template<typename T>
 inline T* ResourceManager::Get(const std::string& filePath)
 {
-    auto it = resources.find(filePath);
+    auto it = resources.end();
+    if (resources.size() > 0) 
+    {
+        it = resources.find(filePath);
+    }
     if (it == resources.end())
     {
         return Create<T>(filePath);

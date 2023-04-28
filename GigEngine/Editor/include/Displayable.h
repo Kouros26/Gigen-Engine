@@ -8,8 +8,8 @@ public:
 
 	virtual void Draw() = 0;
 
-	float GetWidth();
-	float GetHeight();
+	[[nodiscard]] float GetWidth() const;
+	[[nodiscard]] float GetHeight() const;
 
 protected:
 	void LimitWidthResize();

@@ -1,6 +1,8 @@
 #include "MenuBarDisplay.h"
 #include "InterfaceManager.h"
 #include "imgui.h"
+#include "imgui_internal.h"
+#include "Application.h"
 
 MenuBarDisplay::MenuBarDisplay()
 {
@@ -8,8 +10,7 @@ MenuBarDisplay::MenuBarDisplay()
 }
 
 MenuBarDisplay::~MenuBarDisplay()
-{
-}
+= default;
 
 void MenuBarDisplay::Draw()
 {
@@ -24,12 +25,73 @@ void MenuBarDisplay::Draw()
 	}
 	if (ImGui::BeginMenu("Edit"))
 	{
-		if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-		ImGui::Separator();
-		if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+		if (ImGui::MenuItem("test", "CTRL+Z")) {}
+		if (ImGui::MenuItem("test2", "CTRL+X")) {}
 
 		ImGui::EndMenu();
 	}
 
+	DrawPlayPause();
+
+	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 40);
+	if (ImGui::Button("Close"))
+	{
+		Application::GetWindow().Close();
+	}
+
 	ImGui::EndMainMenuBar();
+}
+
+void MenuBarDisplay::DrawPlayPause()
+{
+	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() / 2 - 40);
+
+	const bool isPause = Application::IsInPause();
+	const bool isPlaying = !Application::IsInEditor();
+	const bool isUsingEditorCam = Application::IsUsingEditorCam();
+
+	if (isPlaying)
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+	}
+
+	if (ImGui::Button("Play"))
+	{
+		Application::Play();
+	}
+
+	if (isPlaying)
+	{
+		ImGui::PopStyleVar();
+	}
+
+	if (isPause)
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+	}
+
+	if (ImGui::Button("Pause"))
+	{
+		Application::Pause();
+	}
+
+	if (isPause)
+	{
+		ImGui::PopStyleVar();
+	}
+
+	if (isUsingEditorCam)
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+	}
+
+	if (ImGui::Button("Editor camera"))
+	{
+		Application::UseEditorCam();
+	}
+
+	if (isUsingEditorCam)
+	{
+		ImGui::PopStyleVar();
+	}
 }

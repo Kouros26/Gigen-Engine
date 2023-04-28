@@ -6,15 +6,15 @@
 
 void InterfaceManager::DrawEditor()
 {
-    width = (float)Application::GetWindow().GetWidth();
-    height = (float)Application::GetWindow().GetHeight() - g_menuBarSize;
+    width = static_cast<float>(Application::GetWindow().GetWidth());
+    height = static_cast<float>(Application::GetWindow().GetHeight()) - g_menuBarSize;
 
     for (const auto& displayable : displayables)
         displayable->Draw();
 
-    float posX = GetClassWidth<HierarchyDisplay>();
-    float posY = GetClassHeight<ToolsDisplay>();
-    Application::GetWindow().SetViewPort((int)posX, (int)posY, (int)(width - GetClassWidth<GameObjectInspector>() - posX), (int)(height - posY));
+    const float posX = GetClassWidth<HierarchyDisplay>();
+    const float posY = GetClassHeight<FileDisplay>();
+    Application::GetWindow().SetViewPort(static_cast<int>(posX), static_cast<int>(posY), static_cast<int>(width - GetClassWidth<GameObjectInspector>() - posX), static_cast<int>(height - posY));
 }
 
 void InterfaceManager::AddEditorElement(Displayable* pElement)

@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include "RigidBody.h"
 
 Transform::Transform(const lm::FVec3& pos, const lm::FVec3& rot, const lm::FVec3& scl)
 	: worldPosition(pos), worldRotation(rot), worldScale(scl), localPosition(pos), localRotation(rot), localScale(scl)
@@ -14,6 +15,9 @@ void Transform::SetWorldPosition(const lm::FVec3& pos)
 	localPosition = pos - worldPosition + localPosition;
 	worldPosition = pos;
 	hasChanged = true;
+
+	if (ownerRigidBody)
+		ownerRigidBody->SetRigidBodyPosition(worldPosition);
 }
 
 void Transform::SetWorldRotation(const lm::FVec3& rot)
@@ -22,13 +26,20 @@ void Transform::SetWorldRotation(const lm::FVec3& rot)
 	worldRotation = rot;
 	LimitRotation();
 	hasChanged = true;
+
+	if (ownerRigidBody)
+		ownerRigidBody->SetRigidBodyRotation(worldRotation);
 }
 
 void Transform::SetWorldScale(const lm::FVec3& scl)
 {
 	localScale = (scl / worldScale) * localScale;
+
 	worldScale = scl;
 	hasChanged = true;
+
+	if (ownerRigidBody != nullptr)
+		ownerRigidBody->SetRigidBodyScale(worldScale);
 }
 
 void Transform::SetLocalPosition(const lm::FVec3& pos)
@@ -36,6 +47,9 @@ void Transform::SetLocalPosition(const lm::FVec3& pos)
 	worldPosition = worldPosition + (pos - localPosition);
 	localPosition = pos;
 	hasChanged = true;
+
+	if (ownerRigidBody)
+		ownerRigidBody->SetRigidBodyPosition(worldPosition);
 }
 
 void Transform::SetLocalRotation(const lm::FVec3& rot)
@@ -43,6 +57,9 @@ void Transform::SetLocalRotation(const lm::FVec3& rot)
 	worldRotation = rot;
 	localRotation = rot;
 	hasChanged = true;
+
+	if (ownerRigidBody)
+		ownerRigidBody->SetRigidBodyRotation(worldRotation);
 }
 
 void Transform::SetLocalScale(const lm::FVec3& scl)
@@ -50,6 +67,9 @@ void Transform::SetLocalScale(const lm::FVec3& scl)
 	worldScale = worldScale * (scl / localScale);
 	localScale = scl;
 	hasChanged = true;
+
+	if (ownerRigidBody)
+		ownerRigidBody->SetRigidBodyScale(worldScale);
 }
 
 void Transform::AssignWorldPosition(const lm::FVec3& pos)
@@ -135,6 +155,9 @@ void Transform::AddPosition(const lm::FVec3& pos)
 	worldPosition += pos;
 	localPosition += pos;
 	hasChanged = true;
+
+	if (ownerRigidBody)
+		ownerRigidBody->AddRigidBodyPosition(pos);
 }
 
 void Transform::AddRotation(const lm::FVec3& rot)
@@ -142,6 +165,9 @@ void Transform::AddRotation(const lm::FVec3& rot)
 	worldRotation += rot;
 	localRotation += rot;
 	hasChanged = true;
+
+	if (ownerRigidBody)
+		ownerRigidBody->AddRigidBodyRotation(rot);
 }
 
 void Transform::AddScale(const lm::FVec3& scl)
@@ -149,6 +175,14 @@ void Transform::AddScale(const lm::FVec3& scl)
 	worldScale += scl;
 	localScale += scl;
 	hasChanged = true;
+
+	if (ownerRigidBody)
+		ownerRigidBody->AddRigidBodyScale(scl);
+}
+
+void Transform::SetOwnerRigidBody(RigidBody* rigidBody)
+{
+	ownerRigidBody = rigidBody;
 }
 
 lm::FVec3 Transform::GetFront()
@@ -183,10 +217,18 @@ lm::FMat4 Transform::GetMatrix()
 	return worldMatrix;
 }
 
+lm::FMat4& Transform::MatrixGetter()
+{
+	if (hasChanged)
+		UpdateMatrix();
+
+	return worldMatrix;
+}
+
 void Transform::UpdateMatrix()
 {
-    worldMatrix = lm::FMat4::Transform(worldPosition, GetOrientation(), worldScale);
-    hasChanged = false;
+	worldMatrix = lm::FMat4::Transform(worldPosition, GetOrientation(), worldScale);
+	hasChanged = false;
 }
 
 void Transform::LimitRotation()

@@ -1,12 +1,13 @@
 #pragma once
 #include <list>
-
 #include "Transform.h"
 #include <vector>
 
+struct Collision;
 class Component;
 class Script;
 class Model;
+class Texture;
 
 class GameObject
 {
