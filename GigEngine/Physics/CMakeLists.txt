@@ -26,6 +26,7 @@ file(GLOB_RECURSE HEADER_FILES
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${HEADER_FILES} ${SOURCE_FILES})
 
+add_compile_options(/Zi)
 ###############################
 #                             #
 # Library                  	  #
@@ -37,6 +38,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_FOLDER})
 target_include_directories(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR})
 
 
+#deactivate PDB generation for bullet (too many warnings) in VIsual Studio
+
+
 foreach(project_i ${THIRD_PARTY_PROJECT})
 	include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE}/${project_i}/${INCLUDE_FOLDER})
 endforeach( project_i )
@@ -45,10 +49,8 @@ foreach(include_i ${THIRD_PARTY_INCLUDE})
 	include_directories(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/${include_i}/${INCLUDE_FOLDER})
 endforeach( include_i )
 
-add_compile_options(${PROJECT_NAME} PRIVATE /Zi-)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${BULLET_INCLUDE_DIR})
-message(STATUS "BULLET_INCLUDE_DIR: ${BULLET_INCLUDE_DIR}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
 	debug ${BULLET_COLLISION_LIBRARY_DEBUG}
 	debug ${BULLET_DYNAMICS_LIBRARY_DEBUG}

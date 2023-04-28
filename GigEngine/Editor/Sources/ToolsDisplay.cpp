@@ -15,7 +15,7 @@ ToolsDisplay::~ToolsDisplay()
 
 void ToolsDisplay::Draw()
 {
-	ImGui::ShowDemoWindow();
+
 
 	width = InterfaceManager::GetWidth() - InterfaceManager::GetClassWidth<HierarchyDisplay>();
 	bool open = true;

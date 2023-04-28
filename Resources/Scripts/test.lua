@@ -2,13 +2,13 @@
 local test =
 {
     elapsedTime = 0,
-    Mat4 = Matrix4.new(1, 2, 3, 4,
-                       5, 6, 7, 8,
-                       9, 10, 11, 12,
-                       13, 14, 15, 16),
-    Mat44 = Matrix4.new(2),
-    Mat45 = Matrix4.new(Vector4.new(1, 2, 3, 4), Vector4.new(5, 6, 7, 8), Vector4.new(9, 10, 11, 12), Vector4.new(13, 14, 15, 16)),
-    Mat46 = Matrix4.new(),
+    Quat4 = Quaternion.new(),
+    Quat = Quaternion.new(1, 2, 3, 4),
+    Quat3 = Quaternion.new(1,2,3),
+    Quat2 = Quaternion.new(Vector3.new(1, 2, 3), 4),
+    Quat5 = Quaternion.new(Matrix3.new(1)),
+
+    
 
 
 }
@@ -19,41 +19,50 @@ function test:Awake()
 
         -- Constructors --
         -- Debug.LogError("Constructors")
-        -- Debug.Log(tostring(self.Mat4))
-        -- Debug.Log(tostring(self.Mat44))
-        -- Debug.Log(tostring(self.Mat45))
-        -- Debug.Log(tostring(self.Mat46))
+        -- Debug.Log(tostring(self.Quat4))
+        -- Debug.Log(tostring(self.Quat))
+        -- Debug.Log(tostring(self.Quat3))
+        -- Debug.Log(tostring(self.Quat2))
+        -- Debug.Log(tostring(self.Quat5))
+
 
 
         -- Operators --
         -- Debug.LogError("Operators")
-        -- Debug.Log(tostring(self.Mat4 + self.Mat4))
-        -- Debug.Log(tostring(self.Mat4 - self.Mat4))
-        -- Debug.Log(tostring(self.Mat4 * self.Mat4))
-        -- Debug.Log(tostring(self.Mat4 * 2))
-        -- Debug.Log(tostring(self.Mat4 / 2))
+        -- Debug.Log("Addition: " .. tostring(self.Quat + self.Quat))
+        -- Debug.Log("Subtraction: " .. tostring(self.Quat - self.Quat))
+        -- Debug.Log("Multiplication Quat: " .. tostring(self.Quat * self.Quat))
+        -- Debug.Log("Multiplication Float: " .. tostring(self.Quat * 2))
+        -- Debug.Log("Multiplication Vec3: " .. tostring(self.Quat * Vector3.new(1, 2, 3)))
+        -- Debug.Log("Multiplication Vec4: " .. tostring(self.Quat * Vector4.new(1, 2, 3)))
+        -- Debug.Log("Division Float: " .. tostring(self.Quat / 2))
+
 
         -- Data --
         -- Debug.LogError("Data")
-        -- Debug.Log(tostring(Matrix4:Identity()))
+        -- Debug.Log(tostring(Quaternion:Identity()))
 
         -- Functions --
         -- Debug.LogError("Functions")
-        -- Debug.Log("Transpose: " .. tostring(Matrix4.Transpose(self.Mat4)))
-        -- Debug.Log("Inverse: " .. tostring(Matrix4.Inverse(self.Mat4)))
-        -- Debug.Log("XRotaion: " .. tostring(Matrix4.RotateX(self.Mat4, 90)))
-        -- Debug.Log("YRotaion: " .. tostring(Matrix4.RotateY(self.Mat4, 90)))
-        -- Debug.Log("ZRotaion: " .. tostring(Matrix4.RotateZ(self.Mat4, 90)))
-        -- Debug.Log("Translation: " .. tostring(Matrix4.Translation(Vector3.new(1, 2, 3))))
-        -- Debug.Log("Translation: " .. tostring(Matrix4.Translate(self.Mat4, Vector3.new(1, 2, 3))))
-        -- Debug.Log("YXZRotation: " .. tostring(Matrix4.RotateYXZ(Vector3.new(1, 2, 3))))
-        -- Debug.Log("RotationEuler: " .. tostring(Matrix4.RotationEuler(Vector3.new(1, 2, 3))))
-        -- Debug.Log("Perspective: " .. tostring(Matrix4.CreatePerspective(90, 16 / 9, 0.1, 100)))
-
-
-
-
-
+        -- Debug.Log("Length: " .. tostring(Quaternion.Length(self.Quat)))
+        -- Debug.Log("Normalize: " .. tostring(Quaternion.Normalize(self.Quat)))
+        -- Debug.Log("Conjugate: " .. tostring(Quaternion.Conjugate(self.Quat)))
+        -- Debug.Log("Inverse: " .. tostring(Quaternion.Inverse(self.Quat)))
+        -- Debug.Log("Dot: " .. tostring(Quaternion.Dot(self.Quat, self.Quat2)))
+        -- Debug.Log("Slerp: " .. tostring(Quaternion.Slerp(self.Quat, self.Quat2 ,0.5)))
+        -- Debug.Log("Cross: " .. tostring(Quaternion.Cross(self.Quat, self.Quat2)))
+        -- Debug.Log("NLerp: " .. tostring(Quaternion.NLerp(self.Quat, self.Quat2, 0.5)))
+        -- Debug.Log("isUnit: " .. tostring(self.Quat4:IsUnit()))
+        -- Debug.Log("GetAngle: " .. tostring(self.Quat3:GetAngle()))
+        -- Debug.Log("GetAngle with quat: " .. tostring(Quaternion.GetAngle(self.Quat3)))
+        -- Debug.Log("Rotate Quat & Vector3: " .. tostring(Quaternion.Rotate(self.Quat, Vector3.new(1, 2, 3))))
+        -- Debug.Log("Rotate Quat & Quat: " .. tostring(Quaternion.Rotate(self.Quat, self.Quat)))
+        -- Debug.Log("Rotate Quat & Vector3 & Float: " .. tostring(Quaternion.Rotate(self.Quat, Vector3.new(1, 2, 3), 0.5)))
+        -- Debug.Log("FromEuler Float & Float & Float: " .. tostring(Quaternion.FromEuler(1, 2, 3)))
+        -- Debug.Log("FromEuler Vector3: " .. tostring(Quaternion.FromEuler(Vector3.new(1, 2, 3))))    
+        -- Debug.Log("ToMat3: " .. tostring(Quaternion.ToMat3(self.Quat)))
+        -- Debug.Log("FromMat3: " .. tostring(Quaternion.FromMat3(Matrix3.new(1))))
+        -- Debug.Log("Lerp: " .. tostring(Quaternion.Lerp(self.Quat, self.Quat2, 0.5)))
 
 end
 
