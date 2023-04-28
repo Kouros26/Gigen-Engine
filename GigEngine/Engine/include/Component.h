@@ -19,6 +19,8 @@ public:
     Component& operator=(const Component& other) = default;
     Component& operator=(Component&& other) noexcept = default;
 
+    GameObject* GetGameObject() const;
+
 protected:
     GameObject* gameObject;
 };

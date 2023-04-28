@@ -4,6 +4,11 @@ Component::Component(GameObject* gameObject)
     :gameObject(gameObject)
 {}
 
+GameObject* Component::GetGameObject() const
+{
+    return gameObject;
+}
+
 void Component::Update(float pDeltaTime)
 {
 }
