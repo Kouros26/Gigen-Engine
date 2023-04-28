@@ -217,29 +217,29 @@ void GigScripting::LuaBindMath::BindMath(sol::state& pLua)
 
 			);
 
-	luaState.new_usertype<FQuat>("Quaternion",
-		/* Constructor */
-		sol::constructors <
-		FQuat(),
-		FQuat(const float),
-		FQuat(const float, const float, const float),
-		FQuat(const float, const float, const float, const float),
-		FQuat(const FVec3&, float),
-		FQuat(const FMat3&),
-		>(),
+	//luaState.new_usertype<FQuat>("Quaternion",
+	//	/* Constructor */
+	//	sol::constructors <
+	//	FQuat(),
+	//	FQuat(const float),
+	//	FQuat(const float, const float, const float),
+	//	FQuat(const float, const float, const float, const float),
+	//	FQuat(const FVec3&, float),
+	//	FQuat(const FMat3&),
+	//	>(),
 
-		/* Operators */
-		sol::meta_function::addition, &FQuat::operator+,
-		sol::meta_function::subtraction, sol::resolve<FQuat(const FQuat&) const>(&FQuat::operator-),
-		sol::meta_function::multiplication, sol::overload
-		(
-			sol::resolve<FQuat(float) const>(&FQuat::operator*),
-			sol::resolve<FQuat(const FQuat&) const>(&FQuat::operator*),
-			sol::resolve<FVec3(const FVec3&) const>(&FQuat::operator*),
-			sol::resolve<FMat3(const FVec4&) const>(&FQuat::operator*)
-		),
-		sol::meta_function::division, &FQuat::operator/,
-		sol::meta_function::to_string, [](const FQuat& pQuat) { return "FQuat(" + std::to_string(pQuat.x) + "," + std::to_string(pQuat.y) + "," + std::to_string(pQuat.z) + "," + std::to_string(pQuat.w) + ")"; },
+	//	/* Operators */
+	//	sol::meta_function::addition, &FQuat::operator+,
+	//	sol::meta_function::subtraction, sol::resolve<FQuat(const FQuat&) const>(&FQuat::operator-),
+	//	sol::meta_function::multiplication, sol::overload
+	//	(
+	//		sol::resolve<FQuat(float) const>(&FQuat::operator*),
+	//		sol::resolve<FQuat(const FQuat&) const>(&FQuat::operator*),
+	//		sol::resolve<FVec3(const FVec3&) const>(&FQuat::operator*),
+	//		sol::resolve<FMat3(const FVec4&) const>(&FQuat::operator*)
+	//	),
+	//	sol::meta_function::division, &FQuat::operator/,
+	//	sol::meta_function::to_string, [](const FQuat& pQuat) { return "FQuat(" + std::to_string(pQuat.x) + "," + std::to_string(pQuat.y) + "," + std::to_string(pQuat.z) + "," + std::to_string(pQuat.w) + ")"; },
 
-		);
+	//	);
 }
