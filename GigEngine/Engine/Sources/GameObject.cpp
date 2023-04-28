@@ -171,6 +171,11 @@ void GameObject::SetModel(std::string const& filePath)
 	}
 }
 
+void GameObject::SetModel(Model* pModel)
+{
+	model = pModel;
+}
+
 Model* GameObject::GetModel()
 {
 	return model;

@@ -35,6 +35,7 @@ public:
 	void Destroy();
 
 	void SetModel(const std::string& filePath);
+	void SetModel(Model* pModel);
 	void SetTexture(const std::string& filePath);
 	Model* GetModel();
 	Texture* GetTexture();

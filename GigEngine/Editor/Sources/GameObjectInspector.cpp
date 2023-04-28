@@ -63,7 +63,12 @@ void GameObjectInspector::DrawGameObject()
 	DrawTransform(object);
 	DrawSpecials(object);
 	DrawComponents(object);
-	DrawModel(object);
+
+	if (object->GetModel())
+		DrawModel(object);
+
+	ImGui::Separator();
+	DrawAddComponent(object);
 }
 
 void GameObjectInspector::DrawTransform(GameObject * pObject) const
@@ -103,11 +108,26 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 {
 	if (ImGui::CollapsingHeader("Model"))
 	{
-		std::string path;
-		if (pObject->GetModel())
+		if (ImGui::IsItemClicked(1))
 		{
-			path = pObject->GetModel()->GetFilePath();
+			ImGui::OpenPopup("ModelPopUp");
 		}
+
+		if (ImGui::BeginPopup("ModelPopUp"))
+		{
+			ImGui::SeparatorText("Model");
+			if (ImGui::MenuItem("Remove"))
+			{
+				pObject->SetModel(nullptr);
+			}
+			ImGui::EndPopup();
+			if(!pObject->GetModel())
+			{
+				return;
+			}
+		}
+
+		std::string path = pObject->GetModel()->GetFilePath();
 
 		ImGui::Text("Path :"); ImGui::SameLine();
 		ImGui::Text(path.c_str());
@@ -268,6 +288,40 @@ void GameObjectInspector::DrawCamera(Camera * pObject) const
 		{
 			pObject->SetFar(tFar);
 		}
+	}
+}
+
+void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
+{
+	ImGuiStyle& style = ImGui::GetStyle();
+
+	float size = ImGui::CalcTextSize("Add component").x + style.FramePadding.x * 2.0f;
+	float avail = ImGui::GetContentRegionAvail().x;
+
+	float off = (avail - size) * 0.5f;
+	if (off > 0.0f)
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+
+	if (ImGui::Button("Add component"))
+	{
+		ImGui::OpenPopup("addComponentPopUp");
+	}
+
+	if (ImGui::BeginPopup("addComponentPopUp"))
+	{
+		ImGui::SeparatorText("Components");
+		if (!pObject->GetModel())
+		{
+			if (ImGui::MenuItem("Model"))
+			{
+				pObject->SetModel(g_defaultModelPath);
+			}
+		}
+
+		if (ImGui::MenuItem("RigidBody"))
+		{
+		}
+		ImGui::EndPopup();
 	}
 }
 
