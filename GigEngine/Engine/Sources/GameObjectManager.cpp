@@ -118,7 +118,7 @@ GameObject* GameObjectManager::CreateDirLight(float ambient, float diffuse, floa
 
 GameObject* GameObjectManager::CreateCamera()
 {
-	Camera* object = new Camera();
+	const auto object = new Camera();
 
 	if (!currentCamera)
 	{
@@ -128,27 +128,43 @@ GameObject* GameObjectManager::CreateCamera()
 	return AddGameObject(object);
 }
 
-void GameObjectManager::Remove(GameObject* object)
+void GameObjectManager::RemoveGameObject(GameObject* object)
 {
-	const auto it = std::find(gameObjects.begin(), gameObjects.end(), object);
+	const auto it = std::ranges::find(gameObjects, object);
 
-	if (it != gameObjects.end())
-		gameObjects.erase(it);
+	if (it == gameObjects.end())
+		return;
 
-	const auto pointsTemp = std::find(pointLights.begin(), pointLights.end(), object);
+	gameObjects.erase(it);
+
+	const auto pointsTemp = std::ranges::find(pointLights, object);
 
 	if (pointsTemp != pointLights.end())
+	{
 		pointLights.erase(pointsTemp);
+		object->~GameObject();
+		return;
+	}
 
-	const auto spotTemp = std::find(spotLights.begin(), spotLights.end(), object);
+	const auto spotTemp = std::ranges::find(spotLights, object);
 
 	if (spotTemp != spotLights.end())
+	{
 		spotLights.erase(spotTemp);
+		object->~GameObject();
+		return;
+	}
 
-	const auto dirTemp = std::find(dirLights.begin(), dirLights.end(), object);
+	const auto dirTemp = std::ranges::find(dirLights, object);
 
 	if (dirTemp != dirLights.end())
+	{
 		dirLights.erase(dirTemp);
+		object->~GameObject();
+		return;
+	}
+
+	object->~GameObject();
 }
 
 std::vector<GameObject*> GameObjectManager::FindObjectsByName(std::string name)

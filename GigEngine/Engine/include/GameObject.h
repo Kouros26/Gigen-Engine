@@ -32,8 +32,6 @@ public:
 	void UpdateComponents() const;
 	void UpdateHierarchy();
 
-	void Destroy();
-
 	void SetModel(const std::string& filePath);
 	void SetModel(Model* pModel);
 	void SetTexture(const std::string& filePath);
@@ -84,7 +82,7 @@ public:
 	std::list<GameObject*>& GetChildren();
 
 	bool IsAParent(GameObject* obj) const;
-	bool IsActive() const;
+	[[nodiscard]] bool IsActive() const;
 	void SetActive(bool b);
 
 private:

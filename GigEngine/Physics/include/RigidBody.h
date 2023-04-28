@@ -33,6 +33,7 @@ protected:
 	btTransform transform;
 	GameObject* owner;
 	btRigidBody* body = nullptr;
+	RBState state = RBState::DYNAMIC;
 	CustomMotionState* motionState = nullptr;
 	btCollisionShape* rbShape = nullptr;
 	CollisionCallBacks* collisionCallBacks = nullptr;

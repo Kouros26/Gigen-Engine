@@ -59,7 +59,7 @@ public:
 	static int GetSpotLightSize();
 	static void SetFocusedGameObject(GameObject* obj);
 	static GameObject* GetFocusedGameObject();
-	static void Remove(GameObject* object);
+	static void RemoveGameObject(GameObject* object);
 
 	static std::vector<GameObject*> FindObjectsByName(std::string name);
 	static GameObject* FindObjectByName(std::string name);

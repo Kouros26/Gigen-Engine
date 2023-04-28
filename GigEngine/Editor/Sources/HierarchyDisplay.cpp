@@ -207,7 +207,7 @@ void HierarchyDisplay::GameObjectPopUp(GameObject * obj) const
 		ImGui::SeparatorText(obj->GetName().c_str());
 		if (ImGui::MenuItem("Destroy"))
 		{
-			obj->Destroy();
+			GameObjectManager::RemoveGameObject(obj);
 		}
 		if (ImGui::MenuItem("UnParent"))
 		{

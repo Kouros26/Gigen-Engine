@@ -14,6 +14,22 @@ RigidBody::~RigidBody()
 
 void RigidBody::SetRBState(const RBState& pState) const
 {
+	if (pState == state)
+		return;
+
+	switch (state)
+	{
+	case RBState::DYNAMIC:
+		body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_DYNAMIC_OBJECT);
+		break;
+	case RBState::KINETIC:
+		body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
+		break;
+	case RBState::STATIC:
+		body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_STATIC_OBJECT);
+		break;
+	}
+
 	switch (pState)
 	{
 	case RBState::DYNAMIC:

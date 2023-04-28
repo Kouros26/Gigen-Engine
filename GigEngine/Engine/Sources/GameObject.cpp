@@ -101,12 +101,10 @@ GameObject::~GameObject()
 	for (const auto& component : components)
 		delete component;
 
-	model = nullptr;
+	delete rigidBody;
+
 	if (parent)
-	{
 		parent->RemoveChild(this);
-	}
-	GameObjectManager::Remove(this);
 }
 
 void GameObject::CreateBoxRigidBody(const lm::FVec3& halfExtents = { 1.0f }, const lm::FVec3& scale = { 1.0f }, float mass = 1.0f)
@@ -134,11 +132,6 @@ void GameObject::CreateSphereRigidBody(float radius, const lm::FVec3& scale, flo
 	rigidBody = new SphereRigidBody(radius, scale * transform.GetWorldScale(), transform.GetWorldPosition(), mass, this);
 	rigidBody->GetShapeType() = RigidBodyType::SPHERE;
 	transform.SetOwnerRigidBody(rigidBody);
-}
-
-void GameObject::Destroy()
-{
-	this->~GameObject();
 }
 
 std::string GameObject::GetName()
