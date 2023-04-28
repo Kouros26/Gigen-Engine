@@ -36,23 +36,29 @@ public:
 
 	void SetModel(const std::string& filePath);
 	void SetTexture(const std::string& filePath);
+	Model* GetModel();
+	Texture* GetTexture();
+
 	void LateUpdate() const;
-	void CheckForScript(Component* pComponent);
 
 	std::string GetName();
 	void SetName(const std::string& pName);
-	unsigned int GetId();
+
+	[[nodiscard]] unsigned int GetId() const;
 
 	void AddChild(GameObject* child);
 	void RemoveChild(GameObject* child);
 
+	virtual void OnCollisionEnter(const Collision& collision);
+	virtual void OnCollisionExit(const Collision& collision);
+
 	void AddComponent(Component* newComponent);
 
-	//create New component of type and return the new Component
-	template<class T, typename ...Args>
-	T* AddComponent(Args...  pArgs);
+	//create new component of type and return the new component
 	template<class T>
 	T* AddComponent();
+	template<class T, typename ...Args>
+	T* AddComponent(Args...  pArgs);
 
 	//return first component of type
 	template<class T>
@@ -71,29 +77,45 @@ public:
 	[[nodiscard]] unsigned int GetComponentCount() const;
 
 	Transform& GetTransform();
+	[[nodiscard]] RigidBody* GetRigidBody() const;
+
+	GameObject*& GetParent();
+	GameObject* GetChild(unsigned int index);
+	unsigned int GetChildrenCount();
+	std::list<GameObject*>& GetChildren();
+
+	bool IsAParent(GameObject* obj) const;
+	bool IsActive() const;
+	void SetActive(bool b);
+
+	void CheckForScript(Component* pComponent);
 
 private:
 
-	std::string name;
-	unsigned int id;
+	bool isActive;
+	std::string name{};
+	unsigned int id{};
 
-	Transform transform;
+	Transform transform{};
+	RigidBody* rigidBody = nullptr;
 
 	GameObject* parent = nullptr;
 	std::list<GameObject*> children{};
 
-	std::vector<Component*> components;
+	std::vector<Component*> components{};
+	std::vector<Script*> scripts{};
 
 	Model* model = nullptr;
+	Texture* texture = nullptr;
 
 	//use so every gameObject has a different id
 	static unsigned int gameObjectIndex;
 };
 
-template<class T, typename ...Args>
-T* GameObject::AddComponent(Args... pArgs)
+template<class T>
+T* GameObject::AddComponent()
 {
-	T* newComp = new T(this, pArgs...);
+	T* newComp = new T(this);
 	components.push_back(newComp);
 
 	CheckForScript(newComp);
@@ -101,10 +123,10 @@ T* GameObject::AddComponent(Args... pArgs)
 	return newComp;
 }
 
-template<class T>
-T* GameObject::AddComponent()
+template<class T, typename ...Args>
+T* GameObject::AddComponent(Args... pArgs)
 {
-	T* newComp = new T(this);
+	T* newComp = new T(this, pArgs...);
 	components.push_back(newComp);
 
 	CheckForScript(newComp);
