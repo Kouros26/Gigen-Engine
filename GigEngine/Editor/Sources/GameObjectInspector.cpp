@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include "GameObjectInspector.h"
 #include "InterfaceManager.h"
 #include "FileDisplay.h"

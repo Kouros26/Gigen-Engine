@@ -296,7 +296,7 @@ unsigned GameObject::GetComponentCount() const
 
 Transform& GameObject::GetTransform()
 {
-	return transform;
+    return transform;
 }
 
 bool GameObject::IsAParent(GameObject* obj) const
