@@ -7,6 +7,8 @@
 #include "Light.h"
 #include "Skybox.h"
 #include "Component.h"
+#include "Log.h"
+#include "Behaviour.h"
 #include <iostream>
 
 #include "RigidBody.h"
@@ -146,6 +148,7 @@ void Application::CreateGameObjects()
 	GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 10, 10 }, { 0 }, { 1 });
 	chest->SetModel("Resources/Models/chest.obj");
 	chest->SetTexture("Resources/Textures/test.png");
+	chest->AddComponent<GigScripting::Behaviour>("test");
 
 	GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 10, 10 }, { 0 }, { 1 });
 	car->SetModel("Resources/Models/Car.fbx");

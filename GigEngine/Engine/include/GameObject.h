@@ -12,153 +12,167 @@ class Texture;
 class GameObject
 {
 public:
-	GameObject();
-	GameObject(const std::string& name);
-	GameObject(const std::string& name, const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
-	GameObject(const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
+    GameObject();
+    GameObject(const std::string& name);
+    GameObject(const std::string& name, const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
+    GameObject(const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale);
 
-	GameObject(const GameObject& other);
-	GameObject(GameObject&& other) noexcept = delete;
-	GameObject& operator=(const GameObject& other);
-	GameObject& operator=(GameObject&& other) noexcept = delete;
+    GameObject(const GameObject& other);
+    GameObject(GameObject&& other) noexcept = delete;
+    GameObject& operator=(const GameObject& other);
+    GameObject& operator=(GameObject&& other) noexcept = delete;
 
-	virtual ~GameObject();
+    virtual ~GameObject();
 
-	void CreateBoxRigidBody(const lm::FVec3& halfExtents, const lm::FVec3& scale, float mass);
-	void CreateCapsuleRigidBody(float radius, float height, const lm::FVec3& scale, float mass);
-	void CreateSphereRigidBody(float radius, const lm::FVec3& scale, float mass);
+    void CreateBoxRigidBody(const lm::FVec3& halfExtents, const lm::FVec3& scale, float mass);
+    void CreateCapsuleRigidBody(float radius, float height, const lm::FVec3& scale, float mass);
+    void CreateSphereRigidBody(float radius, const lm::FVec3& scale, float mass);
 
-	virtual void UpdateRender() const;
-	void UpdateComponents() const;
-	void UpdateHierarchy();
+    virtual void UpdateRender() const;
+    void UpdateComponents() const;
+    void UpdateHierarchy();
 
-	void SetModel(const std::string& filePath);
+    void Destroy();
+
+    void SetModel(const std::string& filePath);
 	void SetModel(Model* pModel);
-	void SetTexture(const std::string& filePath);
-	Model* GetModel();
-	Texture* GetTexture();
+    void SetTexture(const std::string& filePath);
 
-	void LateUpdate() const;
+    Model* GetModel();
+    Texture* GetTexture();
 
-	std::string GetName();
-	void SetName(const std::string& pName);
+    void LateUpdate() const;
 
-	[[nodiscard]] unsigned int GetId() const;
+    std::string GetName();
+    void SetName(const std::string& pName);
 
-	void AddChild(GameObject* child);
-	void RemoveChild(GameObject* child);
+    [[nodiscard]] unsigned int GetId() const;
 
-	virtual void OnCollisionEnter(const Collision& collision);
-	virtual void OnCollisionExit(const Collision& collision);
+    void AddChild(GameObject* child);
+    void RemoveChild(GameObject* child);
 
-	void AddComponent(Component* newComponent);
+    virtual void OnCollisionEnter(const Collision& collision);
+    virtual void OnCollisionExit(const Collision& collision);
 
-	//create new component of type and return the new component
-	template<class T>
-	T* AddComponent();
+    void AddComponent(Component* newComponent);
 
-	//return first component of type
-	template<class T>
-	T* GetComponent();
+    //create new component of type and return the new component
+    template<class T>
+    T* AddComponent();
+    template<class T, typename ...Args>
+    T* AddComponent(Args...  pArgs);
 
-	[[nodiscard]] Component* GetComponentByID(int id) const;
+    //return first component of type
+    template<class T>
+    T* GetComponent();
 
-	//return vector of all components of type
-	template<class T>
-	std::vector<T*>& GetComponents();
+    [[nodiscard]] Component* GetComponentByID(int id) const;
 
-	//remove all components of type
-	template<class T>
-	void RemoveComponents();
+    //return vector of all components of type
+    template<class T>
+    std::vector<T*>& GetComponents();
 
-	[[nodiscard]] unsigned int GetComponentCount() const;
+    //remove all components of type
+    template<class T>
+    void RemoveComponents();
 
-	Transform& GetTransform();
-	[[nodiscard]] RigidBody* GetRigidBody() const;
+    [[nodiscard]] unsigned int GetComponentCount() const;
 
-	GameObject*& GetParent();
-	GameObject* GetChild(unsigned int index);
-	unsigned int GetChildrenCount();
-	std::list<GameObject*>& GetChildren();
+    Transform& GetTransform();
+    [[nodiscard]] RigidBody* GetRigidBody() const;
 
-	bool IsAParent(GameObject* obj) const;
+    GameObject*& GetParent();
+    GameObject* GetChild(unsigned int index);
+    unsigned int GetChildrenCount();
+    std::list<GameObject*>& GetChildren();
+
+    bool IsAParent(GameObject* obj) const;
 	[[nodiscard]] bool IsActive() const;
-	void SetActive(bool b);
+    void SetActive(bool b);
+
+    void CheckForScript(Component* pComponent);
 
 private:
 
-	bool isActive;
-	std::string name{};
-	unsigned int id{};
+    bool isActive;
+    std::string name{};
+    unsigned int id{};
 
-	Transform transform{};
-	RigidBody* rigidBody = nullptr;
+    Transform transform{};
+    RigidBody* rigidBody = nullptr;
 
-	GameObject* parent = nullptr;
-	std::list<GameObject*> children{};
+    GameObject* parent = nullptr;
+    std::list<GameObject*> children{};
 
-	std::vector<Component*> components{};
-	std::vector<Script*> scripts{};
+    std::vector<Component*> components{};
+    std::vector<Script*> scripts{};
 
-	Model* model = nullptr;
-	Texture* texture = nullptr;
+    Model* model = nullptr;
+    Texture* texture = nullptr;
 
-	//use so every gameObject has a different id
-	static unsigned int gameObjectIndex;
+    //use so every gameObject has a different id
+    static unsigned int gameObjectIndex;
 };
 
 template<class T>
 T* GameObject::AddComponent()
 {
-	T* newComp = new T(this);
-	components.push_back(newComp);
+    T* newComp = new T(this);
+    components.push_back(newComp);
 
-	if (const auto script = dynamic_cast<Script*>(newComp))
-	{
-		scripts.push_back(script);
-		script->Awake();
-	}
+    CheckForScript(newComp);
 
-	return newComp;
+    return newComp;
+}
+
+template<class T, typename ...Args>
+T* GameObject::AddComponent(Args... pArgs)
+{
+    T* newComp = new T(this, pArgs...);
+    components.push_back(newComp);
+
+    CheckForScript(newComp);
+
+    return newComp;
 }
 
 template<class T>
 T* GameObject::GetComponent()
 {
-	for (int i = 0; i < components.size(); i++)
-	{
-		if (T* comp = dynamic_cast<T*>(components[i]))
-			return comp;
-	}
-	return nullptr;
+    for (int i = 0; i < components.size(); i++)
+    {
+        if (T* comp = dynamic_cast<T*>(components[i]))
+            return comp;
+    }
+    return nullptr;
 }
 
 inline Component* GameObject::GetComponentByID(const int componentID) const
 {
-	return components[componentID];
+    return components[componentID];
 }
 
 template<class T>
 std::vector<T*>& GameObject::GetComponents()
 {
-	std::vector<T*> comps;
-	for (int i = 0; i < components.size(); i++)
-	{
-		if (T* comp = dynamic_cast<T*>(components[i]))
-			comps.push_back(comp);
-	}
-	return comps;
+    std::vector<T*> comps;
+    for (int i = 0; i < components.size(); i++)
+    {
+        if (T* comp = dynamic_cast<T*>(components[i]))
+            comps.push_back(comp);
+    }
+    return comps;
 }
 
 template<class T>
 void GameObject::RemoveComponents()
 {
-	for (int i = 0; i < components.size(); i++)
-	{
-		if (const T* comp = dynamic_cast<T*>(components[i]))
-		{
-			delete comp;
-			components.erase(components.begin() + i);
-		}
-	}
+    for (int i = 0; i < components.size(); i++)
+    {
+        if (const T* comp = dynamic_cast<T*>(components[i]))
+        {
+            delete comp;
+            components.erase(components.begin() + i);
+        }
+    }
 }

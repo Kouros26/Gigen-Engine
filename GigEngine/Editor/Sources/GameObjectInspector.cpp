@@ -71,7 +71,7 @@ void GameObjectInspector::DrawGameObject()
 	DrawAddComponent(object);
 }
 
-void GameObjectInspector::DrawTransform(GameObject * pObject) const
+void GameObjectInspector::DrawTransform(GameObject* pObject) const
 {
 	if (ImGui::CollapsingHeader("Transform"))
 	{
@@ -104,7 +104,7 @@ void GameObjectInspector::DrawTransform(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawModel(GameObject * pObject) const
+void GameObjectInspector::DrawModel(GameObject* pObject) const
 {
 	if (ImGui::CollapsingHeader("Model"))
 	{
@@ -121,7 +121,7 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 				pObject->SetModel(nullptr);
 			}
 			ImGui::EndPopup();
-			if(!pObject->GetModel())
+			if (!pObject->GetModel())
 			{
 				return;
 			}
@@ -147,7 +147,7 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawTexture(GameObject * pObject) const
+void GameObjectInspector::DrawTexture(GameObject* pObject) const
 {
 	if (ImGui::CollapsingHeader("Texture"))
 	{
@@ -170,7 +170,7 @@ void GameObjectInspector::DrawTexture(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawSpecials(GameObject * pObject) const
+void GameObjectInspector::DrawSpecials(GameObject* pObject) const
 {
 	if (auto light = dynamic_cast<DirLight*>(pObject))
 	{
@@ -182,12 +182,12 @@ void GameObjectInspector::DrawSpecials(GameObject * pObject) const
 		DrawCamera(cam);
 }
 
-void GameObjectInspector::DrawComponents(GameObject * pObject)
+void GameObjectInspector::DrawComponents(GameObject* pObject)
 {
 	//TO DO
 }
 
-void GameObjectInspector::DrawLight(GameObject * pObject) const
+void GameObjectInspector::DrawLight(GameObject* pObject) const
 {
 	const auto dirlight = dynamic_cast<DirLight*>(pObject);
 	if (ImGui::CollapsingHeader("Light"))
@@ -263,7 +263,7 @@ void GameObjectInspector::DrawLight(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawCamera(Camera * pObject) const
+void GameObjectInspector::DrawCamera(Camera* pObject) const
 {
 	float fov = pObject->GetFov();
 	float tNear = pObject->GetNear();
@@ -291,7 +291,7 @@ void GameObjectInspector::DrawCamera(Camera * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
+void GameObjectInspector::DrawAddComponent(GameObject* pObject) const
 {
 	ImGuiStyle& style = ImGui::GetStyle();
 

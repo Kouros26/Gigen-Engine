@@ -126,11 +126,11 @@ lm::FVec3 Transform::GetWorldRotation() const
 
 lm::FQuat Transform::GetOrientation()
 {
-	const lm::FQuat rotX(lm::FVec3{ 1,0,0 }, worldRotation[0]);
+    const lm::FQuat rotX(lm::FVec3{ 1,0,0 }, worldRotation[0]);
 
-	const lm::FQuat rotY(lm::FVec3{ 0,1,0 }, worldRotation[1]);
+    const lm::FQuat rotY(lm::FVec3{ 0,1,0 }, worldRotation[1]);
 
-	const lm::FQuat rotZ(lm::FVec3{ 0,0,1 }, worldRotation[2]);
+    const lm::FQuat rotZ(lm::FVec3{ 0,0,1 }, worldRotation[2]);
 
 	return  rotX * rotY * rotZ;
 }

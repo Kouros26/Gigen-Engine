@@ -17,6 +17,12 @@ namespace GigInput
 		PRESS = 1
 	};
 
+	enum class KeyState
+	{
+		RELEASE = 0,
+		PRESS = 1
+	};
+
 	enum class Keys
 	{
 		ESCAPE = 256,
@@ -71,6 +77,8 @@ namespace GigInput
 		F12 = 301,
 		LAST = 348,
 		TAB = 258,
+		ENTER = 257,
+		BACKSPACE = 259
 	};
 
 	struct Mouse
@@ -98,6 +106,10 @@ namespace GigInput
 		Inputs() = delete;
 
 		static bool GetKey(Keys pKey);
+
+		static bool GetKeyDown(Keys pKey);
+
+		static bool GetKeyUp(Keys pKey);
 
 		static Mouse GetMouse();
 

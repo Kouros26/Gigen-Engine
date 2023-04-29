@@ -1,16 +1,16 @@
 #include "InterfaceManager.h"
 #include "Application.h"
 #include "GameObjectInspector.h"
-#include "FileDisplay.h"
+#include "ToolsDisplay.h"
 #include "HierarchyDisplay.h"
-
+#include "FileDisplay.h"
 void InterfaceManager::DrawEditor()
 {
     width = static_cast<float>(Application::GetWindow().GetWidth());
     height = static_cast<float>(Application::GetWindow().GetHeight()) - g_menuBarSize;
 
-    for (const auto& displayable : displayables)
-        displayable->Draw();
+	for (const auto& displayable : displayables)
+		displayable->Draw();
 
     const float posX = GetClassWidth<HierarchyDisplay>();
     const float posY = GetClassHeight<FileDisplay>();
@@ -19,21 +19,21 @@ void InterfaceManager::DrawEditor()
 
 void InterfaceManager::AddEditorElement(Displayable* pElement)
 {
-    displayables.push_back(pElement);
+	displayables.push_back(pElement);
 }
 
 void InterfaceManager::Cleanup()
 {
-    for (const auto& displayable : displayables)
-        delete displayable;
+	for (const auto& displayable : displayables)
+		delete displayable;
 }
 
 float InterfaceManager::GetWidth()
 {
-    return width;
+	return width;
 }
 
 float InterfaceManager::GetHeight()
 {
-    return height;
+	return height;
 }

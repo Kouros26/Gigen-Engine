@@ -7,7 +7,7 @@ class RigidBody;
 class Transform
 {
 public:
-    Transform(const lm::FVec3& pos = { 0 }, const lm::FVec3& rot = {0}, const lm::FVec3& scl = {1});
+    Transform(const lm::FVec3& pos = { 0 }, const lm::FVec3& rot = { 0 }, const lm::FVec3& scl = { 1 });
     ~Transform();
 
     void SetWorldPosition(const lm::FVec3& pos);
@@ -49,8 +49,8 @@ public:
     lm::FMat4& MatrixGetter();
 
 private:
-	void UpdateMatrix();
-	void LimitRotation();
+    void UpdateMatrix();
+    void LimitRotation();
 
     RigidBody* ownerRigidBody = nullptr;
 
@@ -58,9 +58,9 @@ private:
     lm::FVec3 worldRotation{ 0 };
     lm::FVec3 worldScale{ 1 };
 
-    lm::FVec3 localPosition{0};
-    lm::FVec3 localRotation{0};
-    lm::FVec3 localScale{1};
+    lm::FVec3 localPosition{ 0 };
+    lm::FVec3 localRotation{ 0 };
+    lm::FVec3 localScale{ 1 };
 
     lm::FMat4 worldMatrix;
 

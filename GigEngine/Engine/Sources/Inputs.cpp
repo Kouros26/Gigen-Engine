@@ -21,6 +21,26 @@ bool GigInput::Inputs::GetKey(GigInput::Keys pKey)
     return inputs[key];
 }
 
+bool GigInput::Inputs::GetKeyDown(Keys pKey)
+{
+    auto key = (int)pKey;
+    if ('a' <= key && key <= 'z')
+    {
+        key -= ('a' - 'A');
+    }
+    return inputs[key] == (int)KeyState::PRESS;
+}
+
+bool GigInput::Inputs::GetKeyUp(Keys pKey)
+{
+    auto key = (int)pKey;
+    if ('a' <= key && key <= 'z')
+    {
+        key -= ('a' - 'A');
+    }
+    return inputs[key] == (int)KeyState::RELEASE;
+}
+
 GigInput::Mouse GigInput::Inputs::GetMouse()
 {
     return mouse;
