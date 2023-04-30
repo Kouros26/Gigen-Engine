@@ -22,6 +22,7 @@ public:
 	lm::FVec3 GetFront();
 	lm::FVec3 GetUp();
 	lm::FVec3 GetRight();
+	virtual std::string GetType() override;
 
 private:
 	void UpdateProjectionMatrix();

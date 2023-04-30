@@ -100,3 +100,9 @@ lm::FVec3 Camera::GetRight()
 	const lm::FVec3 right = inverse[0];
 	return lm::FVec3::Normalize(right);
 }
+
+std::string Camera::GetType()
+{
+	const std::string type(typeid(this).name());
+	return type.substr(6, type.size() - 16);
+}

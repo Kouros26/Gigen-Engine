@@ -40,6 +40,7 @@ protected:
     RigidBodyType rbType{};
     btScalar mass{};
     lm::FVec3 scale;
+    bool gravity;
 
 public:
 
@@ -82,6 +83,7 @@ public:
     void AddImpulse(const float pValue);
     void AddImpulse(const lm::FVec3& pValue);
 
+    [[nodiscard]] bool IsGravityEnabled() const;
     [[nodiscard]] btRigidBody* GetRigidBody() const;
     [[nodiscard]] CustomMotionState* GetMotionState() const;
     [[nodiscard]] btCollisionShape* GetRBShape() const;
@@ -91,6 +93,6 @@ public:
     const lm::FVec3& GetScale();
     void SetMass(const float pValue);
     void SetScale(const lm::FVec3& pNewScale);
-    void SetGravityEnabled(const bool pState) const;
+    void SetGravityEnabled(const bool pState);
     void ClearForces();
 };

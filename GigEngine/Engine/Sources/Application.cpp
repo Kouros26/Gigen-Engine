@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "RigidBody.h"
+#include "SceneSaver.h"
 #include "WorldPhysics.h"
 
 using namespace GigRenderer;
@@ -22,10 +23,12 @@ Application::Application()
 
 	WorldPhysics::InitPhysicWorld();
 	CreateGameObjects();
+	Scene::LoadScene("Monkey.chad");
 }
 
 Application::~Application()
 {
+	Scene::SaveScene("Monkey.chad");
 	Lines::Clear();
 	GameObjectManager::Cleanup();
 	WorldPhysics::DestroyPhysicWorld();
@@ -144,31 +147,6 @@ void Application::CreateGameObjects()
 	//to remove =====================================================
 
 	skybox = new Skybox();
-
-	GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 10, 10 }, { 0 }, { 1 });
-	chest->SetModel("Resources/Models/chest.obj");
-	chest->SetTexture("Resources/Textures/test.png");
-	chest->AddComponent<GigScripting::Behaviour>("test");
-
-	GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 10, 10 }, { 0 }, { 1 });
-	car->SetModel("Resources/Models/Car.fbx");
-	//car->AddComponent<TestComponent>();
-	car->AddComponent<testComponent2>();
-	GameObjectManager::SetFocusedGameObject(car);
-	car->AddChild(chest);
-	car->CreateCapsuleRigidBody(1, 5, { 1 }, 10);
-
-	GameObject* ground = GameObjectManager::CreateGameObject("Ground");
-	ground->SetModel("Resources/Models/Basics/Cube.FBX");
-	ground->GetTransform().SetWorldScale({ 50, 1, 50 });
-	ground->CreateBoxRigidBody({ 1 }, { 1 }, 0.f);
-
-	GameObject* TH = GameObjectManager::CreateGameObject("Thierry-Henri", { -5, 15, 8 }, { 0, 90, 0 }, { 20 });
-	TH->SetModel("Resources/Models/Thierry-Henri.obj");
-	TH->CreateSphereRigidBody(2, { 0.05f }, 10.0f);
-	TH->GetRigidBody()->SetGravityEnabled(false);
-
-	//chest->CreateBoxRigidBody({ 10 }, { 1 }, 10.f);
 
 	GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
 	dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
