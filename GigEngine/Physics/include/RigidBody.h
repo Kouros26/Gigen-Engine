@@ -46,6 +46,7 @@ public:
 	~RigidBody();
 
 	void SetRBState(const RBState& pState) const;
+	void RemoveRBState(const RBState& pState) const;
 	void SetMotionState(CustomMotionState* pMotionState);
 
 	void SetRigidBodyPosition(const lm::FVec3& pNewPosition);
@@ -65,8 +66,10 @@ public:
 	RigidBodyType& GetShapeType();
 	btScalar& GetMass();
 	bool GetGravityEnabled() const;
-	bool HasCollisionFlag(const RBState& pState) const;
+	int GetCollisionFlag() const;
 	const lm::FVec3& GetScale();
+
+	btTransform GetTransfrom() const;
 
 	void SetMass(btScalar pMass);
 	void SetScale(const lm::FVec3& pNewScale);

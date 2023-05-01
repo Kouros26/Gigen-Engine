@@ -49,3 +49,10 @@ float SphereRigidBody::GetRadius() const
 {
 	return radius;
 }
+
+void SphereRigidBody::SetRadius(float pRadius) 
+{
+	btSphereShape* shape = (btSphereShape*)rbShape;
+	radius = pRadius;
+	shape->setUnscaledRadius(radius);
+}

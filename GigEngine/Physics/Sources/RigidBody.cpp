@@ -17,13 +17,29 @@ void RigidBody::SetRBState(const RBState& pState) const
 	switch (pState)
 	{
 	case RBState::DYNAMIC:
-		body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_DYNAMIC_OBJECT);
+		body->setCollisionFlags(btCollisionObject::CF_DYNAMIC_OBJECT);
 		break;
 	case RBState::KINETIC:
-		body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+		body->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
 		break;
 	case RBState::STATIC:
-		body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
+		body->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+		break;
+	}
+}
+
+void RigidBody::RemoveRBState(const RBState& pState) const 
+{
+	switch (pState)
+	{
+	case RBState::DYNAMIC:
+		body->setCollisionFlags(~btCollisionObject::CF_DYNAMIC_OBJECT);
+		break;
+	case RBState::KINETIC:
+		body->setCollisionFlags(~btCollisionObject::CF_KINEMATIC_OBJECT);
+		break;
+	case RBState::STATIC:
+		body->setCollisionFlags(~btCollisionObject::CF_STATIC_OBJECT);
 		break;
 	}
 }
@@ -132,24 +148,26 @@ bool RigidBody::GetGravityEnabled() const
 	return body->getGravity() != btVector3({ 0,0,0 });
 }
 
-bool RigidBody::HasCollisionFlag(const RBState& pState) const
+int RigidBody::GetCollisionFlag() const
 {
-	switch (pState)
+	switch (body->getCollisionFlags())
 	{
-	case RBState::DYNAMIC:
-		return body->getCollisionFlags() == btCollisionObject::CF_DYNAMIC_OBJECT;
-	case RBState::KINETIC:
-		return body->getCollisionFlags() == btCollisionObject::CF_KINEMATIC_OBJECT;
-	case RBState::STATIC:
-		return body->getCollisionFlags() == btCollisionObject::CF_STATIC_OBJECT;
-	default:
-		return false;
+	case btCollisionObject::CF_KINEMATIC_OBJECT:
+		return (int)RBState::KINETIC;
+	case btCollisionObject::CF_STATIC_OBJECT:
+		return (int)RBState::STATIC;
+	default: return (int)RBState::DYNAMIC;
 	}
 }
 
 const lm::FVec3& RigidBody::GetScale()
 {
 	return scale;
+}
+
+btTransform RigidBody::GetTransfrom() const
+{
+	return transform;
 }
 
 void RigidBody::SetMass(btScalar pMass)

@@ -4,6 +4,7 @@
 
 class GameObject;
 class Camera;
+class RigidBody;
 
 class GameObjectInspector : public Displayable
 {
@@ -21,6 +22,7 @@ private:
 	void DrawModel(GameObject* pObject) const;
 	void DrawTexture(GameObject* pObject) const;
 	void DrawRigidBody(GameObject* pObject) const;
+	void DrawRigidShape(RigidBody* body) const;
 
 	void DrawSpecials(GameObject* pObject) const;
 	void DrawComponents(GameObject* pObject);
