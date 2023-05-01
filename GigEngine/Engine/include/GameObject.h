@@ -77,6 +77,7 @@ public:
 
 	Transform& GetTransform();
 	[[nodiscard]] RigidBody* GetRigidBody() const;
+	void RemoveRigidBody();
 
 	GameObject*& GetParent();
 	GameObject* GetChild(unsigned int index);

@@ -75,7 +75,7 @@ void Application::Pause()
 
 void Application::Stop()
 {
-	//reload
+	//reload @kouros
 	isEditor = true;
 }
 
@@ -149,9 +149,7 @@ void Application::CreateGameObjects()
 
 	GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 10, 10 }, { 0 }, { 1 });
 	car->SetModel("Resources/Models/Car.fbx");
-	//car->AddComponent<TestComponent>();
 	car->AddComponent<testComponent2>();
-	GameObjectManager::SetFocusedGameObject(car);
 	car->AddChild(chest);
 	car->CreateCapsuleRigidBody(1, 5, { 1 }, 10);
 

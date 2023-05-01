@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Texture.h"
+#include "RigidBody.h"
 #include "GameObjectManager.h"
 #include <Windows.h>
 
@@ -63,6 +64,9 @@ void GameObjectInspector::DrawGameObject()
 	DrawTransform(object);
 	DrawSpecials(object);
 	DrawComponents(object);
+
+	if (object->GetRigidBody())
+		DrawRigidBody(object);
 
 	if (object->GetModel())
 		DrawModel(object);
@@ -121,7 +125,7 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 				pObject->SetModel(nullptr);
 			}
 			ImGui::EndPopup();
-			if(!pObject->GetModel())
+			if (!pObject->GetModel())
 			{
 				return;
 			}
@@ -168,6 +172,72 @@ void GameObjectInspector::DrawTexture(GameObject * pObject) const
 				pObject->SetTexture(filePath);
 		}
 	}
+}
+
+void GameObjectInspector::DrawRigidBody(GameObject * pObject) const
+{
+	//draw rigid
+	if (ImGui::CollapsingHeader("RigidBody"))
+	{
+		if (ImGui::IsItemClicked(1))
+		{
+			ImGui::OpenPopup("RigidPopUp");
+		}
+
+		if (ImGui::BeginPopup("RigidPopUp"))
+		{
+			ImGui::SeparatorText("RigidBody");
+			if (ImGui::MenuItem("Remove"))
+			{
+				pObject->RemoveRigidBody();
+			}
+			ImGui::EndPopup();
+			if (!pObject->GetRigidBody())
+			{
+				return;
+			}
+		}
+	}
+
+	RigidBody* rigid = pObject->GetRigidBody();
+
+	ImGui::Text("Mass"); ImGui::SameLine();
+	btScalar mass = rigid->GetMass();
+	if (ImGui::DragFloat("##18", &mass, g_maxStep, 0, g_floatMax, g_floatFormat))
+	{
+		rigid->SetMass(mass);
+	}
+
+	ImGui::Text("Gravity"); ImGui::SameLine();
+	bool grav = rigid->GetGravityEnabled();
+	ImGui::Checkbox("##19", &grav);
+	if (grav != rigid->GetGravityEnabled())
+	{
+		rigid->SetGravityEnabled(grav);
+	}
+
+	//RBState here with checkbox
+	bool isDynamic = rigid->HasCollisionFlag(RBState::DYNAMIC);
+	bool isKinetic = rigid->HasCollisionFlag(RBState::KINETIC);
+	bool isStatic = rigid->HasCollisionFlag(RBState::STATIC);
+
+	ImGui::Checkbox("dynamic", &isDynamic);
+	if (isDynamic != rigid->HasCollisionFlag(RBState::DYNAMIC))
+	{
+		rigid->SetRBState(RBState::DYNAMIC);
+	}
+	ImGui::Checkbox("kinetic", &isKinetic);
+	if (isKinetic != rigid->HasCollisionFlag(RBState::KINETIC))
+	{
+		rigid->SetRBState(RBState::KINETIC);
+	}
+	ImGui::Checkbox("static", &isStatic);
+	if (isStatic != rigid->HasCollisionFlag(RBState::STATIC))
+	{
+		rigid->SetRBState(RBState::STATIC);
+	}
+
+	//draw shape
 }
 
 void GameObjectInspector::DrawSpecials(GameObject * pObject) const

@@ -127,9 +127,34 @@ btScalar& RigidBody::GetMass()
 	return mass;
 }
 
+bool RigidBody::GetGravityEnabled() const
+{
+	return body->getGravity() != btVector3({ 0,0,0 });
+}
+
+bool RigidBody::HasCollisionFlag(const RBState& pState) const
+{
+	switch (pState)
+	{
+	case RBState::DYNAMIC:
+		return body->getCollisionFlags() == btCollisionObject::CF_DYNAMIC_OBJECT;
+	case RBState::KINETIC:
+		return body->getCollisionFlags() == btCollisionObject::CF_KINEMATIC_OBJECT;
+	case RBState::STATIC:
+		return body->getCollisionFlags() == btCollisionObject::CF_STATIC_OBJECT;
+	default:
+		return false;
+	}
+}
+
 const lm::FVec3& RigidBody::GetScale()
 {
 	return scale;
+}
+
+void RigidBody::SetMass(btScalar pMass)
+{
+	mass = pMass;
 }
 
 void RigidBody::SetScale(const lm::FVec3& pNewScale)

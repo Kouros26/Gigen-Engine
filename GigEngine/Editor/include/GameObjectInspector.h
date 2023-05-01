@@ -20,6 +20,7 @@ private:
 	void DrawTransform(GameObject* pObject) const;
 	void DrawModel(GameObject* pObject) const;
 	void DrawTexture(GameObject* pObject) const;
+	void DrawRigidBody(GameObject* pObject) const;
 
 	void DrawSpecials(GameObject* pObject) const;
 	void DrawComponents(GameObject* pObject);

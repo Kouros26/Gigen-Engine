@@ -64,8 +64,11 @@ public:
 	[[nodiscard]] CollisionCallBacks* GetCallBacks() const;
 	RigidBodyType& GetShapeType();
 	btScalar& GetMass();
+	bool GetGravityEnabled() const;
+	bool HasCollisionFlag(const RBState& pState) const;
 	const lm::FVec3& GetScale();
 
+	void SetMass(btScalar pMass);
 	void SetScale(const lm::FVec3& pNewScale);
 	void SetGravityEnabled(const bool pState) const;
 };

@@ -344,6 +344,12 @@ RigidBody* GameObject::GetRigidBody() const
 	return rigidBody;
 }
 
+void GameObject::RemoveRigidBody()
+{
+	delete rigidBody;
+	rigidBody = nullptr;
+}
+
 bool GameObject::IsActive() const
 {
 	return isActive;
