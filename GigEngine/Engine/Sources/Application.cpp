@@ -22,13 +22,12 @@ Application::Application()
 	Init();
 
 	WorldPhysics::InitPhysicWorld();
+	Scene::LoadScene(defaultScene);
 	CreateGameObjects();
-	Scene::LoadScene("Monkey.chad");
 }
 
 Application::~Application()
 {
-	Scene::SaveScene("Monkey.chad");
 	Lines::Clear();
 	GameObjectManager::Cleanup();
 	WorldPhysics::DestroyPhysicWorld();
@@ -147,9 +146,6 @@ void Application::CreateGameObjects()
 	//to remove =====================================================
 
 	skybox = new Skybox();
-
-	GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
-	dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
 }
 
 void Application::InitMainShader()

@@ -70,7 +70,7 @@ GameObject* GameObjectManager::CreateGameObject(const GameObject* other)
 	return AddGameObject(object);
 }
 
-GameObject& GameObjectManager::operator=(const GameObject& other)
+GameObject& GameObjectManager::operator=(const GameObject& other) const
 {
 	const auto object = new GameObject(other);
 
@@ -80,12 +80,12 @@ GameObject& GameObjectManager::operator=(const GameObject& other)
 GameObject* GameObjectManager::CreateSpotLight(float ambient, float diffuse, float specular,
 	float constant, float linear, float quadratic,
 	float cutOff, float outerCutOff,
-	lm::FVec3 color)
+	const lm::FVec3& color)
 {
 	if (spotLights.size() >= g_nbMaxLight)
 		return nullptr;
 
-	SpotLight* object = new SpotLight(ambient, diffuse, specular, constant, linear, quadratic, cutOff, outerCutOff, color);
+	const auto object = new SpotLight(ambient, diffuse, specular, constant, linear, quadratic, cutOff, outerCutOff, color);
 	spotLights.push_back(object);
 
 	return AddGameObject(object);
@@ -93,24 +93,24 @@ GameObject* GameObjectManager::CreateSpotLight(float ambient, float diffuse, flo
 
 GameObject* GameObjectManager::CreatePointLight(float ambient, float diffuse, float specular,
 	float constant, float linear, float quadratic,
-	lm::FVec3 color)
+	const lm::FVec3& color)
 {
 	if (pointLights.size() >= g_nbMaxLight)
 		return nullptr;
 
-	PointLight* object = new PointLight(ambient, diffuse, specular, constant, linear, quadratic, color);
+	const auto object = new PointLight(ambient, diffuse, specular, constant, linear, quadratic, color);
 	pointLights.push_back(object);
 
 	return AddGameObject(object);
 }
 
 GameObject* GameObjectManager::CreateDirLight(float ambient, float diffuse, float specular,
-	lm::FVec3 color)
+                                              const lm::FVec3& color)
 {
 	if (dirLights.size() >= g_nbMaxLight)
 		return nullptr;
 
-	DirLight* object = new DirLight(ambient, diffuse, specular, color);
+	const auto object = new DirLight(ambient, diffuse, specular, color);
 	dirLights.push_back(object);
 
 	return AddGameObject(object);
@@ -121,9 +121,7 @@ GameObject* GameObjectManager::CreateCamera()
 	const auto object = new Camera();
 
 	if (!currentCamera)
-	{
 		currentCamera = object;
-	}
 
 	return AddGameObject(object);
 }

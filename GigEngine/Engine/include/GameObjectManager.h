@@ -33,20 +33,20 @@ public:
 	static GameObject* CreateGameObject(GameObject*&& other) noexcept = delete;
 
 	//rule of 5
-	GameObject& operator=(const GameObject& other);
+	GameObject& operator=(const GameObject& other) const;
 	GameObject& operator=(GameObject&& other) noexcept;
 
 	static GameObject* CreateSpotLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
 		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
 		float cutOff = 45, float outerCutOff = 90,
-		lm::FVec3 color = lm::FVec3(1));
+		const lm::FVec3& color = lm::FVec3(1));
 
 	static GameObject* CreatePointLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
 		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
-		lm::FVec3 color = lm::FVec3(1));
+		const lm::FVec3& color = lm::FVec3(1));
 
 	static GameObject* CreateDirLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
-		lm::FVec3 color = lm::FVec3(1));
+		const lm::FVec3& color = lm::FVec3(1));
 
 	static GameObject* CreateCamera();
 

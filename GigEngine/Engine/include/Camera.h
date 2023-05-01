@@ -9,9 +9,10 @@ public:
 
 	lm::FMat4 CreateViewMatrix();
 
-	float GetFov();
-	float GetNear();
-	float GetFar();
+	[[nodiscard]] float GetFov() const;
+	[[nodiscard]] float GetNear() const;
+	[[nodiscard]] float GetFar() const;
+	[[nodiscard]] float GetRatio() const;
 
 	void SetFov(float fov);
 	void SetNear(float near);

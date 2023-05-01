@@ -1,10 +1,13 @@
 #pragma once
 #include <string>
-#include "GameObject.h"
+#include "Camera.h"
+#include "Light.h"
 
 namespace formatting
 {
 	const std::string typeTag("*");
+	const std::string lightValueTag(".");
+	const std::string cameraValueTag("-");
 	const std::string nameTag("N");
 	const std::string transformTag("W");
 	const std::string rigidBodyTag("R");
@@ -19,6 +22,7 @@ struct ProcessedObject // describes the gameObject that is currently handled
 {
 	inline static std::string type;
 	inline static std::string name;
+	inline static std::string otherValues;
 	inline static std::string transform;
 	inline static std::string rigidBody;
 	inline static std::string parent;
@@ -40,10 +44,18 @@ public:
 private:
 
 	static void GetValues(GameObject* pGameObject);
-	static void ProcessTransform(const std::string& pLine, GameObject* pGameObject);
-	static void ProcessRigidBody(const std::string& pLine, GameObject* pGameObject);
-	static void ProcessComponents(const std::string& pLine, GameObject* pGameObject);
+	static void GetLightValues(DirLight* pGameObject);
+	static void GetCameraValues(const Camera* pGameObject);
+	static bool IsLight(const std::string& pType);
 
+	static GameObject* ProcessTypeOfGameObject(const std::string& pLine);
+	static void ProcessLightData(const std::string& pLine, GameObject* pOutGameObject);
+	static void ProcessCameraData(const std::string& pLine, Camera* pOutGameObject);
+	static void ProcessTransform(const std::string& pLine, GameObject* pOutGameObject);
+	static void ProcessRigidBody(const std::string& pLine, GameObject* pOutGameObject);
+	static void ProcessComponents(const std::string& pLine, GameObject* pOutGameObject);
+
+	static std::string VecToString(const float pFirst, const float pSecond, const float pThird);
 	static std::string VecToString(const lm::FVec3& pVec);
 	static std::vector<std::string> SplitString(const std::string& pString, char delimiter = ' ');
 

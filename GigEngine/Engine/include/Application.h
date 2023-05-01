@@ -30,6 +30,7 @@ public:
 private:
 	class Skybox* skybox;
 
+	static inline std::string defaultScene = "default.chad";
 	static inline Window window;
 	static inline EditorCamera editorCamera;
 
