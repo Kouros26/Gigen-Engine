@@ -24,6 +24,11 @@ void GameObjectManager::Cleanup()
 {
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 		delete gameObjects[i];
+
+	gameObjects.clear();
+	dirLights.clear();
+	pointLights.clear();
+	spotLights.clear();
 }
 
 GameObject* GameObjectManager::CreateGameObject()

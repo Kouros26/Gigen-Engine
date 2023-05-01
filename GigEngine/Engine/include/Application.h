@@ -58,7 +58,7 @@ private:
 	void UpdateGameObjectComponent();
 	void UpdateGameObjectRender();
 	void UpdateLights();
-	void UpdateUniforms();
+	void UpdateUniforms() const;
 
 	static void StartGame();
 };

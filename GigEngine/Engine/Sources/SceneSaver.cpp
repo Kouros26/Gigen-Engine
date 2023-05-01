@@ -118,6 +118,12 @@ void Scene::LoadScene(const std::string& pSceneName)
 		GameObjectManager::FindObjectByName(i.first)->AddChild(GameObjectManager::FindObjectByName(i.second));
 }
 
+void Scene::ReloadScene(const std::string& pSceneName)
+{
+	GameObjectManager::Cleanup();
+	LoadScene(pSceneName);
+}
+
 void Scene::GetValues(GameObject* pGameObject)
 {
 	//type

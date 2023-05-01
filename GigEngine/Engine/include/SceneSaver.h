@@ -40,6 +40,7 @@ public:
 
 	static void SaveScene(const std::string& pSceneName);
 	static void LoadScene(const std::string& pSceneName);
+	static void ReloadScene(const std::string& pSceneName);
 
 private:
 

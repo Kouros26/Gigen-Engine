@@ -79,7 +79,7 @@ void Application::Pause()
 
 void Application::Stop()
 {
-	//reload
+	Scene::ReloadScene(defaultScene);
 	isEditor = true;
 }
 
@@ -102,6 +102,8 @@ bool Application::IsUsingEditorCam()
 }
 void Application::StartGame()
 {
+	Scene::SaveScene(defaultScene);
+
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		const GameObject* object = GameObjectManager::GetGameObject(i);
@@ -242,7 +244,7 @@ void Application::UpdateLights()
 	GameObjectManager::SendLightsToShader();
 }
 
-void Application::UpdateUniforms()
+void Application::UpdateUniforms() const
 {
 	Camera* cam = nullptr;
 	if (isEditor || useEditorCam)

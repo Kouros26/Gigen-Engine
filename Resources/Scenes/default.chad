@@ -3,7 +3,7 @@ Nchest
 W5.000000 10.000000 10.000000 0.000000 0.000000 0.000000 1.000000 1.000000 1.000000
 Rnone
 Pcar
-C3 test   
+C3    
 MResources/Models/chest.obj
 TResources/Textures/test.png
 
@@ -19,7 +19,7 @@ TResources/Textures/default.png
 *GameObject
 NGround
 W0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 50.000000 1.000000 50.000000
-Rbox 1.000000 1.000000 1.000000 0.707107 0.000006 0.707107 0.000000 true
+Rbox 1.000000 1.000000 1.000000 0.707107 0.000000 0.707107 0.000000 true
 Pnone
 C2   
 MResources/Models/Basics/Cube.FBX
