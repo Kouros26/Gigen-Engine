@@ -3,6 +3,8 @@
 #include "ModelLoader.h"
 #include <vector>
 
+const char* const g_defaultModelPath = "Resources/Models/Basics/Cube.FBX";
+
 class Texture;
 class Material;
 class Mesh;

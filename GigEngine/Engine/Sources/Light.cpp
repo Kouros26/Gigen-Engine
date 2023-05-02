@@ -12,6 +12,10 @@ DirLight::DirLight(float ambient, float diffuse, float specular, lm::FVec3 color
 
 void DirLight::SendToShader(const int& pos, const std::string& shaderName)
 {
+	if (!IsActive())
+	{
+		return;
+	}
 	std::string str = shaderName + "[" + std::to_string(pos) + "].";
 	std::string temp = str;
 
@@ -52,7 +56,7 @@ float DirLight::GetSpecular()
 	return specular;
 }
 
-void DirLight::SetColor(lm::FVec3 pColor)
+void DirLight::SetColor(const lm::FVec3& pColor)
 {
 	for (int i = 0; i < 3; i++)
 	{
@@ -82,6 +86,10 @@ PointLight::PointLight(float ambient, float diffuse, float specular, float const
 
 void PointLight::SendToShader(const int& pos, const std::string& shaderName)
 {
+	if (!IsActive())
+	{
+		return;
+	}
 	DirLight::SendToShader(pos, shaderName);
 
 	std::string str = shaderName + "[" + std::to_string(pos) + "].";
@@ -139,6 +147,10 @@ SpotLight::SpotLight(float ambient, float diffuse, float specular, float constan
 
 void SpotLight::SendToShader(const int& pos, const std::string& shaderName)
 {
+	if (!IsActive())
+	{
+		return;
+	}
 	PointLight::SendToShader(pos, shaderName);
 
 	std::string str = shaderName + "[" + std::to_string(pos) + "].";

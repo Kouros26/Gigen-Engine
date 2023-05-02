@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Skybox.h"
+#include "GameObjectManager.h"
 #include <ResourceManager.h>
 #include "Application.h"
 
@@ -29,13 +30,13 @@ void Skybox::Draw()
 {
     shaderProgram.Use();
 
-    if (Application::IsInEditor())
+    if (Application::IsInEditor() || Application::IsUsingEditorCam())
     {
         GetTransform().SetWorldPosition(Application::GetEditorCamera().GetTransform().GetWorldPosition());
     }
-    else
+    else if(Camera* cam = GameObjectManager::GetCurrentCamera())
     {
-        //same but with current camera
+        GetTransform().SetWorldPosition(cam->GetTransform().GetWorldPosition());
     }
 
     RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(Application::GetViewProj()));

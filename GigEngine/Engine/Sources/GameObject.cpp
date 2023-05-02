@@ -7,69 +7,67 @@
 #include "ResourceManager.h"
 #include "GameObjectManager.h"
 #include "Component.h"
+#include "ScriptInterpreter.h"
+#include "Behaviour.h"
 #include "SphereRigidBody.h"
 
 unsigned int GameObject::gameObjectIndex = 0;
 
 GameObject::GameObject()
 {
-	gameObjectIndex++;
-	id = gameObjectIndex;
+    gameObjectIndex++;
+    id = gameObjectIndex;
 
-	name = "GameObject " + std::to_string(id);
+    name = "GameObject " + std::to_string(id);
 }
 
 GameObject::GameObject(const std::string& name)
-	: GameObject()
+    : GameObject()
 {
-	if (!name.empty())
-		this->name = name;
+    if (!name.empty())
+        this->name = name;
 }
 
 GameObject::GameObject(const std::string& name, const lm::FVec3& position, const lm::FVec3& rotation,
-	const lm::FVec3& scale)
-	: transform(position, rotation, scale)
+    const lm::FVec3& scale)
+    : transform(position, rotation, scale)
 {
-	gameObjectIndex++;
-	id = gameObjectIndex;
+    gameObjectIndex++;
+    id = gameObjectIndex;
 
-	if (!name.empty())
-		this->name = name;
+    if (!name.empty())
+        this->name = name;
 
-	else
-		this->name = "GameObject " + std::to_string(id);
+    else
+        this->name = "GameObject " + std::to_string(id);
 }
 
 GameObject::GameObject(const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale)
-	: transform(position, rotation, scale)
+    : transform(position, rotation, scale)
 {
-	gameObjectIndex++;
-	id = gameObjectIndex;
+    gameObjectIndex++;
+    id = gameObjectIndex;
 
-	name = "GameObject " + std::to_string(id);
+    name = "GameObject " + std::to_string(id);
 }
 
 GameObject::GameObject(const GameObject& other)
 {
-	gameObjectIndex++;
-	id = gameObjectIndex;
+    gameObjectIndex++;
+    id = gameObjectIndex;
 
-	name = other.name + " " + std::to_string(id);
+    name = other.name + " " + std::to_string(id);
 
-	transform = other.transform;
+    transform = other.transform;
 
-	for (const auto& component : other.components)
-		components.push_back(component->Clone(this));
+    for (const auto& component : other.components)
+        components.push_back(component->Clone(this));
 
-	for (const auto& script : other.scripts)
-	{
-		auto newScript = dynamic_cast<Script*>(script->Clone(this));
-		scripts.push_back(newScript);
-		newScript->Awake();
-	}
+    for (const auto& child : other.children)
+        AddChild(GameObjectManager::CreateGameObject(*child));
 
-	for (const auto& child : other.children)
-		AddChild(GameObjectManager::CreateGameObject(*child));
+    for (const auto& child : other.children)
+        AddChild(GameObjectManager::CreateGameObject(*child));
 
 	if (other.model != nullptr)
 		model = ResourceManager::Get<Model>(other.model->GetFilePath());
@@ -77,36 +75,34 @@ GameObject::GameObject(const GameObject& other)
 
 GameObject& GameObject::operator=(const GameObject& other)
 {
-	if (this == &other)
-		return *this;
+    if (this == &other)
+        return *this;
 
-	name = other.name + " " + std::to_string(id);
+    name = other.name + " " + std::to_string(id);
 
-	transform = other.transform;
+    transform = other.transform;
 
-	for (const auto& component : other.components)
-		components.push_back(component->Clone(this));
+    for (const auto& component : other.components)
+        components.push_back(component->Clone(this));
 
-	for (const auto& child : other.children)
-		AddChild(GameObjectManager::CreateGameObject(*child));
+    for (const auto& child : other.children)
+        AddChild(GameObjectManager::CreateGameObject(*child));
 
-	if (other.model != nullptr)
-		model = ResourceManager::Get<Model>(other.model->GetFilePath());
+    if (other.model != nullptr)
+        model = ResourceManager::Get<Model>(other.model->GetFilePath());
 
-	return *this;
+    return *this;
 }
 
 GameObject::~GameObject()
 {
-	for (const auto& component : components)
-		delete component;
+    for (const auto& component : components)
+        delete component;
 
-	model = nullptr;
+	delete rigidBody;
+
 	if (parent)
-	{
 		parent->RemoveChild(this);
-	}
-	GameObjectManager::Remove(this);
 }
 
 void GameObject::CreateBoxRigidBody(const lm::FVec3& halfExtents = { 1.0f }, const lm::FVec3& scale = { 1.0f }, float mass = 1.0f)
@@ -136,14 +132,9 @@ void GameObject::CreateSphereRigidBody(float radius, const lm::FVec3& scale, flo
 	transform.SetOwnerRigidBody(rigidBody);
 }
 
-void GameObject::Destroy()
-{
-	this->~GameObject();
-}
-
 std::string GameObject::GetName()
 {
-	return name;
+    return name;
 }
 
 void GameObject::SetName(const std::string& pName)
@@ -154,22 +145,26 @@ void GameObject::SetName(const std::string& pName)
 		return;
 	}
 
-	name = pName;
+    name = pName;
 }
-
 
 unsigned int GameObject::GetId() const
 {
-	return id;
+    return id;
 }
 
 void GameObject::SetModel(std::string const& filePath)
 {
 	model = ResourceManager::Get<Model>(filePath);
-	if (!texture) 
+	if (!texture)
 	{
 		texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
 	}
+}
+
+void GameObject::SetModel(Model* pModel)
+{
+	model = pModel;
 }
 
 Model* GameObject::GetModel()
@@ -194,30 +189,30 @@ Texture* GameObject::GetTexture()
 
 void GameObject::AddChild(GameObject* child)
 {
-	if (child->parent == this)
-		return;
+    if (child->parent == this)
+        return;
 
-	if (child->parent != nullptr)
-		child->parent->RemoveChild(child);
+    if (child->parent != nullptr)
+        child->parent->RemoveChild(child);
 
-	child->parent = this;
+    child->parent = this;
 
-	child->GetTransform().AssignLocalPosition(child->GetTransform().GetWorldPosition() - GetTransform().GetWorldPosition());
-	child->GetTransform().AssignLocalScale(child->GetTransform().GetWorldScale() / GetTransform().GetWorldScale());
+    child->GetTransform().AssignLocalPosition(child->GetTransform().GetWorldPosition() - GetTransform().GetWorldPosition());
+    child->GetTransform().AssignLocalScale(child->GetTransform().GetWorldScale() / GetTransform().GetWorldScale());
 
-	children.push_back(child);
+    children.push_back(child);
 }
 
 void GameObject::RemoveChild(GameObject* child)
 {
-	if (child->parent != this)
-		return;
+    if (child->parent != this)
+        return;
 
-	child->GetTransform().SetLocalPosition(child->GetTransform().GetWorldPosition());
-	child->GetTransform().SetLocalRotation(child->GetTransform().GetWorldRotation());
+    child->GetTransform().SetLocalPosition(child->GetTransform().GetWorldPosition());
+    child->GetTransform().SetLocalRotation(child->GetTransform().GetWorldRotation());
 
-	child->parent = nullptr;
-	children.remove(child);
+    child->parent = nullptr;
+    children.remove(child);
 }
 
 void GameObject::OnCollisionEnter(const Collision& collision)
@@ -232,64 +227,79 @@ void GameObject::OnCollisionExit(const Collision& collision)
 
 void GameObject::UpdateRender() const
 {
-	if (model)
+	if (model && IsActive())
 		model->Draw(texture);
 }
 
 void GameObject::UpdateComponents() const
 {
-	for (const auto& component : components)
-		component->Update();
+    if (IsActive())
+    {
+        for (const auto& component : components)
+            component->Update(Time::GetDeltaTime());
+    }
 }
 
 void GameObject::LateUpdate() const
 {
-	for (const auto& script : scripts)
-		script->LateUpdate();
+    if (IsActive())
+    {
+        for (const auto script : components)
+            script->LateUpdate(Time::GetDeltaTime());
+    }
+}
+
+void GameObject::CheckForScript(Component* pComponent)
+{
+    if (const auto script = dynamic_cast<GigScripting::Behaviour*>(pComponent))
+    {
+        SCRIPT_INTERPRETER.RegisterBehaviour(script);
+        script->Awake();
+    }
 }
 
 void GameObject::UpdateHierarchy()
 {
-	if (this->parent != nullptr)
-	{
-		GetTransform().AssignWorldRotation(parent->GetTransform().GetWorldRotation() + GetTransform().GetLocalRotation());
-		GetTransform().AssignWorldPosition(parent->GetTransform().GetWorldPosition() + (parent->GetTransform().GetOrientation() * GetTransform().GetLocalPosition()));
-		GetTransform().AssignWorldScale(parent->GetTransform().GetWorldScale() * GetTransform().GetLocalScale());
-	}
+    if (this->parent != nullptr)
+    {
+        GetTransform().AssignWorldRotation(parent->GetTransform().GetWorldRotation() + GetTransform().GetLocalRotation());
+        GetTransform().AssignWorldPosition(parent->GetTransform().GetWorldPosition() + (parent->GetTransform().GetOrientation() * GetTransform().GetLocalPosition()));
+        GetTransform().AssignWorldScale(parent->GetTransform().GetWorldScale() * GetTransform().GetLocalScale());
+    }
 
-	else
-	{
-		GetTransform().AssignWorldRotation(GetTransform().GetLocalRotation());
-		GetTransform().AssignWorldPosition(GetTransform().GetLocalPosition());
-		GetTransform().AssignWorldScale(GetTransform().GetLocalScale());
-	}
+    else
+    {
+        GetTransform().AssignWorldRotation(GetTransform().GetLocalRotation());
+        GetTransform().AssignWorldPosition(GetTransform().GetLocalPosition());
+        GetTransform().AssignWorldScale(GetTransform().GetLocalScale());
+    }
 
-	for (const auto& child : this->children)
-		child->UpdateHierarchy();
+    for (const auto& child : this->children)
+        child->UpdateHierarchy();
 }
 
 void GameObject::AddComponent(Component* newComponent)
 {
-	components.push_back(newComponent);
+    components.push_back(newComponent);
 
-	if (const auto script = dynamic_cast<Script*>(newComponent))
-	{
-		scripts.push_back(script);
-		script->Awake();
-	}
+    if (const auto script = dynamic_cast<GigScripting::Behaviour*>(newComponent))
+    {
+        SCRIPT_INTERPRETER.RegisterBehaviour(script);
+        script->Awake();
+    }
 }
 
 unsigned GameObject::GetComponentCount() const
 {
-	return static_cast<unsigned>(components.size());
+    return static_cast<unsigned>(components.size());
 }
 
 Transform& GameObject::GetTransform()
 {
-	return transform;
+    return transform;
 }
 
-bool GameObject::IsAParent(GameObject* obj)
+bool GameObject::IsAParent(GameObject* obj) const
 {
 	GameObject* p = parent;
 	while (p != nullptr)
@@ -332,4 +342,18 @@ unsigned int GameObject::GetChildrenCount()
 RigidBody* GameObject::GetRigidBody() const
 {
 	return rigidBody;
+}
+
+bool GameObject::IsActive() const
+{
+	return isActive;
+}
+
+void GameObject::SetActive(bool b)
+{
+	isActive = b;
+	for (GameObject* child : children)
+	{
+		child->SetActive(b);
+	}
 }

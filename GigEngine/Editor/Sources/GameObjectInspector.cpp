@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include "GameObjectInspector.h"
 #include "InterfaceManager.h"
 #include "FileDisplay.h"
@@ -21,12 +22,11 @@ GameObjectInspector::~GameObjectInspector()
 void GameObjectInspector::Draw()
 {
 	height = InterfaceManager::GetHeight() - InterfaceManager::GetClassHeight<FileDisplay>() - g_menuBarSize;
-	bool open = true;
 	ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width, g_menuBarSize });
 	ImGui::SetNextWindowSize({ width, height });
 
 	// noMove et NoCollapse
-	ImGui::Begin("Inspector", &open, 4 | 32);
+	ImGui::Begin("Inspector", NULL, 4 | 32);
 
 	LimitWidthResize();
 	ImGui::SetWindowSize("Inspector", { width, height });
@@ -46,22 +46,33 @@ void GameObjectInspector::DrawGameObject()
 
 	ImGui::Text("Name"); ImGui::SameLine();
 
-	ImGui::PushItemWidth(-1);
-	if (ImGui::InputText("Name", name, 128))
+	if (ImGui::InputText("##1", name, 128))
 	{
 		object->SetName(name);
 	}
-	ImGui::PopItemWidth();
+
+	bool isActive = object->IsActive();
+	ImGui::SameLine();
+	ImGui::Checkbox("##2", &isActive);
+	if (isActive != object->IsActive())
+	{
+		object->SetActive(isActive);
+	}
 
 	ImGui::Separator();
 
 	DrawTransform(object);
 	DrawSpecials(object);
 	DrawComponents(object);
-	DrawModel(object);
+
+	if (object->GetModel())
+		DrawModel(object);
+
+	ImGui::Separator();
+	DrawAddComponent(object);
 }
 
-void GameObjectInspector::DrawTransform(GameObject * pObject) const
+void GameObjectInspector::DrawTransform(GameObject* pObject) const
 {
 	if (ImGui::CollapsingHeader("Transform"))
 	{
@@ -75,40 +86,49 @@ void GameObjectInspector::DrawTransform(GameObject * pObject) const
 
 		ImGui::Text("Position"); ImGui::SameLine();
 
-		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat3("pos", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat3("##3", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
 		{
 			pObject->GetTransform().SetWorldPosition(lm::FVec3(translation[0], translation[1], translation[2]));
 		}
-		ImGui::PopItemWidth();
 
 		ImGui::Text("Scale"); ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat3("sca", scale, g_maxStep, 0, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat3("##4", scale, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
 		{
 			pObject->GetTransform().SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
 		}
-		ImGui::PopItemWidth();
 
 		ImGui::Text("Rotation"); ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat3("rot", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
+		if (ImGui::DragFloat3("##5", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
 		{
 			pObject->GetTransform().SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
 		}
-		ImGui::PopItemWidth();
 	}
 }
 
-void GameObjectInspector::DrawModel(GameObject * pObject) const
+void GameObjectInspector::DrawModel(GameObject* pObject) const
 {
 	if (ImGui::CollapsingHeader("Model"))
 	{
-		std::string path;
-		if (pObject->GetModel())
+		if (ImGui::IsItemClicked(1))
 		{
-			path = pObject->GetModel()->GetFilePath();
+			ImGui::OpenPopup("ModelPopUp");
 		}
+
+		if (ImGui::BeginPopup("ModelPopUp"))
+		{
+			ImGui::SeparatorText("Model");
+			if (ImGui::MenuItem("Remove"))
+			{
+				pObject->SetModel(nullptr);
+			}
+			ImGui::EndPopup();
+			if (!pObject->GetModel())
+			{
+				return;
+			}
+		}
+
+		std::string path = pObject->GetModel()->GetFilePath();
 
 		ImGui::Text("Path :"); ImGui::SameLine();
 		ImGui::Text(path.c_str());
@@ -116,12 +136,12 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 		if (ImGui::Button("Locate##1"))
 		{
 			const std::string& filePath = GetFilePathFromExplorer("3D object \0 *.obj\0 *.OBJ\0 *.fbx\0 *.FBX\0");
-			
-			if(filePath.length() > 0)
+
+			if (filePath.length() > 0)
 				pObject->SetModel(filePath);
 		}
 
-		if (pObject->GetModel()) 
+		if (pObject->GetModel())
 		{
 			DrawTexture(pObject);
 		}
@@ -151,7 +171,7 @@ void GameObjectInspector::DrawTexture(GameObject* pObject) const
 	}
 }
 
-void GameObjectInspector::DrawSpecials(GameObject * pObject) const
+void GameObjectInspector::DrawSpecials(GameObject* pObject) const
 {
 	if (auto light = dynamic_cast<DirLight*>(pObject))
 	{
@@ -163,12 +183,12 @@ void GameObjectInspector::DrawSpecials(GameObject * pObject) const
 		DrawCamera(cam);
 }
 
-void GameObjectInspector::DrawComponents(GameObject * pObject)
+void GameObjectInspector::DrawComponents(GameObject* pObject)
 {
 	//TO DO
 }
 
-void GameObjectInspector::DrawLight(GameObject * pObject) const
+void GameObjectInspector::DrawLight(GameObject* pObject) const
 {
 	const auto dirlight = dynamic_cast<DirLight*>(pObject);
 	if (ImGui::CollapsingHeader("Light"))
@@ -179,33 +199,25 @@ void GameObjectInspector::DrawLight(GameObject * pObject) const
 		float specular = dirlight->GetSpecular();
 
 		ImGui::Text("Color"); ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-		ImGui::ColorEdit3("color", color);
-		ImGui::PopItemWidth();
+		ImGui::ColorEdit3("##6", color);
 
 		ImGui::Text("Ambient"); ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat("ambient", &ambient, g_maxStep, 0, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat("##7", &ambient, g_maxStep, 0, g_floatMax, g_floatFormat))
 		{
 			dirlight->SetAmbient(ambient);
 		}
-		ImGui::PopItemWidth();
 
 		ImGui::Text("Diffuse"); ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat("diffuse", &diffuse, g_maxStep, 0, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat("##8", &diffuse, g_maxStep, 0, g_floatMax, g_floatFormat))
 		{
 			dirlight->SetDiffuse(diffuse);
 		}
-		ImGui::PopItemWidth();
 
 		ImGui::Text("Specular"); ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat("specular", &specular, g_maxStep, 0, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat("##9", &specular, g_maxStep, 0, g_floatMax, g_floatFormat))
 		{
 			dirlight->SetSpecular(specular);
 		}
-		ImGui::PopItemWidth();
 
 		if (const auto pointLight = dynamic_cast<PointLight*>(pObject))
 		{
@@ -214,28 +226,22 @@ void GameObjectInspector::DrawLight(GameObject * pObject) const
 			float quadratic = pointLight->GetQuadratic();
 
 			ImGui::Text("Constant"); ImGui::SameLine();
-			ImGui::PushItemWidth(-1);
-			if (ImGui::DragFloat("constant", &constant, g_maxStep, 0, g_floatMax, g_floatFormat))
+			if (ImGui::DragFloat("##10", &constant, g_maxStep, 0, g_floatMax, g_floatFormat))
 			{
 				pointLight->SetConstant(constant);
 			}
-			ImGui::PopItemWidth();
 
 			ImGui::Text("Linear"); ImGui::SameLine();
-			ImGui::PushItemWidth(-1);
-			if (ImGui::DragFloat("linear", &linear, g_maxStep, 0, g_floatMax, g_floatFormat))
+			if (ImGui::DragFloat("##11", &linear, g_maxStep, 0, g_floatMax, g_floatFormat))
 			{
 				pointLight->SetLinear(linear);
 			}
-			ImGui::PopItemWidth();
 
 			ImGui::Text("Quadratic"); ImGui::SameLine();
-			ImGui::PushItemWidth(-1);
-			if (ImGui::DragFloat("quadratic", &quadratic, g_maxStep, 0, g_floatMax, g_floatFormat))
+			if (ImGui::DragFloat("##12", &quadratic, g_maxStep, 0, g_floatMax, g_floatFormat))
 			{
 				pointLight->SetQuadratic(quadratic);
 			}
-			ImGui::PopItemWidth();
 		}
 
 		if (const auto spotLight = dynamic_cast<SpotLight*>(pObject))
@@ -244,25 +250,21 @@ void GameObjectInspector::DrawLight(GameObject * pObject) const
 			float outerCutOff = spotLight->GetOuterCutOff();
 
 			ImGui::Text("CutOff"); ImGui::SameLine();
-			ImGui::PushItemWidth(-1);
-			if (ImGui::DragFloat("cutOff", &cutOff, g_maxStep, 0, g_floatMax, g_floatFormat))
+			if (ImGui::DragFloat("##13", &cutOff, g_maxStep, 0, g_floatMax, g_floatFormat))
 			{
 				spotLight->SetCutOff(cutOff);
 			}
-			ImGui::PopItemWidth();
 
 			ImGui::Text("OuterCutOff"); ImGui::SameLine();
-			ImGui::PushItemWidth(-1);
-			if (ImGui::DragFloat("outerCutOff", &outerCutOff, g_maxStep, 0, g_floatMax, g_floatFormat))
+			if (ImGui::DragFloat("##14", &outerCutOff, g_maxStep, 0, g_floatMax, g_floatFormat))
 			{
 				spotLight->SetOuterCutOff(outerCutOff);
 			}
-			ImGui::PopItemWidth();
 		}
 	}
 }
 
-void GameObjectInspector::DrawCamera(Camera * pObject) const
+void GameObjectInspector::DrawCamera(Camera* pObject) const
 {
 	float fov = pObject->GetFov();
 	float tNear = pObject->GetNear();
@@ -271,28 +273,56 @@ void GameObjectInspector::DrawCamera(Camera * pObject) const
 	if (ImGui::CollapsingHeader("Camera"))
 	{
 		ImGui::Text("Fov"); ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat("fov", &fov, g_maxStep, 0, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat("##15", &fov, g_maxStep, 0, g_floatMax, g_floatFormat))
 		{
 			pObject->SetFov(fov);
 		}
-		ImGui::PopItemWidth();
 
 		ImGui::Text("Near"); ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat("near", &tNear, g_maxStep, 0, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat("##16", &tNear, g_maxStep, 0, g_floatMax, g_floatFormat))
 		{
 			pObject->SetNear(tNear);
 		}
-		ImGui::PopItemWidth();
 
 		ImGui::Text("Far"); ImGui::SameLine();
-		ImGui::PushItemWidth(-1);
-		if (ImGui::DragFloat("far", &tFar, g_maxStep, 0, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat("##17", &tFar, g_maxStep, 0, g_floatMax, g_floatFormat))
 		{
 			pObject->SetFar(tFar);
 		}
-		ImGui::PopItemWidth();
+	}
+}
+
+void GameObjectInspector::DrawAddComponent(GameObject* pObject) const
+{
+	ImGuiStyle& style = ImGui::GetStyle();
+
+	float size = ImGui::CalcTextSize("Add component").x + style.FramePadding.x * 2.0f;
+	float avail = ImGui::GetContentRegionAvail().x;
+
+	float off = (avail - size) * 0.5f;
+	if (off > 0.0f)
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+
+	if (ImGui::Button("Add component"))
+	{
+		ImGui::OpenPopup("addComponentPopUp");
+	}
+
+	if (ImGui::BeginPopup("addComponentPopUp"))
+	{
+		ImGui::SeparatorText("Components");
+		if (!pObject->GetModel())
+		{
+			if (ImGui::MenuItem("Model"))
+			{
+				pObject->SetModel(g_defaultModelPath);
+			}
+		}
+
+		if (ImGui::MenuItem("RigidBody"))
+		{
+		}
+		ImGui::EndPopup();
 	}
 }
 
