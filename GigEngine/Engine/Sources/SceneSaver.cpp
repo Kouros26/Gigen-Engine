@@ -14,7 +14,7 @@
 
 void Scene::SaveScene(const std::string& pSceneName)
 {
-	static std::ofstream file(sceneFolder + pSceneName);
+	std::ofstream file(sceneFolder + pSceneName);
 
 	const std::string skybox = GameObjectManager::GetSkyBox() ? "true" : "false";
 	file << formatting::skyboxTag << skybox << std::endl;
