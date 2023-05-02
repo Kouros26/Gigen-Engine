@@ -10,7 +10,7 @@ namespace GigScripting
         Behaviour(GameObject* obj);
         Behaviour(GameObject* obj, const std::string& scriptName);
 
-        virtual ~Behaviour() override {};
+        virtual ~Behaviour() override;
 
         virtual void Awake() override;
         virtual void Start() override;
@@ -22,7 +22,7 @@ namespace GigScripting
 
         virtual Component* Clone(GameObject* newGameObject) override;
 
-        const std::string& GetScriptName() const;
+        [[nodiscard]] const std::string& GetScriptName() const;
 
         sol::table& GetScriptTable();
 

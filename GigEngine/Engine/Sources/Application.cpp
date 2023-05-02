@@ -23,7 +23,6 @@ Application::Application()
 
 	WorldPhysics::InitPhysicWorld();
 	Scene::LoadScene(defaultScene);
-	CreateGameObjects();
 }
 
 Application::~Application()
@@ -31,7 +30,6 @@ Application::~Application()
 	Lines::Clear();
 	GameObjectManager::Cleanup();
 	WorldPhysics::DestroyPhysicWorld();
-	delete skybox;
 }
 
 Window& Application::GetWindow()
@@ -79,6 +77,7 @@ void Application::Pause()
 
 void Application::Stop()
 {
+	GameObjectManager::SetCurrentCamera(nullptr);
 	Scene::ReloadScene(defaultScene);
 	isEditor = true;
 }
@@ -143,13 +142,6 @@ void Application::Init()
 	InitMainShader();
 }
 
-void Application::CreateGameObjects()
-{
-	//to remove =====================================================
-
-	skybox = new Skybox();
-}
-
 void Application::InitMainShader()
 {
 	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/core_vert.vert");
@@ -172,7 +164,8 @@ void Application::Draw()
 	ClearWindow();
 
 	RENDERER.Disable(RD_DEPTH_TEST);
-	skybox->Draw();
+	if (GameObjectManager::GetSkyBox())
+		GameObjectManager::GetSkyBox()->Draw();
 
 	if (isEditor || useEditorCam)
 	{

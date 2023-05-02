@@ -28,7 +28,6 @@ public:
 	void SwapFrames();
 
 private:
-	class Skybox* skybox;
 
 	static inline std::string defaultScene = "default.chad";
 	static inline Window window;
@@ -51,7 +50,6 @@ private:
 	int nbSpotLightLocation;
 
 	void Init();
-	void CreateGameObjects();
 	void InitMainShader();
 	void Draw();
 	void ClearWindow();

@@ -1,5 +1,7 @@
 #include "Behaviour.h"
 
+#include "ScriptInterpreter.h"
+
 GigScripting::Behaviour::Behaviour(GameObject* obj) : Component(obj)
 {
 	scriptTable = sol::nil;
@@ -28,6 +30,11 @@ void GigScripting::Behaviour::LateUpdate(float pDeltaTime)
 GigScripting::Behaviour::Behaviour(GameObject* obj, const std::string& scriptName) : Component(obj), scriptName(scriptName)
 {
 	scriptTable = sol::nil;
+}
+
+GigScripting::Behaviour::~Behaviour()
+{
+	SCRIPT_INTERPRETER.UnregisterBehaviour(this);
 }
 
 Component* GigScripting::Behaviour::Clone(GameObject* newGameObject)

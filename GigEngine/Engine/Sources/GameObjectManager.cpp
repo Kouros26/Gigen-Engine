@@ -8,7 +8,9 @@ GameObjectManager::GameObjectManager()
 {}
 
 GameObjectManager::~GameObjectManager()
-{}
+{
+	Cleanup();
+}
 
 unsigned int GameObjectManager::GetSize()
 {
@@ -24,6 +26,8 @@ void GameObjectManager::Cleanup()
 {
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 		delete gameObjects[i];
+
+	delete skybox;
 
 	gameObjects.clear();
 	dirLights.clear();
@@ -170,7 +174,7 @@ void GameObjectManager::RemoveGameObject(GameObject* object)
 	object->~GameObject();
 }
 
-std::vector<GameObject*> GameObjectManager::FindObjectsByName(std::string name)
+std::vector<GameObject*> GameObjectManager::FindObjectsByName(const std::string& name)
 {
 	std::vector<GameObject*> namedObjects;
 
@@ -181,25 +185,23 @@ std::vector<GameObject*> GameObjectManager::FindObjectsByName(std::string name)
 	return namedObjects;
 }
 
-GameObject* GameObjectManager::FindObjectByName(std::string name)
+GameObject* GameObjectManager::FindObjectByName(const std::string& name)
 {
-	for (int i = 0; i < gameObjects.size(); i++)
+	for (const auto& gameObject : gameObjects)
 	{
-		if (gameObjects[i]->GetName() == name)
-		{
-			return gameObjects[i];
-		}
+		if (gameObject->GetName() == name)
+			return gameObject;
 	}
 	return nullptr;
 }
 
-GameObject* GameObjectManager::FindObjectById(int id)
+GameObject* GameObjectManager::FindObjectById(unsigned int id)
 {
-	for (int i = 0; i < gameObjects.size(); i++)
+	for (const auto& gameObject : gameObjects)
 	{
-		if (gameObjects[i]->GetId() == id)
+		if (gameObject->GetId() == id)
 		{
-			return gameObjects[i];
+			return gameObject;
 		}
 	}
 	return nullptr;
@@ -213,6 +215,17 @@ Camera* GameObjectManager::GetCurrentCamera()
 void GameObjectManager::SetCurrentCamera(Camera* camera)
 {
 	currentCamera = camera;
+}
+
+void GameObjectManager::CreateSkyBox()
+{
+	delete skybox;
+	skybox = new Skybox();
+}
+
+Skybox*& GameObjectManager::GetSkyBox()
+{
+	return skybox;
 }
 
 void GameObjectManager::SendLightsToShader()

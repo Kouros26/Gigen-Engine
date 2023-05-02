@@ -16,6 +16,9 @@ void Scene::SaveScene(const std::string& pSceneName)
 {
 	static std::ofstream file(sceneFolder + pSceneName);
 
+	const std::string skybox = GameObjectManager::GetSkyBox() ? "true" : "false";
+	file << formatting::skyboxTag << skybox << std::endl;
+
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		GetValues(GameObjectManager::GetGameObject(i));
@@ -107,6 +110,11 @@ void Scene::LoadScene(const std::string& pSceneName)
 		case 'T':
 			if (word != "none")
 				obj->SetTexture(word);
+			break;
+
+		case 'B':
+			if (word == "true")
+				GameObjectManager::CreateSkyBox();
 			break;
 
 		default:

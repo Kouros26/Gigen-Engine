@@ -2,9 +2,7 @@
 #include <vector>
 #include <string>
 #include "Vec3/FVec3.hpp"
-#include "btBulletDynamicsCommon.h"
-#include "DebugDrawer.h"
-#include <set>
+#include "Skybox.h"
 
 class GameObject;
 class Camera;
@@ -52,6 +50,10 @@ public:
 
 	static Camera* GetCurrentCamera();
 	static void SetCurrentCamera(Camera* camera);
+
+	static void CreateSkyBox();
+	static Skybox*& GetSkyBox();
+
 	//ok
 	static void SendLightsToShader();
 	static int GetDirLightSize();
@@ -61,13 +63,14 @@ public:
 	static GameObject* GetFocusedGameObject();
 	static void RemoveGameObject(GameObject* object);
 
-	static std::vector<GameObject*> FindObjectsByName(std::string name);
-	static GameObject* FindObjectByName(std::string name);
-	static GameObject* FindObjectById(int id);
+	static std::vector<GameObject*> FindObjectsByName(const std::string& name);
+	static GameObject* FindObjectByName(const std::string& name);
+	static GameObject* FindObjectById(unsigned int id);
 
 private:
 	static GameObject* AddGameObject(GameObject* object);
 
+	inline static Skybox* skybox = nullptr;
 	inline static Camera* currentCamera;
 	inline static std::vector<GameObject*> gameObjects;
 

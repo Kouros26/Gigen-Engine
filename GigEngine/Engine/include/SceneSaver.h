@@ -5,6 +5,7 @@
 
 namespace formatting
 {
+	const std::string skyboxTag("B");
 	const std::string typeTag("*");
 	const std::string lightValueTag(".");
 	const std::string cameraValueTag("-");
