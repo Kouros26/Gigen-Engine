@@ -219,10 +219,10 @@ void GameObjectInspector::DrawRigidBody(GameObject * pObject) const
 		}
 
 		ImGui::Text("Collision type"); ImGui::SameLine();
-		const char* items[] = { "Dynamic", "Kinetic", "Static"};
+		const char* items[] = { "Dynamic", "Kinetic", "Static" };
 		int item_current = rigid->GetCollisionFlag();
 		ImGui::Combo("##20", &item_current, items, IM_ARRAYSIZE(items));
-		if (item_current != rigid->GetCollisionFlag()) 
+		if (item_current != rigid->GetCollisionFlag())
 		{
 			rigid->SetRBState((RBState)item_current);
 		}
@@ -231,20 +231,20 @@ void GameObjectInspector::DrawRigidBody(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawRigidShape(RigidBody* body) const
+void GameObjectInspector::DrawRigidShape(RigidBody * body) const
 {
 	ImGui::SetCursorPosX(30);
 	ImGui::BeginGroup();
 	if (ImGui::CollapsingHeader("Shape"))
 	{
-		if (body->GetShapeType() == RigidBodyType::CAPSULE) 
+		if (body->GetShapeType() == RigidBodyType::CAPSULE)
 		{
 			CapsuleRigidBody* caps = (CapsuleRigidBody*)body;
 			float radius = caps->GetRadius();
 			float height = caps->GetHeight();
 
 			ImGui::Text("Radius"); ImGui::SameLine();
-			if (ImGui::DragFloat("##21", &radius, g_maxStep, 0.001f, g_floatMax, g_floatFormat)) 
+			if (ImGui::DragFloat("##21", &radius, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
 			{
 				caps->SetRadius(radius);
 			}
@@ -254,7 +254,7 @@ void GameObjectInspector::DrawRigidShape(RigidBody* body) const
 				caps->SetHeight(height);
 			}
 		}
-		else if(body->GetShapeType() == RigidBodyType::SPHERE)
+		else if (body->GetShapeType() == RigidBodyType::SPHERE)
 		{
 			SphereRigidBody* sphere = (SphereRigidBody*)body;
 			float radius = sphere->GetRadius();
@@ -267,21 +267,21 @@ void GameObjectInspector::DrawRigidShape(RigidBody* body) const
 		}
 	}
 
-	if (ImGui::CollapsingHeader("Transform##2")) 
+	if (ImGui::CollapsingHeader("Transform##2"))
 	{
-		float rotation[3];
-		body->GetTransfrom().getRotation().getEulerZYX((btScalar&)rotation[2], (btScalar&)rotation[1], (btScalar&)rotation[0]);
+		//float rotation[3];
+		//body->GetTransfrom().getRotation().getEulerZYX((btScalar&)rotation[2], (btScalar&)rotation[1], (btScalar&)rotation[0]);
 
-		btVector3 btPos = body->GetTransfrom().getOrigin();
-		float translation[3] = { btPos.getX(), btPos.getY(), btPos.getZ() };
+		//btVector3 btPos = body->GetTransfrom().getOrigin();
+		//float translation[3] = { btPos.getX(), btPos.getY(), btPos.getZ() };
 
-		float scale[3] = { body->GetScale().x, body->GetScale().y, body->GetScale().z};
+		float scale[3] = { body->GetScale().x, body->GetScale().y, body->GetScale().z };
 
-		ImGui::Text("Position"); ImGui::SameLine();
-		if (ImGui::DragFloat3("##21", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
-		{
-			body->SetRigidBodyPosition(lm::FVec3(translation[0], translation[1], translation[2]));
-		}
+		//ImGui::Text("Position"); ImGui::SameLine();
+		//if (ImGui::DragFloat3("##21", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+		//{
+		//	body->SetRigidBodyPosition(lm::FVec3(translation[0], translation[1], translation[2]));
+		//}
 
 		ImGui::Text("Scale"); ImGui::SameLine();
 		if (ImGui::DragFloat3("##22", scale, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
@@ -289,11 +289,11 @@ void GameObjectInspector::DrawRigidShape(RigidBody* body) const
 			body->SetRigidBodyScale(lm::FVec3(scale[0], scale[1], scale[2]));
 		}
 
-		ImGui::Text("Rotation"); ImGui::SameLine();
-		if (ImGui::DragFloat3("##23", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
-		{
-			body->SetRigidBodyRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
-		}
+		//ImGui::Text("Rotation"); ImGui::SameLine();
+		//if (ImGui::DragFloat3("##23", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
+		//{
+		//	body->SetRigidBodyRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
+		//}
 	}
 	ImGui::EndGroup();
 }
@@ -446,8 +446,20 @@ void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 			}
 		}
 
-		if (ImGui::MenuItem("RigidBody"))
+		if (!pObject->GetRigidBody())
 		{
+			if (ImGui::MenuItem("RigidBody Capsule"))
+			{
+				pObject->CreateCapsuleRigidBody(1, 2, { 1 }, 1);
+			}
+			if (ImGui::MenuItem("RigidBody Cube"))
+			{
+				pObject->CreateBoxRigidBody({ 1 }, { 1 }, 1);
+			}
+			if (ImGui::MenuItem("RigidBody Sphere"))
+			{
+				pObject->CreateSphereRigidBody(1, { 1 }, 1);
+			}
 		}
 		ImGui::EndPopup();
 	}
