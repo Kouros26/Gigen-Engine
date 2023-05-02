@@ -3,6 +3,7 @@
 #include "Inputs.h"
 #include "Application.h"
 #include <iostream>
+#include <stb_image.h>
 
 using namespace GigRenderer;
 
@@ -47,6 +48,8 @@ void Window::Init()
 	version += std::to_string(versionMajor);
 	version += std::to_string(versionMinor);
 	version += '0';
+
+	SetIcon("Resources/Textures/Icon.png");
 }
 
 void Window::ProcessInput() const
@@ -61,6 +64,14 @@ void Window::ProcessInput() const
 void Window::Close()
 {
 	glfwSetWindowShouldClose(window, true);
+}
+
+void Window::SetIcon(std::string pPath)
+{
+	GLFWimage images[1];
+	images[0].pixels = stbi_load(pPath.c_str(), &images[0].width, &images[0].height, 0, 4); //rgba channels
+	glfwSetWindowIcon(window, 1, images);
+	stbi_image_free(images[0].pixels);
 }
 
 void Window::KeyCallback(GLFWwindow* /*window*/, int key, int /*scancode*/, int action, int /*mods*/)

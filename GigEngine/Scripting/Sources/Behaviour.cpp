@@ -8,7 +8,6 @@ GigScripting::Behaviour::Behaviour(GameObject* obj) : Component(obj)
 
 GigScripting::Behaviour::~Behaviour()
 {
-	UnregisterFromLuaContext();
 	SCRIPT_INTERPRETER.UnregisterBehaviour(this);
 }
 

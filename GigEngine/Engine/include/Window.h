@@ -39,6 +39,8 @@ private:
 
 	float viewPortRatio = 1;
 
+	void SetIcon(std::string pPath);
+
 	static void KeyCallback(GLFWwindow*, int key, int, int action, int);
 	static void MouseButtonCallback(GLFWwindow*, int button, int action, int);
 	static void FrameBufferResizeCallback(GLFWwindow* pWindow, int width, int height);
