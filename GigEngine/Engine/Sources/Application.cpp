@@ -13,6 +13,7 @@
 
 #include "RigidBody.h"
 #include "WorldPhysics.h"
+#include "ScriptInterpreter.h"
 
 using namespace GigRenderer;
 
@@ -63,6 +64,7 @@ void Application::Play()
 	{
 		StartGame();
 		isEditor = false;
+		SCRIPT_INTERPRETER.RefreshBehaviours();
 	}
 	else
 	{

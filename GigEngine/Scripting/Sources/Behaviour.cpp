@@ -1,8 +1,15 @@
 #include "Behaviour.h"
+#include <ScriptInterpreter.h>
 
 GigScripting::Behaviour::Behaviour(GameObject* obj) : Component(obj)
 {
 	scriptTable = sol::nil;
+}
+
+GigScripting::Behaviour::~Behaviour()
+{
+	UnregisterFromLuaContext();
+	SCRIPT_INTERPRETER.UnregisterBehaviour(this);
 }
 
 void GigScripting::Behaviour::Awake()
@@ -61,7 +68,7 @@ bool GigScripting::Behaviour::RegisterToLuaContext(const std::string& pScriptFol
 		if (result.return_count() == 1 && result[0].is<sol::table>())
 		{
 			scriptTable = result[0];
-			scriptTable["owner"] = *gameObject;
+			scriptTable["owner"] = gameObject;
 			return true;
 		}
 		else
@@ -75,4 +82,9 @@ bool GigScripting::Behaviour::RegisterToLuaContext(const std::string& pScriptFol
 void GigScripting::Behaviour::UnregisterFromLuaContext()
 {
 	scriptTable = sol::nil;
+}
+
+std::string GigScripting::Behaviour::GetName() const
+{
+	return scriptName;
 }
