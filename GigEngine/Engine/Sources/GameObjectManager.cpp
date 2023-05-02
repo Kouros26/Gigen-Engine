@@ -219,7 +219,6 @@ void GameObjectManager::SetCurrentCamera(Camera* camera)
 
 void GameObjectManager::CreateSkyBox()
 {
-	delete skybox;
 	skybox = new Skybox();
 }
 
