@@ -6,14 +6,15 @@ local test =
 
 -- Update function
 function test:Update(dt)
-    Debug.Log(tostring(self.elapsedTime))
 
     self.elapsedTime = self.elapsedTime + dt
 
-    Debug.Log(tostring(self.owner))
-    transform = self.owner:GetTransform()
+    rigidBody = self.owner:GetRigidBody()
 
-    transform:SetPosition(Vector3.new(transform:GetPosition().x, math.sin(self.elapsedTime), transform:GetPosition().z))
+    if (self.elapsedTime > 1) then
+        rigidBody:AddTorque(Vector3.new(0, 1000,0))
+        self.elapsedTime = 0
+    end
 end
 
 -- Returns the usertype so the engine has a reference to it

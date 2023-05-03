@@ -94,7 +94,11 @@ ${PROJECT_INCLUDE_DIR}/*.h
 ${PROJECT_INCLUDE_DIR}/*.hpp
 ${PROJECT_INCLUDE_DIR}/*.inl)
 
-add_executable(${MAIN_PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES} )
+#add icon
+set(ICON_FILE ${RESOURCES_DIR}/appicon.rc)
+
+
+add_executable(${MAIN_PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES} ${ICON_FILE})
 
 target_include_directories(${MAIN_PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE_DIR})
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${THIRD_PARTY_PROJECT})
