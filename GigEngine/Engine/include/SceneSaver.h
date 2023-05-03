@@ -32,7 +32,8 @@ struct ProcessedObject // describes the gameObject that is currently handled
 	inline static std::string texture;
 
 	inline static unsigned int componentSize;
-	inline static unsigned int scriptSize;
+
+	static void Clear();
 };
 
 class Scene

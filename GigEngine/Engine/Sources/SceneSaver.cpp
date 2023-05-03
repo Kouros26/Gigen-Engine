@@ -12,6 +12,21 @@
 #include "Texture.h"
 #include "Behaviour.h"
 
+void ProcessedObject::Clear()
+{
+	type.clear();
+	name.clear();
+	otherValues.clear();
+	transform.clear();
+	rigidBody.clear();
+	parent.clear();
+	components.clear();
+	model.clear();
+	texture.clear();
+
+	componentSize = 0;
+}
+
 void Scene::SaveScene(const std::string& pSceneName)
 {
 	std::ofstream file(sceneFolder + pSceneName);
@@ -49,7 +64,7 @@ void Scene::SaveScene(const std::string& pSceneName)
 
 	file.close();
 
-	std::filesystem::copy_file(sceneFolder + pSceneName, "../../../" + sceneFolder + pSceneName, std::filesystem::copy_options::overwrite_existing);
+	copy_file(sceneFolder + pSceneName, "../../../" + sceneFolder + pSceneName, std::filesystem::copy_options::update_existing);
 }
 
 void Scene::LoadScene(const std::string& pSceneName)
@@ -359,7 +374,8 @@ void Scene::ProcessComponents(const std::string& pLine, GameObject* pOutGameObje
 
 	for (int i = 1; i < strings.size(); i++)
 	{
-		pOutGameObject->AddComponent<GigScripting::Behaviour>(strings[i]);
+		if (!strings[i].empty())
+			pOutGameObject->AddComponent<GigScripting::Behaviour>(strings[i]);
 	}
 }
 
