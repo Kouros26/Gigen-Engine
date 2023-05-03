@@ -28,6 +28,23 @@ void HierarchyDisplay::Draw()
 	ImGui::Separator();
 	DisplayHierarchy();
 
+	ImGui::BeginChild("##");
+	ImGui::EndChild();
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY"))
+		{
+			const auto drop = static_cast<GameObject*>(payload->Data);
+			if (drop->GetParent())
+			{
+				drop->GetParent()->RemoveChild(drop);
+			}
+		}
+
+		ImGui::EndDragDropTarget();
+	}
+
 	ImGui::End();
 }
 

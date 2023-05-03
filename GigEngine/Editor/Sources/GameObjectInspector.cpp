@@ -10,6 +10,7 @@
 #include "Texture.h"
 #include "GameObjectManager.h"
 #include <Windows.h>
+#include <filesystem>
 
 GameObjectInspector::GameObjectInspector()
 {
@@ -70,9 +71,11 @@ void GameObjectInspector::DrawGameObject()
 
 	ImGui::Separator();
 	DrawAddComponent(object);
+
+	DrawDropTarget(object);
 }
 
-void GameObjectInspector::DrawTransform(GameObject* pObject) const
+void GameObjectInspector::DrawTransform(GameObject * pObject) const
 {
 	if (ImGui::CollapsingHeader("Transform"))
 	{
@@ -105,7 +108,7 @@ void GameObjectInspector::DrawTransform(GameObject* pObject) const
 	}
 }
 
-void GameObjectInspector::DrawModel(GameObject* pObject) const
+void GameObjectInspector::DrawModel(GameObject * pObject) const
 {
 	if (ImGui::CollapsingHeader("Model"))
 	{
@@ -148,7 +151,7 @@ void GameObjectInspector::DrawModel(GameObject* pObject) const
 	}
 }
 
-void GameObjectInspector::DrawTexture(GameObject* pObject) const
+void GameObjectInspector::DrawTexture(GameObject * pObject) const
 {
 	if (ImGui::CollapsingHeader("Texture"))
 	{
@@ -171,7 +174,7 @@ void GameObjectInspector::DrawTexture(GameObject* pObject) const
 	}
 }
 
-void GameObjectInspector::DrawSpecials(GameObject* pObject) const
+void GameObjectInspector::DrawSpecials(GameObject * pObject) const
 {
 	if (auto light = dynamic_cast<DirLight*>(pObject))
 	{
@@ -183,12 +186,12 @@ void GameObjectInspector::DrawSpecials(GameObject* pObject) const
 		DrawCamera(cam);
 }
 
-void GameObjectInspector::DrawComponents(GameObject* pObject)
+void GameObjectInspector::DrawComponents(GameObject * pObject)
 {
 	//TO DO
 }
 
-void GameObjectInspector::DrawLight(GameObject* pObject) const
+void GameObjectInspector::DrawLight(GameObject * pObject) const
 {
 	const auto dirlight = dynamic_cast<DirLight*>(pObject);
 	if (ImGui::CollapsingHeader("Light"))
@@ -264,7 +267,7 @@ void GameObjectInspector::DrawLight(GameObject* pObject) const
 	}
 }
 
-void GameObjectInspector::DrawCamera(Camera* pObject) const
+void GameObjectInspector::DrawCamera(Camera * pObject) const
 {
 	float fov = pObject->GetFov();
 	float tNear = pObject->GetNear();
@@ -292,7 +295,7 @@ void GameObjectInspector::DrawCamera(Camera* pObject) const
 	}
 }
 
-void GameObjectInspector::DrawAddComponent(GameObject* pObject) const
+void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 {
 	ImGuiStyle& style = ImGui::GetStyle();
 
@@ -323,6 +326,40 @@ void GameObjectInspector::DrawAddComponent(GameObject* pObject) const
 		{
 		}
 		ImGui::EndPopup();
+	}
+}
+
+void GameObjectInspector::DrawDropTarget(GameObject * pObject) const
+{
+	ImGui::BeginChild("##");
+	ImGui::EndChild();
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+		{
+			const char* path = (const char*)payload->Data;
+			std::string str(path);
+			if (str.find(".obj") != std::string::npos
+				|| str.find(".OBJ") != std::string::npos
+				|| str.find(".fbx") != std::string::npos
+				|| str.find(".FBX") != std::string::npos)
+			{
+				pObject->SetModel(path);
+			}
+			else if (str.find(".png") != std::string::npos ||
+				str.find(".jpg") != std::string::npos ||
+				str.find(".jpeg") != std::string::npos)
+			{
+				pObject->SetTexture(path);
+			}
+			else if (str.find(".lua") != std::string::npos)
+			{
+				std::cout << "its a component" << std::endl;
+			}
+		}
+
+		ImGui::EndDragDropTarget();
 	}
 }
 

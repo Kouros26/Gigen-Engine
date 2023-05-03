@@ -2,6 +2,9 @@
 #include "HierarchyDisplay.h"
 #include "InterfaceManager.h"
 #include "imgui.h"
+#include <stdio.h>
+#include <filesystem>
+#include <iostream>
 
 FileDisplay::FileDisplay()
 {
@@ -22,5 +25,16 @@ void FileDisplay::Draw()
 	LimitHeightResize();
 	ImGui::SetWindowSize("Files", { width, height });
 
+	DrawFolders("Resources/");
+
 	ImGui::End();
+}
+
+void FileDisplay::DrawFolders(std::string path)
+{
+	int flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
+
+	for (auto& p : std::filesystem::recursive_directory_iterator(path))
+		if (p.is_directory())
+			std::cout << p.path() << std::endl;
 }

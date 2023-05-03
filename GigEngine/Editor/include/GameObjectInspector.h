@@ -29,5 +29,7 @@ private:
 
 	void DrawAddComponent(GameObject* pObject) const;
 
+	void DrawDropTarget(GameObject* pObject) const;
+
 	static std::string GetFilePathFromExplorer(const char* filter);
 };
