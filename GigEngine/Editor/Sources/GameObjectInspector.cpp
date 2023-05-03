@@ -310,7 +310,7 @@ void GameObjectInspector::DrawSpecials(GameObject * pObject) const
 		DrawCamera(cam);
 }
 
-void GameObjectInspector::DrawComponents(GameObject * pObject)
+void GameObjectInspector::DrawComponents(GameObject * pObject) const
 {
 	//TO DO
 }

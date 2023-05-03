@@ -25,7 +25,7 @@ private:
 	void DrawRigidShape(RigidBody* body) const;
 
 	void DrawSpecials(GameObject* pObject) const;
-	void DrawComponents(GameObject* pObject);
+	void DrawComponents(GameObject* pObject) const;
 
 	void DrawLight(GameObject* pObject) const;
 	void DrawCamera(Camera* pObject) const;
