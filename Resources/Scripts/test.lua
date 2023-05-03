@@ -10,9 +10,10 @@ function test:Update(dt)
 
     self.elapsedTime = self.elapsedTime + dt
 
+    Debug.Log(tostring(self.owner))
     transform = self.owner:GetTransform()
 
-    transform:SetPosition(Vector3.new(0, math.sin(self.elapsedTime), 0))
+    transform:SetPosition(Vector3.new(transform:GetPosition().x, math.sin(self.elapsedTime), transform:GetPosition().z))
 end
 
 -- Returns the usertype so the engine has a reference to it
