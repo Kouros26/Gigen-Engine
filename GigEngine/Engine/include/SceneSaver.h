@@ -16,7 +16,6 @@ namespace formatting
 	const std::string componentTag("C");
 	const std::string modelTag("M");
 	const std::string textureTag("T");
-	const std::string newObjectTag("\n");
 }
 
 struct ProcessedObject // describes the gameObject that is currently handled

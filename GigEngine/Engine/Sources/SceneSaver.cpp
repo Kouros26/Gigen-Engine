@@ -31,8 +31,8 @@ void Scene::SaveScene(const std::string& pSceneName)
 {
 	std::ofstream file(sceneFolder + pSceneName);
 
-	const std::string skybox = GameObjectManager::GetSkyBox() ? "true" : "false";
-	file << formatting::skyboxTag << skybox << std::endl;
+	if (GameObjectManager::GetSkyBox())
+		file << formatting::skyboxTag << std::endl;
 
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
@@ -53,13 +53,23 @@ void Scene::SaveScene(const std::string& pSceneName)
 
 		file << formatting::nameTag << ProcessedObject::name << std::endl;
 		file << formatting::transformTag << ProcessedObject::transform << std::endl;
-		file << formatting::rigidBodyTag << ProcessedObject::rigidBody << std::endl;
-		file << formatting::parentTag << ProcessedObject::parent << std::endl;
-		file << formatting::componentTag << std::to_string(ProcessedObject::componentSize) << ' ' << ProcessedObject::components << std::endl;
-		file << formatting::modelTag << ProcessedObject::model << std::endl;
-		file << formatting::textureTag << ProcessedObject::texture << std::endl;
-		file << formatting::newObjectTag;
-		ProcessedObject::components.clear();
+
+		if (!ProcessedObject::rigidBody.empty())
+			file << formatting::rigidBodyTag << ProcessedObject::rigidBody << std::endl;
+
+		if (!ProcessedObject::parent.empty())
+			file << formatting::parentTag << ProcessedObject::parent << std::endl;
+
+		if (ProcessedObject::componentSize > 0)
+			file << formatting::componentTag << std::to_string(ProcessedObject::componentSize) << ' ' << ProcessedObject::components << std::endl;
+
+		if (!ProcessedObject::model.empty())
+			file << formatting::modelTag << ProcessedObject::model << std::endl;
+
+		if (!ProcessedObject::texture.empty())
+			file << formatting::textureTag << ProcessedObject::texture << std::endl;
+
+		ProcessedObject::Clear();
 	}
 
 	file.close();
@@ -103,13 +113,11 @@ void Scene::LoadScene(const std::string& pSceneName)
 			break;
 
 		case 'R':
-			if (word != "none")
-				ProcessRigidBody(word, obj);
+			ProcessRigidBody(word, obj);
 			break;
 
 		case 'P':
-			if (word != "none")
-				parentChildMemory.emplace_back(word, obj->GetName());
+			parentChildMemory.emplace_back(word, obj->GetName());
 			break;
 
 		case 'C':
@@ -118,18 +126,15 @@ void Scene::LoadScene(const std::string& pSceneName)
 			break;
 
 		case 'M':
-			if (word != "none")
-				obj->SetModel(word);
+			obj->SetModel(word);
 			break;
 
 		case 'T':
-			if (word != "none")
-				obj->SetTexture(word);
+			obj->SetTexture(word);
 			break;
 
 		case 'B':
-			if (word == "true")
-				GameObjectManager::CreateSkyBox();
+			GameObjectManager::CreateSkyBox();
 			break;
 
 		default:
@@ -168,10 +173,7 @@ void Scene::GetValues(GameObject* pGameObject)
 	ProcessedObject::transform = VecToString(position) + ' ' + VecToString(rotation) + ' ' + VecToString(scale);
 
 	//rigidbody
-	if (!pGameObject->GetRigidBody())
-		ProcessedObject::rigidBody = "none";
-
-	else
+	if (pGameObject->GetRigidBody())
 	{
 		if (pGameObject->GetRigidBody()->GetShapeType() == RigidBodyType::BOX)
 		{
@@ -202,7 +204,8 @@ void Scene::GetValues(GameObject* pGameObject)
 	}
 
 	//parent
-	!pGameObject->GetParent() ? ProcessedObject::parent = "none" : ProcessedObject::parent = pGameObject->GetParent()->GetName();
+	if (pGameObject->GetParent())
+		ProcessedObject::parent = pGameObject->GetParent()->GetName();
 
 	//components
 	for (ProcessedObject::componentSize = 0; ProcessedObject::componentSize < pGameObject->GetComponentCount(); ProcessedObject::componentSize++)
@@ -212,10 +215,12 @@ void Scene::GetValues(GameObject* pGameObject)
 	}
 
 	//model
-	!pGameObject->GetModel() ? ProcessedObject::model = "none" : ProcessedObject::model = pGameObject->GetModel()->GetFilePath();
+	if (pGameObject->GetModel()) 
+		ProcessedObject::model = pGameObject->GetModel()->GetFilePath();
 
 	//texture
-	!pGameObject->GetTexture() ? ProcessedObject::texture = "none" : ProcessedObject::texture = pGameObject->GetTexture()->GetFilePath();
+	if (pGameObject->GetTexture()) 
+		ProcessedObject::texture = pGameObject->GetTexture()->GetFilePath();
 }
 
 void Scene::GetLightValues(DirLight* pGameObject)
