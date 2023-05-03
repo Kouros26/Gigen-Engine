@@ -39,6 +39,9 @@ public:
     void AddRotation(const lm::FVec3& rot);
     void AddScale(const lm::FVec3& scl);
 
+    void RigidBodyAddPosition(const lm::FVec3& pPosition);
+    void RigidBodyAddRotation(const lm::FVec3& pRotation);
+
     void SetOwnerRigidBody(RigidBody* rigidBody);
 
 	lm::FVec3 GetFront();

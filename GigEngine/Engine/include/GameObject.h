@@ -32,14 +32,13 @@ public:
     void UpdateComponents() const;
     void UpdateHierarchy();
 
-    void Destroy();
-
     void SetModel(const std::string& filePath);
 	void SetModel(Model* pModel);
     void SetTexture(const std::string& filePath);
 
-    Model* GetModel();
-    Texture* GetTexture();
+    [[nodiscard]] Model* GetModel() const;
+    [[nodiscard]] Texture* GetTexture() const;
+    virtual std::string GetType();
 
     void LateUpdate() const;
 
@@ -105,7 +104,6 @@ private:
     std::list<GameObject*> children{};
 
     std::vector<Component*> components{};
-    std::vector<Script*> scripts{};
 
     Model* model = nullptr;
     Texture* texture = nullptr;

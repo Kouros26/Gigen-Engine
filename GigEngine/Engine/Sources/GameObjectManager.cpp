@@ -8,7 +8,9 @@ GameObjectManager::GameObjectManager()
 {}
 
 GameObjectManager::~GameObjectManager()
-{}
+{
+	Cleanup();
+}
 
 unsigned int GameObjectManager::GetSize()
 {
@@ -24,6 +26,13 @@ void GameObjectManager::Cleanup()
 {
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 		delete gameObjects[i];
+
+	delete skybox;
+
+	gameObjects.clear();
+	dirLights.clear();
+	pointLights.clear();
+	spotLights.clear();
 }
 
 GameObject* GameObjectManager::CreateGameObject()
@@ -70,7 +79,7 @@ GameObject* GameObjectManager::CreateGameObject(const GameObject* other)
 	return AddGameObject(object);
 }
 
-GameObject& GameObjectManager::operator=(const GameObject& other)
+GameObject& GameObjectManager::operator=(const GameObject& other) const
 {
 	const auto object = new GameObject(other);
 
@@ -80,12 +89,12 @@ GameObject& GameObjectManager::operator=(const GameObject& other)
 GameObject* GameObjectManager::CreateSpotLight(float ambient, float diffuse, float specular,
 	float constant, float linear, float quadratic,
 	float cutOff, float outerCutOff,
-	lm::FVec3 color)
+	const lm::FVec3& color)
 {
 	if (spotLights.size() >= g_nbMaxLight)
 		return nullptr;
 
-	SpotLight* object = new SpotLight(ambient, diffuse, specular, constant, linear, quadratic, cutOff, outerCutOff, color);
+	const auto object = new SpotLight(ambient, diffuse, specular, constant, linear, quadratic, cutOff, outerCutOff, color);
 	spotLights.push_back(object);
 
 	return AddGameObject(object);
@@ -93,24 +102,24 @@ GameObject* GameObjectManager::CreateSpotLight(float ambient, float diffuse, flo
 
 GameObject* GameObjectManager::CreatePointLight(float ambient, float diffuse, float specular,
 	float constant, float linear, float quadratic,
-	lm::FVec3 color)
+	const lm::FVec3& color)
 {
 	if (pointLights.size() >= g_nbMaxLight)
 		return nullptr;
 
-	PointLight* object = new PointLight(ambient, diffuse, specular, constant, linear, quadratic, color);
+	const auto object = new PointLight(ambient, diffuse, specular, constant, linear, quadratic, color);
 	pointLights.push_back(object);
 
 	return AddGameObject(object);
 }
 
 GameObject* GameObjectManager::CreateDirLight(float ambient, float diffuse, float specular,
-	lm::FVec3 color)
+                                              const lm::FVec3& color)
 {
 	if (dirLights.size() >= g_nbMaxLight)
 		return nullptr;
 
-	DirLight* object = new DirLight(ambient, diffuse, specular, color);
+	const auto object = new DirLight(ambient, diffuse, specular, color);
 	dirLights.push_back(object);
 
 	return AddGameObject(object);
@@ -121,9 +130,7 @@ GameObject* GameObjectManager::CreateCamera()
 	const auto object = new Camera();
 
 	if (!currentCamera)
-	{
 		currentCamera = object;
-	}
 
 	return AddGameObject(object);
 }
@@ -167,7 +174,7 @@ void GameObjectManager::RemoveGameObject(GameObject* object)
 	object->~GameObject();
 }
 
-std::vector<GameObject*> GameObjectManager::FindObjectsByName(std::string name)
+std::vector<GameObject*> GameObjectManager::FindObjectsByName(const std::string& name)
 {
 	std::vector<GameObject*> namedObjects;
 
@@ -178,25 +185,23 @@ std::vector<GameObject*> GameObjectManager::FindObjectsByName(std::string name)
 	return namedObjects;
 }
 
-GameObject* GameObjectManager::FindObjectByName(std::string name)
+GameObject* GameObjectManager::FindObjectByName(const std::string& name)
 {
-	for (int i = 0; i < gameObjects.size(); i++)
+	for (const auto& gameObject : gameObjects)
 	{
-		if (gameObjects[i]->GetName() == name)
-		{
-			return gameObjects[i];
-		}
+		if (gameObject->GetName() == name)
+			return gameObject;
 	}
 	return nullptr;
 }
 
-GameObject* GameObjectManager::FindObjectById(int id)
+GameObject* GameObjectManager::FindObjectById(unsigned int id)
 {
-	for (int i = 0; i < gameObjects.size(); i++)
+	for (const auto& gameObject : gameObjects)
 	{
-		if (gameObjects[i]->GetId() == id)
+		if (gameObject->GetId() == id)
 		{
-			return gameObjects[i];
+			return gameObject;
 		}
 	}
 	return nullptr;
@@ -210,6 +215,16 @@ Camera* GameObjectManager::GetCurrentCamera()
 void GameObjectManager::SetCurrentCamera(Camera* camera)
 {
 	currentCamera = camera;
+}
+
+void GameObjectManager::CreateSkyBox()
+{
+	skybox = new Skybox();
+}
+
+Skybox*& GameObjectManager::GetSkyBox()
+{
+	return skybox;
 }
 
 void GameObjectManager::SendLightsToShader()

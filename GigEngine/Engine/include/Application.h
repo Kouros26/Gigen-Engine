@@ -28,8 +28,8 @@ public:
 	void SwapFrames();
 
 private:
-	class Skybox* skybox;
 
+	static inline std::string defaultScene = "default.chad";
 	static inline Window window;
 	static inline EditorCamera editorCamera;
 
@@ -50,14 +50,13 @@ private:
 	int nbSpotLightLocation;
 
 	void Init();
-	void CreateGameObjects();
 	void InitMainShader();
 	void Draw();
 	void ClearWindow();
 	void UpdateGameObjectComponent();
 	void UpdateGameObjectRender();
 	void UpdateLights();
-	void UpdateUniforms();
+	void UpdateUniforms() const;
 
 	static void StartGame();
 };
