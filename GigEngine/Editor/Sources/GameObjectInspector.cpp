@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Texture.h"
+#include "ResourceManager.h"
 #include "GameObjectManager.h"
 #include <Windows.h>
 #include <filesystem>
@@ -45,7 +46,7 @@ void GameObjectInspector::DrawGameObject()
 	static char name[128];
 	strcpy_s(name, object->GetName().c_str());
 
-	ImGui::Text("Name"); ImGui::SameLine();
+	ImGui::Text(ICON_GAMEOBJECT " Name"); ImGui::SameLine();
 
 	if (ImGui::InputText("##1", name, 128))
 	{
@@ -77,7 +78,7 @@ void GameObjectInspector::DrawGameObject()
 
 void GameObjectInspector::DrawTransform(GameObject * pObject) const
 {
-	if (ImGui::CollapsingHeader("Transform"))
+	if (ImGui::CollapsingHeader(ICON_TRANSFORM " Transform"))
 	{
 		const lm::FVec3 rot = pObject->GetTransform().GetWorldRotation();
 		const lm::FVec3 pos = pObject->GetTransform().GetWorldPosition();
@@ -110,7 +111,7 @@ void GameObjectInspector::DrawTransform(GameObject * pObject) const
 
 void GameObjectInspector::DrawModel(GameObject * pObject) const
 {
-	if (ImGui::CollapsingHeader("Model"))
+	if (ImGui::CollapsingHeader(ICON_MODEL " Model"))
 	{
 		if (ImGui::IsItemClicked(1))
 		{
@@ -153,7 +154,7 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 
 void GameObjectInspector::DrawTexture(GameObject * pObject) const
 {
-	if (ImGui::CollapsingHeader("Texture"))
+	if (ImGui::CollapsingHeader(ICON_TEXTURE " Texture"))
 	{
 		std::string path;
 		if (pObject->GetTexture())
@@ -194,7 +195,7 @@ void GameObjectInspector::DrawComponents(GameObject * pObject)
 void GameObjectInspector::DrawLight(GameObject * pObject) const
 {
 	const auto dirlight = dynamic_cast<DirLight*>(pObject);
-	if (ImGui::CollapsingHeader("Light"))
+	if (ImGui::CollapsingHeader(ICON_LIGHT " Light"))
 	{
 		float* color = dirlight->GetColor();
 		float ambient = dirlight->GetAmbient();
@@ -273,7 +274,7 @@ void GameObjectInspector::DrawCamera(Camera * pObject) const
 	float tNear = pObject->GetNear();
 	float tFar = pObject->GetFar();
 
-	if (ImGui::CollapsingHeader("Camera"))
+	if (ImGui::CollapsingHeader(ICON_CAMERA " Camera"))
 	{
 		ImGui::Text("Fov"); ImGui::SameLine();
 		if (ImGui::DragFloat("##15", &fov, g_maxStep, 0, g_floatMax, g_floatFormat))
@@ -299,14 +300,14 @@ void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 {
 	const ImGuiStyle& style = ImGui::GetStyle();
 
-	const float size = ImGui::CalcTextSize("Add component").x + style.FramePadding.x * 2.0f;
-	const float avail = ImGui::GetContentRegionAvail().x;
+	float size = ImGui::CalcTextSize("Add component " ICON_PLUS).x + style.FramePadding.x * 2.0f;
+	float avail = ImGui::GetContentRegionAvail().x;
 
 	const float off = (avail - size) * 0.5f;
 	if (off > 0.0f)
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
 
-	if (ImGui::Button("Add component"))
+	if (ImGui::Button("Add component " ICON_PLUS))
 	{
 		ImGui::OpenPopup("addComponentPopUp");
 	}
@@ -316,13 +317,13 @@ void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 		ImGui::SeparatorText("Components");
 		if (!pObject->GetModel())
 		{
-			if (ImGui::MenuItem("Model"))
+			if (ImGui::MenuItem(ICON_MODEL " Model"))
 			{
 				pObject->SetModel(g_defaultModelPath);
 			}
 		}
 
-		if (ImGui::MenuItem("RigidBody"))
+		if (ImGui::MenuItem(ICON_RIGIDBODY " RigidBody"))
 		{
 		}
 		ImGui::EndPopup();

@@ -69,6 +69,7 @@ void Application::Play()
 	else
 	{
 		Stop();
+		isPause = false;
 	}
 }
 

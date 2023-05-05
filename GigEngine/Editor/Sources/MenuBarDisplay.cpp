@@ -30,21 +30,29 @@ void MenuBarDisplay::Draw()
 
 		ImGui::EndMenu();
 	}
+	if (ImGui::Button(ICON_SAVE)) 
+	{
+		//save
+	}
 
 	DrawPlayPause();
 
-	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 40);
-	if (ImGui::Button("Close"))
+	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 12);
+	ImGui::PushStyleColor(ImGuiCol_Button, {1,0,0,0.8f});
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 1,0,0,1 });
+	if (ImGui::Button(ICON_CLOSE))
 	{
 		Application::GetWindow().Close();
 	}
+	ImGui::PopStyleColor();
+	ImGui::PopStyleColor();
 
 	ImGui::EndMainMenuBar();
 }
 
 void MenuBarDisplay::DrawPlayPause()
 {
-	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() / 2 - 40);
+	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() / 2 - 75);
 
 	const bool isPause = Application::IsInPause();
 	const bool isPlaying = !Application::IsInEditor();
@@ -52,46 +60,52 @@ void MenuBarDisplay::DrawPlayPause()
 
 	if (isPlaying)
 	{
-		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+		ImGui::PushStyleColor(ImGuiCol_Button, { 0,1,0,0.5f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0,1,0,0.6f });
 	}
 
-	if (ImGui::Button("Play"))
+	if (ImGui::Button(ICON_PLAY, { 50, 0 }))
 	{
 		Application::Play();
 	}
 
 	if (isPlaying)
 	{
-		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
 	}
 
 	if (isPause)
 	{
-		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+		ImGui::PushStyleColor(ImGuiCol_Button, { 0,1,0,0.5f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0,1,0,0.6f });
 	}
 
-	if (ImGui::Button("Pause"))
+	if (ImGui::Button(ICON_PAUSE, { 50, 0 }))
 	{
 		Application::Pause();
 	}
 
 	if (isPause)
 	{
-		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
 	}
 
 	if (isUsingEditorCam)
 	{
-		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+		ImGui::PushStyleColor(ImGuiCol_Button, { 0,1,0,0.5f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0,1,0,0.6f });
 	}
 
-	if (ImGui::Button("Editor camera"))
+	if (ImGui::Button(ICON_CAMERA, { 50, 0 }))
 	{
 		Application::UseEditorCam();
 	}
 
 	if (isUsingEditorCam)
 	{
-		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
 	}
 }

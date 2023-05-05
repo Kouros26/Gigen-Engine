@@ -2,7 +2,6 @@
 #include "imgui.h"
 #include "GameObjectManager.h"
 #include "Application.h"
-#include "GameObject.h"
 #include "InterfaceManager.h"
 
 HierarchyDisplay::HierarchyDisplay()
@@ -58,7 +57,7 @@ void HierarchyDisplay::DisplayHierarchy()
 
 void HierarchyDisplay::CreatePopUp() const
 {
-	if (ImGui::Button("Create"))
+	if (ImGui::Button(ICON_PLUS " Create"))
 		ImGui::OpenPopup("createPopUp");
 
 	if (ImGui::BeginPopup("createPopUp"))
@@ -68,7 +67,7 @@ void HierarchyDisplay::CreatePopUp() const
 		{
 			GameObjectManager::CreateGameObject();
 		}
-		if (ImGui::BeginMenu("Basics"))
+		if (ImGui::BeginMenu(ICON_GAMEOBJECT " Basics"))
 		{
 			if (ImGui::MenuItem("Arrow"))
 			{
@@ -107,7 +106,7 @@ void HierarchyDisplay::CreatePopUp() const
 			}
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Lights"))
+		if (ImGui::BeginMenu(ICON_LIGHT " Lights"))
 		{
 			if (ImGui::MenuItem("Directionnal Light"))
 			{
@@ -123,7 +122,7 @@ void HierarchyDisplay::CreatePopUp() const
 			}
 			ImGui::EndMenu();
 		}
-		if (ImGui::MenuItem("Camera"))
+		if (ImGui::MenuItem(ICON_CAMERA " Camera"))
 		{
 			GameObjectManager::CreateCamera();
 		}
@@ -222,18 +221,18 @@ void HierarchyDisplay::GameObjectPopUp(GameObject* obj) const
 	if (ImGui::BeginPopup(obj->GetName().c_str()))
 	{
 		ImGui::SeparatorText(obj->GetName().c_str());
-		if (ImGui::MenuItem("Destroy"))
+		if (ImGui::MenuItem(ICON_DESTROY " Destroy"))
 		{
 			GameObjectManager::RemoveGameObject(obj);
 		}
-		if (ImGui::MenuItem("UnParent"))
+		if (ImGui::MenuItem(ICON_REMOVE " UnParent"))
 		{
 			if (obj->GetParent())
 			{
 				obj->GetParent()->RemoveChild(obj);
 			}
 		}
-		if (ImGui::MenuItem("Clone"))
+		if (ImGui::MenuItem(ICON_CLONE " Clone"))
 		{
 			GameObjectManager::CreateGameObject(obj);
 		}
