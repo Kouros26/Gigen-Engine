@@ -56,37 +56,37 @@ void HierarchyDisplay::CreatePopUp() const
 			if (ImGui::MenuItem("Arrow"))
 			{
 				GameObject* obj = GameObjectManager::CreateGameObject("Arrow");
-				obj->SetModel("Resources/Models/Basics/Arrow.FBX");
+				obj->SetModel("Engine/Models/Basics/Arrow.FBX");
 			}
 			if (ImGui::MenuItem("Capsule"))
 			{
 				GameObject* obj = GameObjectManager::CreateGameObject("Capsule");
-				obj->SetModel("Resources/Models/Basics/Capsule.FBX");
+				obj->SetModel("Engine/Models/Basics/Capsule.FBX");
 			}
 			if (ImGui::MenuItem("Cone"))
 			{
 				GameObject* obj = GameObjectManager::CreateGameObject("Cone");
-				obj->SetModel("Resources/Models/Basics/Cone.FBX");
+				obj->SetModel("Engine/Models/Basics/Cone.FBX");
 			}
 			if (ImGui::MenuItem("Cube"))
 			{
 				GameObject* obj = GameObjectManager::CreateGameObject("Cube");
-				obj->SetModel("Resources/Models/Basics/Cube.FBX");
+				obj->SetModel("Engine/Models/Basics/Cube.FBX");
 			}
 			if (ImGui::MenuItem("Cylinder"))
 			{
 				GameObject* obj = GameObjectManager::CreateGameObject("Cylinder");
-				obj->SetModel("Resources/Models/Basics/Cylinder.FBX");
+				obj->SetModel("Engine/Models/Basics/Cylinder.FBX");
 			}
 			if (ImGui::MenuItem("Plane"))
 			{
 				GameObject* obj = GameObjectManager::CreateGameObject("Plane");
-				obj->SetModel("Resources/Models/Basics/Plane.FBX");
+				obj->SetModel("Engine/Models/Basics/Plane.FBX");
 			}
 			if (ImGui::MenuItem("Sphere"))
 			{
 				GameObject* obj = GameObjectManager::CreateGameObject("Sphere");
-				obj->SetModel("Resources/Models/Basics/Sphere.FBX");
+				obj->SetModel("Engine/Models/Basics/Sphere.FBX");
 			}
 			ImGui::EndMenu();
 		}
@@ -114,7 +114,7 @@ void HierarchyDisplay::CreatePopUp() const
 	}
 }
 
-void HierarchyDisplay::DisplayGameObject(GameObject * obj, bool isChild)
+void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 {
 	if (obj->GetParent() && !isChild)
 	{
@@ -183,7 +183,7 @@ void HierarchyDisplay::DisplayGameObject(GameObject * obj, bool isChild)
 	}
 }
 
-void HierarchyDisplay::GameObjectClicked(GameObject * obj) const
+void HierarchyDisplay::GameObjectClicked(GameObject* obj) const
 {
 	if (ImGui::IsItemClicked(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 	{
@@ -200,7 +200,7 @@ void HierarchyDisplay::GameObjectClicked(GameObject * obj) const
 	}
 }
 
-void HierarchyDisplay::GameObjectPopUp(GameObject * obj) const
+void HierarchyDisplay::GameObjectPopUp(GameObject* obj) const
 {
 	if (ImGui::BeginPopup(obj->GetName().c_str()))
 	{

@@ -49,7 +49,7 @@ void Window::Init()
 	version += std::to_string(versionMinor);
 	version += '0';
 
-	SetIcon("Resources/Textures/Icon.png");
+	SetIcon("Engine/Textures/Icon.png");
 }
 
 void Window::ProcessInput() const

@@ -58,6 +58,7 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
 
 		),
 		"SetVelocity", &RigidBody::SetVelocity,
+		"GetVelocity", &RigidBody::GetVelocity,
 		"SetAngularVelocity", &RigidBody::SetAngularVelocity,
 		"GetMass", &RigidBody::GetMass,
 		"ClearForces", &RigidBody::ClearForces,
@@ -83,7 +84,10 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
 		(
 			sol::resolve<void(const lm::FVec3&)>(&RigidBody::AddImpulse),
 			sol::resolve<void(const float)>(&RigidBody::AddImpulse)
-		)
+		),
+		"SetGravity", &RigidBody::SetGravity,
+		"SetGravityEnabled", &RigidBody::SetGravityEnabled,
+		"GetGravity", &RigidBody::GetGravity
 
 	);
 }

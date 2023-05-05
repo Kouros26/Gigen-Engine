@@ -96,6 +96,7 @@ GigScripting::ScriptInterpreter::ScriptInterpreter(const std::string& pScriptFol
 
 GigScripting::ScriptInterpreter::ScriptInterpreter()
 {
-	scriptFolderRoot = "Resources/Scripts/";
+	scriptFolderRoot = "../../../Resources/Editor/Scripts/";
+
 	CreateLuaContextAndBindGlobal();
 }

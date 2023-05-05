@@ -95,7 +95,7 @@ ${PROJECT_INCLUDE_DIR}/*.hpp
 ${PROJECT_INCLUDE_DIR}/*.inl)
 
 #add icon
-set(ICON_FILE ${RESOURCES_DIR}/appicon.rc)
+set(ICON_FILE ${ENGINE_RESOURCES_DIR}/appicon.rc)
 
 
 add_executable(${MAIN_PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES} ${ICON_FILE})
@@ -113,8 +113,8 @@ target_compile_options(${MAIN_PROJECT_NAME} PRIVATE /W4 /WX)
 #Copy resources Folder
 add_custom_command(TARGET ${MAIN_PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-		${RESOURCES_DIR}
-        $<TARGET_FILE_DIR:${MAIN_PROJECT_NAME}>/Resources)
+		${RESOURCES_DIR}/Engine
+        $<TARGET_FILE_DIR:${MAIN_PROJECT_NAME}>/Engine)
 
 
 #look for shader
