@@ -33,12 +33,11 @@ void GigScripting::LuaBindGameObject::BindGameObject(sol::state& pLuaState)
         "GetChildrenCount", &GameObject::GetChildrenCount,
         "Destroy", &GameObject::Destroy,
 
-        //"GetTransform", &GameObject::GetTransform,
         "GetRigidBody", &GameObject::GetRigidBody,
         "GetModel", &GameObject::GetModel,
         "GetTexture", &GameObject::GetTexture,
-        "SetModel", &GameObject::SetModel,
-        "SetTexture", &GameObject::SetTexture,
+        "SetModel", &GameObject::SetModelWithPathLua,
+        "SetTexture", &GameObject::SetTextureWithPathLua,
 
         "GetBehaviour", [](GameObject& p_this, const std::string& pName) -> sol::table
         {

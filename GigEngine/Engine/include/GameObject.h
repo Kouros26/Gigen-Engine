@@ -39,7 +39,9 @@ public:
     void Destroy();
 
     void SetModel(const std::string& filePath);
+    void SetModelWithPathLua(const std::string& filePath);
     void SetTexture(const std::string& filePath);
+    void SetTextureWithPathLua(const std::string& filePath);
 
     Model* GetModel();
     Texture* GetTexture();

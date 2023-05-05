@@ -213,7 +213,8 @@ void GigScripting::LuaBindMath::BindMath(sol::state& pLua)
             "RotateZ", [](const FMat4& pMat, const float pAngle) { return FMat4::ZRotation(pMat, pAngle); },
             "RotateYXZ", &FMat4::YXZRotation,
             "RotationEuler", &FMat4::RotationEuler,
-            "CreatePerspective", &FMat4::Perspective
+            "CreatePerspective", &FMat4::Perspective,
+            "LookAt", &FMat4::LookAt
 
             );
 
@@ -283,4 +284,8 @@ void GigScripting::LuaBindMath::BindMath(sol::state& pLua)
         "FromMat3", &FQuat::FromMatrix3
 
     );
+
+    luaState.create_named_table("MathsTools");
+    luaState["MathsTools"]["ToRadians"] = [](const float pAngle) { return lm::degreesToRadians(pAngle); };
+    luaState["MathsTools"]["ToDegrees"] = [](const float pAngle) { return lm::radiansToDegrees(pAngle); };
 }

@@ -169,6 +169,12 @@ void GameObject::SetModel(std::string const& filePath)
     }
 }
 
+void GameObject::SetModelWithPathLua(const std::string& filePath)
+{
+    const std::string& path = "../../../Resources/";
+    SetModel(path + filePath);
+}
+
 Model* GameObject::GetModel()
 {
     return model;
@@ -182,6 +188,12 @@ void GameObject::SetTexture(const std::string& filePath)
         std::cout << "texture invalid" << std::endl;
         texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
     }
+}
+
+void GameObject::SetTextureWithPathLua(const std::string& filePath)
+{
+    const std::string& path = "../../../Resources/";
+    SetTexture(path + filePath);
 }
 
 Texture* GameObject::GetTexture()

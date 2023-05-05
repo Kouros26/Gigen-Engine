@@ -12,33 +12,33 @@ function bool_to_number(value)
 function test:Start()
     Debug.Log("Start")
 
-    transform = self.owner:GetTransform()
-    transform:SetPosition(Vector3.new(0, 3, 0))
-
-
-    rigidBody = self.owner:GetRigidBody()
     
+    rigidBody = self.owner:GetRigidBody()
     rigidBody:SetGravityEnabled(true)
+    
 
-    rigidBody:SetMass(1)
+    transform = self.owner:GetTransform()
+    transform:SetPosition(Vector3.new(0, 4, 0))
+    self.owner:SetModel("Engine/Models/MinecraftVillage.fbx")
+    transform:SetScale(Vector3.new(0.1))
+  
 end
 
 
 -- Update function
 function test:Update(dt)
-    self.elapsedTime = self.elapsedTime + dt
-    
-    rigidBody = self.owner:GetRigidBody()
+
+    transform = self.owner:GetTransform()
     move = Vector3.new()
     move.x = bool_to_number(Inputs.GetKey(Keys.J)) - bool_to_number(Inputs.GetKey(Keys.L))
     move.z = bool_to_number(Inputs.GetKey(Keys.I)) - bool_to_number(Inputs.GetKey(Keys.K))
-    move = move * 1000 * dt
+    move = move * 10 * dt
 
+    Debug.Log(tostring(move))
 
-    if(move ~= Vector3.Zero) then
-        rigidBody:AddTorque(Vector3.new(math.deg(move.x), 0, math.deg(move.z)))
-        Debug.Log(tostring(move))
-        rigidBody:SetLinearVelocity(move)
+    if(move ~= Vector3.Zero()) then
+        transform:SetPosition(transform:GetPosition() + move)
+        transform:LookAt(move, Vector3.Up())
     end
 end
 
