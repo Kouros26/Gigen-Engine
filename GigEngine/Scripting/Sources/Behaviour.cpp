@@ -38,11 +38,6 @@ GigScripting::Behaviour::Behaviour(GameObject* obj, const std::string& scriptNam
     scriptTable = sol::nil;
 }
 
-GigScripting::Behaviour::~Behaviour()
-{
-	SCRIPT_INTERPRETER.UnregisterBehaviour(this);
-}
-
 Component* GigScripting::Behaviour::Clone(GameObject* newGameObject)
 {
     return new Behaviour(newGameObject);

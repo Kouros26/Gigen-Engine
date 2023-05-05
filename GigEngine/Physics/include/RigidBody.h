@@ -92,8 +92,8 @@ public:
     const lm::FVec3& GetScale();
     void SetMass(const float pValue);
     void SetScale(const lm::FVec3& pNewScale);
-    void SetGravityEnabled(const bool pState) const;
+    void SetGravityEnabled(const bool pState);
     void ClearForces() const;
     void SetGravity(const lm::FVec3& pValue) const;
-    lm::FVec3 GetGravity() const;
+    [[nodiscard]] lm::FVec3 GetGravity() const;
 };

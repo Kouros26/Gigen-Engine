@@ -31,7 +31,6 @@ void GigScripting::LuaBindGameObject::BindGameObject(sol::state& pLuaState)
         "SetActive", &GameObject::SetActive,
         "IsActive", &GameObject::IsActive,
         "GetChildrenCount", &GameObject::GetChildrenCount,
-        "Destroy", &GameObject::Destroy,
 
         "GetRigidBody", &GameObject::GetRigidBody,
         "GetModel", &GameObject::GetModel,

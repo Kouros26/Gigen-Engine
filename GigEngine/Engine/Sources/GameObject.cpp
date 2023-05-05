@@ -168,7 +168,6 @@ void GameObject::SetModelWithPathLua(const std::string& filePath)
     SetModel(path + filePath);
 }
 
-Model* GameObject::GetModel()
 void GameObject::SetModel(Model* pModel)
 {
 	model = pModel;
