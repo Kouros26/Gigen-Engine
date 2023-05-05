@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include "GameObjectInspector.h"
 #include "InterfaceManager.h"
-#include "FileDisplay.h"
+#include "ToolsDisplay.h"
 #include "imgui.h"
 #include "Application.h"
 #include "Light.h"
@@ -22,7 +22,7 @@ GameObjectInspector::~GameObjectInspector()
 
 void GameObjectInspector::Draw()
 {
-	height = InterfaceManager::GetHeight() - InterfaceManager::GetClassHeight<FileDisplay>() - g_menuBarSize;
+	height = InterfaceManager::GetHeight() - InterfaceManager::GetClassHeight<ToolsDisplay>() - g_menuBarSize;
 	ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width, g_menuBarSize });
 	ImGui::SetNextWindowSize({ width, height });
 
@@ -297,12 +297,12 @@ void GameObjectInspector::DrawCamera(Camera * pObject) const
 
 void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 {
-	ImGuiStyle& style = ImGui::GetStyle();
+	const ImGuiStyle& style = ImGui::GetStyle();
 
-	float size = ImGui::CalcTextSize("Add component").x + style.FramePadding.x * 2.0f;
-	float avail = ImGui::GetContentRegionAvail().x;
+	const float size = ImGui::CalcTextSize("Add component").x + style.FramePadding.x * 2.0f;
+	const float avail = ImGui::GetContentRegionAvail().x;
 
-	float off = (avail - size) * 0.5f;
+	const float off = (avail - size) * 0.5f;
 	if (off > 0.0f)
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
 
@@ -338,8 +338,8 @@ void GameObjectInspector::DrawDropTarget(GameObject * pObject) const
 	{
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 		{
-			const char* path = (const char*)payload->Data;
-			std::string str(path);
+			const char* path = static_cast<const char*>(payload->Data);
+			const std::string str(path);
 			if (str.find(".obj") != std::string::npos
 				|| str.find(".OBJ") != std::string::npos
 				|| str.find(".fbx") != std::string::npos
@@ -378,7 +378,7 @@ std::string GameObjectInspector::GetFilePathFromExplorer(const char* filter)
 	ofn.lpstrDefExt = "";
 
 	if (GetOpenFileName(&ofn))
-		return std::string(fileName);
+		return { fileName };
 
-	return std::string();
+	return {};
 }
