@@ -76,6 +76,6 @@ void Interface::SetColorDark()
 void Interface::SetFont()
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.Fonts->AddFontFromFileTTF("Resources/Fonts/Ruda-Bold.ttf", 16.0f);
-	io.FontDefault = io.Fonts->AddFontFromFileTTF("Resources/Fonts/Ruda-Bold.ttf", 16.0f);
+	io.Fonts->AddFontFromFileTTF("Engine/Fonts/Ruda-Bold.ttf", 16.0f);
+	io.FontDefault = io.Fonts->AddFontFromFileTTF("Engine/Fonts/Ruda-Bold.ttf", 16.0f);
 }

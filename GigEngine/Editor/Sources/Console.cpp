@@ -31,9 +31,9 @@ void Console::Draw()
 	}
 
 	ImGui::BeginGroup();
-	for (int i = 0; i < logs.size(); i++)
+	for (int i = logs.size(); i > 0; i--)
 	{
-		LogMessage logmsg = logs[i];
+		LogMessage logmsg = logs[i - 1];
 		switch (logmsg.type)
 		{
 		case logType::WARNING:

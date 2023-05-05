@@ -14,6 +14,7 @@
 #include "RigidBody.h"
 #include "SceneSaver.h"
 #include "WorldPhysics.h"
+#include "ScriptInterpreter.h"
 
 using namespace GigRenderer;
 
@@ -63,6 +64,7 @@ void Application::Play()
 	{
 		StartGame();
 		isEditor = false;
+		SCRIPT_INTERPRETER.RefreshBehaviours();
 	}
 	else
 	{
@@ -144,8 +146,8 @@ void Application::Init()
 
 void Application::InitMainShader()
 {
-	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/core_vert.vert");
-	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/core_frag.frag");
+	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Engine/Shaders/core_vert.vert");
+	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Engine/Shaders/core_frag.frag");
 
 	if (!mainShader.Link(mainVertex, mainFragment))
 		std::cout << "Error linking main shader" << std::endl;
@@ -185,6 +187,7 @@ void Application::Draw()
 	RENDERER.Enable(RD_DEPTH_TEST);
 	RENDERER.DepthFunction(RD_LESS);
 	UpdateGameObjectRender(); //render model if they have one
+
 	mainShader.UnUse(); //stop using the main shader
 
 	Lines::DrawLines(); //render debug lines or guizmos

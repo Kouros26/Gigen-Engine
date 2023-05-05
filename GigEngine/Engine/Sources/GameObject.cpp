@@ -162,6 +162,13 @@ void GameObject::SetModel(std::string const& filePath)
 	}
 }
 
+void GameObject::SetModelWithPathLua(const std::string& filePath)
+{
+    const std::string& path = "../../../Resources/";
+    SetModel(path + filePath);
+}
+
+Model* GameObject::GetModel()
 void GameObject::SetModel(Model* pModel)
 {
 	model = pModel;
@@ -174,12 +181,18 @@ Model* GameObject::GetModel() const
 
 void GameObject::SetTexture(const std::string& filePath)
 {
-	texture = ResourceManager::Get<Texture>(filePath);
-	if (!texture->isValid())
-	{
-		std::cout << "texture invalid" << std::endl;
-		texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
-	}
+    texture = ResourceManager::Get<Texture>(filePath);
+    if (!texture->isValid())
+    {
+        std::cout << "texture invalid" << std::endl;
+        texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
+    }
+}
+
+void GameObject::SetTextureWithPathLua(const std::string& filePath)
+{
+    const std::string& path = "../../../Resources/";
+    SetTexture(path + filePath);
 }
 
 Texture* GameObject::GetTexture() const
@@ -264,6 +277,20 @@ void GameObject::CheckForScript(Component* pComponent)
 	}
 }
 
+GigScripting::Behaviour* GameObject::GetBehaviour(const std::string& pName)
+{
+    for (const auto& component : components)
+    {
+        if (const auto script = dynamic_cast<GigScripting::Behaviour*>(component))
+        {
+            if (script->GetName() == pName)
+                return script;
+        }
+    }
+
+    return nullptr;
+}
+
 void GameObject::UpdateHierarchy()
 {
 	if (this->parent != nullptr)
@@ -322,6 +349,16 @@ bool GameObject::IsAParent(GameObject* obj) const
 GameObject*& GameObject::GetParent()
 {
 	return parent;
+}
+
+void GameObject::SetParent(GameObject* newParent)
+{
+    if (parent)
+    {
+        parent->RemoveChild(this);
+    }
+    parent = newParent;
+    newParent->AddChild(this);
 }
 
 std::list<GameObject*>& GameObject::GetChildren()

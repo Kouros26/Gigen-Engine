@@ -3,9 +3,13 @@
 #include "Transform.h"
 #include <vector>
 
+namespace GigScripting
+{
+    class Behaviour;
+}
+
 struct Collision;
 class Component;
-class Script;
 class Model;
 class Texture;
 
@@ -34,7 +38,9 @@ public:
 
     void SetModel(const std::string& filePath);
 	void SetModel(Model* pModel);
+    void SetModelWithPathLua(const std::string& filePath);
     void SetTexture(const std::string& filePath);
+    void SetTextureWithPathLua(const std::string& filePath);
 
     [[nodiscard]] Model* GetModel() const;
     [[nodiscard]] Texture* GetTexture() const;
@@ -81,6 +87,7 @@ public:
     [[nodiscard]] RigidBody* GetRigidBody() const;
 
     GameObject*& GetParent();
+    void SetParent(GameObject* newParent);
     GameObject* GetChild(unsigned int index);
     unsigned int GetChildrenCount();
     std::list<GameObject*>& GetChildren();
@@ -90,6 +97,8 @@ public:
     void SetActive(bool b);
 
     void CheckForScript(Component* pComponent);
+
+    GigScripting::Behaviour* GetBehaviour(const std::string& pName);
 
 private:
 

@@ -10,6 +10,8 @@ public:
     Transform(const lm::FVec3& pos = { 0 }, const lm::FVec3& rot = { 0 }, const lm::FVec3& scl = { 1 });
     ~Transform();
 
+    void LookAt(const lm::FVec3& target, const lm::FVec3& up);
+
     void SetWorldPosition(const lm::FVec3& pos);
     void SetWorldRotation(const lm::FVec3& rot);
     void SetWorldScale(const lm::FVec3& scl);
@@ -44,7 +46,7 @@ public:
 
     void SetOwnerRigidBody(RigidBody* rigidBody);
 
-	lm::FVec3 GetFront();
+    lm::FVec3 GetFront();
     lm::FVec3 GetUp();
     lm::FVec3 GetRight();
 

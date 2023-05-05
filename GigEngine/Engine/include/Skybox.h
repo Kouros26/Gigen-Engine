@@ -4,8 +4,8 @@
 
 class ShaderProgram;
 
-const char* const g_SkyboxModelPath = "Resources/Models/Skybox/cube.obj";
-const char* const g_SkyboxTexturePath = "Resources/Textures/Skybox/default.png";
+const char* const g_SkyboxModelPath = "Engine/Models/Skybox/cube.obj";
+const char* const g_SkyboxTexturePath = "Engine/Textures/Skybox/default.png";
 
 class Skybox : GameObject
 {

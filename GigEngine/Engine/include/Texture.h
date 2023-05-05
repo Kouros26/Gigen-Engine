@@ -1,7 +1,7 @@
 #pragma once
 #include "IResource.h"
 
-const char* const g_defaultTexturePath = "Resources/Textures/default.png";
+const char* const g_defaultTexturePath = "Engine/Textures/default.png";
 
 class Texture : public IResource
 {

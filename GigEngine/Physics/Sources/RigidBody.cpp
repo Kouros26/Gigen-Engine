@@ -14,21 +14,21 @@ RigidBody::~RigidBody()
 
 void RigidBody::SetRBState(const RBState& pState) const
 {
-	if (pState == state)
-		return;
+    if (pState == state)
+        return;
 
-	switch (state)
-	{
-	case RBState::DYNAMIC:
-		body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_DYNAMIC_OBJECT);
-		break;
-	case RBState::KINETIC:
-		body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
-		break;
-	case RBState::STATIC:
-		body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_STATIC_OBJECT);
-		break;
-	}
+    switch (state)
+    {
+    case RBState::DYNAMIC:
+        body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_DYNAMIC_OBJECT);
+        break;
+    case RBState::KINETIC:
+        body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
+        break;
+    case RBState::STATIC:
+        body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_STATIC_OBJECT);
+        break;
+    }
 
     switch (pState)
     {
@@ -113,97 +113,92 @@ void RigidBody::AddRigidBodyScale(const lm::FVec3& pAddedScale) const
     rbShape->setLocalScaling(rbShape->getLocalScaling() + scale);
 }
 
-void RigidBody::AddForce(const float pValue)
+void RigidBody::AddForce(const float pValue) const
 {
-    body->applyForce(btVector3(pValue, pValue, pValue), btVector3(0, 0, 0));
+    body->applyForce(btVector3(pValue, pValue, pValue), { 0,0,0 });
 }
 
-void RigidBody::AddForce(const lm::FVec3& pValue)
+void RigidBody::AddForce(const lm::FVec3& pValue) const
 {
-    body->applyForce(btVector3(pValue.x, pValue.y, pValue.z), btVector3(0, 0, 0));
+    body->applyForce(btVector3(pValue.x, pValue.y, pValue.z), { 0,0,0 });
 }
 
-void RigidBody::AddTorque(const float pValue)
+void RigidBody::AddTorque(const float pValue) const
 {
     body->applyTorque(btVector3(pValue, pValue, pValue));
 }
 
-void RigidBody::AddTorque(const lm::FVec3& pValue)
+void RigidBody::AddTorque(const lm::FVec3& pValue) const
 {
     body->applyTorque(btVector3(pValue.x, pValue.y, pValue.z));
 }
 
-void RigidBody::SetVelocity(const lm::FVec3& pValue)
+void RigidBody::SetVelocity(const lm::FVec3& pValue) const
 {
     body->setLinearVelocity(btVector3(pValue.x, pValue.y, pValue.z));
 }
 
-void RigidBody::SetAngularVelocity(const lm::FVec3& pValue)
+void RigidBody::SetAngularVelocity(const lm::FVec3& pValue) const
 {
     body->setAngularVelocity(btVector3(pValue.x, pValue.y, pValue.z));
 }
 
-float RigidBody::GetFriction()
+float RigidBody::GetFriction() const
 {
     return body->getFriction();
 }
 
-void RigidBody::SetFriction(const float pValue)
+void RigidBody::SetFriction(const float pValue) const
 {
     body->setFriction(pValue);
 }
 
-void RigidBody::SetBounciness(const float pValue)
+void RigidBody::SetBounciness(const float pValue) const
 {
     body->setRestitution(pValue);
 }
 
-void RigidBody::SetLinearVelocity(const lm::FVec3& pValue)
+lm::FVec3 RigidBody::GetLinearVelocity() const
 {
-    body->setLinearVelocity(btVector3(pValue.x, pValue.y, pValue.z));
+    const btVector3 linearVelocity = body->getLinearVelocity();
+    return { linearVelocity.x(), linearVelocity.y(), linearVelocity.z() };
 }
 
-lm::FVec3 RigidBody::GetLinearVelocity()
-{
-    btVector3 linearVelocity = body->getLinearVelocity();
-    return lm::FVec3(linearVelocity.x(), linearVelocity.y(), linearVelocity.z());
-}
-
-float RigidBody::GetBounciness()
+float RigidBody::GetBounciness() const
 {
     return body->getRestitution();
 }
 
-lm::FVec3 RigidBody::GetAngularVelocity()
+lm::FVec3 RigidBody::GetAngularVelocity() const
 {
-    btVector3 angularVelocity = body->getAngularVelocity();
-    return lm::FVec3(angularVelocity.x(), angularVelocity.y(), angularVelocity.z());
+    const btVector3 angularVelocity = body->getAngularVelocity();
+    return { angularVelocity.x(), angularVelocity.y(), angularVelocity.z() };
 }
 
-void RigidBody::SetLinearFactor(const float pValue)
+void RigidBody::SetLinearFactor(const float pValue) const
 {
     body->setAngularFactor(btVector3(pValue, pValue, pValue));
 }
 
-void RigidBody::SetLinearFactor(const lm::FVec3& pValue)
+void RigidBody::SetLinearFactor(const lm::FVec3& pValue) const
 {
     body->setAngularFactor(btVector3(pValue.x, pValue.y, pValue.z));
 }
 
-void RigidBody::SetAngularFactor(const float pValue)
+void RigidBody::SetAngularFactor(const float pValue) const
 {
     body->setAngularFactor(pValue);
 }
 
-lm::FVec3 RigidBody::GetLinearFactor()
+lm::FVec3 RigidBody::GetLinearFactor() const
 {
-    return lm::FVec3(body->getAngularFactor().x(), body->getAngularFactor().y(), body->getAngularFactor().z());
+    return { body->getAngularFactor().x(), body->getAngularFactor().y(), body->getAngularFactor().z() };
 }
 
-lm::FVec3 RigidBody::GetAngularFactor()
+lm::FVec3 RigidBody::GetAngularFactor() const
 {
-    btVector3 angularFactor = body->getAngularFactor();
-    return lm::FVec3(angularFactor.x(), angularFactor.y(), angularFactor.z());
+    const btVector3 angularFactor = body->getAngularFactor();
+    return { angularFactor.x(), angularFactor.y(), angularFactor.z() };
 }
 
 bool RigidBody::IsTrigger()
@@ -215,19 +210,19 @@ void RigidBody::SetTrigger(const bool pIsTrigger)
 {
 }
 
-void RigidBody::AddImpulse(const float pValue)
+void RigidBody::AddImpulse(const float pValue) const
 {
     body->applyCentralImpulse(btVector3(pValue, pValue, pValue));
 }
 
-void RigidBody::AddImpulse(const lm::FVec3& pValue)
+void RigidBody::AddImpulse(const lm::FVec3& pValue) const
 {
     body->applyCentralImpulse(btVector3(pValue.x, pValue.y, pValue.z));
 }
 
 bool RigidBody::IsGravityEnabled() const
 {
-    return gravity;
+    return body->getGravity().length() > 0;
 }
 
 btRigidBody* RigidBody::GetRigidBody() const
@@ -287,7 +282,20 @@ void RigidBody::SetGravityEnabled(const bool pState)
     gravity = pState;
 }
 
-void RigidBody::ClearForces()
+void RigidBody::ClearForces() const
 {
+    SetVelocity(0);
+    SetAngularVelocity(0);
     body->clearForces();
+}
+
+void RigidBody::SetGravity(const lm::FVec3& pValue) const
+{
+    body->setGravity({ pValue.x, pValue.y, pValue.z });
+}
+
+lm::FVec3 RigidBody::GetGravity() const
+{
+    btVector3 gravity = body->getGravity();
+    return lm::FVec3(gravity.x(), gravity.y(), gravity.z());
 }
