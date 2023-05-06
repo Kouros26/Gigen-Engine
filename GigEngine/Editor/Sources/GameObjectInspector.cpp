@@ -300,8 +300,8 @@ void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 {
 	const ImGuiStyle& style = ImGui::GetStyle();
 
-	float size = ImGui::CalcTextSize("Add component " ICON_PLUS).x + style.FramePadding.x * 2.0f;
-	float avail = ImGui::GetContentRegionAvail().x;
+	const float size = ImGui::CalcTextSize("Add component " ICON_PLUS).x + style.FramePadding.x * 2.0f;
+	const float avail = ImGui::GetContentRegionAvail().x;
 
 	const float off = (avail - size) * 0.5f;
 	if (off > 0.0f)

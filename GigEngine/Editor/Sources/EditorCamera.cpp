@@ -57,7 +57,7 @@ void EditorCamera::ChangeSpeed()
 	ignored.push_back(this);
 	if (GigInput::Inputs::GetKey(GigInput::Keys::TAB))
 	{
-		if (WorldPhysics::RayCast(GetTransform().GetWorldPosition(), GetFront() * 100, result, RayCastDebug::Timer, 5, ignored))
+		if (WorldPhysics::GetInstance().RayCast(GetTransform().GetWorldPosition(), GetFront() * 100, result, RayCastDebug::Timer, 5, ignored))
 		{
 			std::cout << "Raycast hit " << result.hitObject->GetName() << std::endl;
 		}

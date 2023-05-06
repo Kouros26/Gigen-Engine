@@ -42,7 +42,7 @@ SphereRigidBody::SphereRigidBody(float pRadius, const lm::FVec3& pScale, const l
 	collisionCallBacks->onExit = CollisionExitCallBack(exit);
 	body->setUserPointer(owner);
 
-	WorldPhysics::AddRigidBodyInWorld(body);
+	WorldPhysics::GetInstance().AddRigidBodyInWorld(*body);
 }
 
 float SphereRigidBody::GetRadius() const

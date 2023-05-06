@@ -22,15 +22,15 @@ Application::Application()
 {
 	Init();
 
-	WorldPhysics::InitPhysicWorld();
-	Scene::LoadScene(defaultScene);
+	WorldPhysics::GetInstance().InitPhysicWorld();
+	Scene::LoadScene(Scene::GetCurrentSceneName());
 }
 
 Application::~Application()
 {
 	Lines::Clear();
 	GameObjectManager::Cleanup();
-	WorldPhysics::DestroyPhysicWorld();
+	WorldPhysics::GetInstance().DestroyPhysicWorld();
 }
 
 Window& Application::GetWindow()
@@ -81,7 +81,7 @@ void Application::Pause()
 void Application::Stop()
 {
 	GameObjectManager::SetCurrentCamera(nullptr);
-	Scene::ReloadScene(defaultScene);
+	Scene::ReloadScene(Scene::GetCurrentSceneName());
 	isEditor = true;
 }
 
@@ -104,8 +104,6 @@ bool Application::IsUsingEditorCam()
 }
 void Application::StartGame()
 {
-	Scene::SaveScene(defaultScene);
-
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		const GameObject* object = GameObjectManager::GetGameObject(i);
@@ -125,10 +123,9 @@ void Application::Run()
 	Draw();
 
 	if (!isEditor && !isPause)
-	{
-		WorldPhysics::UpdatePhysics(Time::GetDeltaTime());
-	}
-	WorldPhysics::DrawDebug();
+		WorldPhysics::GetInstance().UpdatePhysics(Time::GetDeltaTime());
+
+	WorldPhysics::GetInstance().DrawDebug();
 }
 
 void Application::SwapFrames()
@@ -147,8 +144,8 @@ void Application::Init()
 
 void Application::InitMainShader()
 {
-	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Engine/Shaders/core_vert.vert");
-	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Engine/Shaders/core_frag.frag");
+	auto* mainVertex = ResourceManager::Get<VertexShader>("Engine/Shaders/core_vert.vert");
+	auto* mainFragment = ResourceManager::Get<FragmentShader>("Engine/Shaders/core_frag.frag");
 
 	if (!mainShader.Link(mainVertex, mainFragment))
 		std::cout << "Error linking main shader" << std::endl;
@@ -215,7 +212,7 @@ void Application::UpdateGameObjectComponent()
 	}
 }
 
-void Application::UpdateGameObjectRender()
+void Application::UpdateGameObjectRender() const
 {
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
@@ -228,7 +225,7 @@ void Application::UpdateGameObjectRender()
 	}
 }
 
-void Application::UpdateLights()
+void Application::UpdateLights() const
 {
 	int nbDirLight = GameObjectManager::GetDirLightSize();
 	int nbPointLight = GameObjectManager::GetPointLightSize();

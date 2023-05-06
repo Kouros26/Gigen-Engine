@@ -37,7 +37,7 @@ void HierarchyDisplay::Draw()
 			const auto drop = static_cast<GameObject*>(payload->Data);
 			if (drop->GetParent())
 			{
-				drop->GetParent()->RemoveChild(drop);
+				drop->GetParent()->RemoveChild(*drop);
 			}
 		}
 
@@ -51,7 +51,7 @@ void HierarchyDisplay::DisplayHierarchy()
 {
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
-		DisplayGameObject(GameObjectManager::GetGameObject(i), false);
+		DisplayGameObject(*GameObjectManager::GetGameObject(i), false);
 	}
 }
 
@@ -130,17 +130,17 @@ void HierarchyDisplay::CreatePopUp() const
 	}
 }
 
-void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
+void HierarchyDisplay::DisplayGameObject(GameObject& obj, bool isChild)
 {
-	if (obj->GetParent() && !isChild)
+	if (obj.GetParent() && !isChild)
 	{
 		return;
 	}
 
-	bool isFocused = (obj == GameObjectManager::GetFocusedGameObject());
+	const bool isFocused = (&obj == GameObjectManager::GetFocusedGameObject());
 	int flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
 
-	if (obj->GetChildrenCount() == 0)
+	if (obj.GetChildrenCount() == 0)
 	{
 		flags = flags | ImGuiTreeNodeFlags_Leaf;
 	}
@@ -150,14 +150,14 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 		ImGui::PushStyleColor(ImGuiCol_Text, { 1,1,0.5f,1 });
 	}
 
-	const bool treeNodeOpen = ImGui::TreeNodeEx(obj->GetName().c_str(), flags);
+	const bool treeNodeOpen = ImGui::TreeNodeEx(obj.GetName().c_str(), flags);
 
 	if (isFocused)
 	{
 		ImGui::PopStyleColor();
 	}
 
-	ImGui::PushID(obj->GetId());
+	ImGui::PushID(obj.GetId());
 	ImGui::PopID();
 
 	GameObjectClicked(obj);
@@ -165,8 +165,8 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 
 	if (ImGui::BeginDragDropSource())
 	{
-		ImGui::SetDragDropPayload("HIERARCHY", (const void*)obj, sizeof(const void*));
-		ImGui::Text(obj->GetName().c_str());
+		ImGui::SetDragDropPayload("HIERARCHY", (const void*)&obj, sizeof(const void*));
+		ImGui::Text(obj.GetName().c_str());
 
 		ImGui::EndDragDropSource();
 	}
@@ -176,13 +176,13 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY"))
 		{
 			const auto drop = static_cast<GameObject*>(payload->Data);
-			if (drop != obj && drop && obj && !obj->IsAParent(drop))
+			if (drop != &obj && drop && !obj.IsAParent(drop))
 			{
 				if (drop->GetParent())
 				{
-					drop->GetParent()->RemoveChild(drop);
+					drop->GetParent()->RemoveChild(*drop);
 				}
-				obj->AddChild(drop);
+				obj.AddChild(*drop);
 			}
 		}
 
@@ -191,45 +191,45 @@ void HierarchyDisplay::DisplayGameObject(GameObject* obj, bool isChild)
 
 	if (treeNodeOpen)
 	{
-		for (int i = 0; i < obj->GetChildrenCount(); i++)
+		for (int i = 0; i < obj.GetChildrenCount(); i++)
 		{
-			DisplayGameObject(obj->GetChild(i), treeNodeOpen);
+			DisplayGameObject(*obj.GetChild(i), treeNodeOpen);
 		}
 		ImGui::TreePop();
 	}
 }
 
-void HierarchyDisplay::GameObjectClicked(GameObject* obj) const
+void HierarchyDisplay::GameObjectClicked(GameObject& obj) const
 {
 	if (ImGui::IsItemClicked(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 	{
-		GameObjectManager::SetFocusedGameObject(obj);
+		GameObjectManager::SetFocusedGameObject(&obj);
 	}
 	if (ImGui::IsItemClicked(1))
 	{
-		ImGui::OpenPopup(obj->GetName().c_str());
+		ImGui::OpenPopup(obj.GetName().c_str());
 	}
 	if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
 	{
 		EditorCamera& cam = Application::GetEditorCamera();
-		cam.GetTransform().SetWorldPosition(obj->GetTransform().GetWorldPosition() - cam.GetFront() * 3);
+		cam.GetTransform().SetWorldPosition(obj.GetTransform().GetWorldPosition() - cam.GetFront() * 3);
 	}
 }
 
-void HierarchyDisplay::GameObjectPopUp(GameObject* obj) const
+void HierarchyDisplay::GameObjectPopUp(GameObject& obj) const
 {
-	if (ImGui::BeginPopup(obj->GetName().c_str()))
+	if (ImGui::BeginPopup(obj.GetName().c_str()))
 	{
-		ImGui::SeparatorText(obj->GetName().c_str());
+		ImGui::SeparatorText(obj.GetName().c_str());
 		if (ImGui::MenuItem(ICON_DESTROY " Destroy"))
 		{
-			GameObjectManager::RemoveGameObject(obj);
+			GameObjectManager::RemoveGameObject(&obj);
 		}
 		if (ImGui::MenuItem(ICON_REMOVE " UnParent"))
 		{
-			if (obj->GetParent())
+			if (obj.GetParent())
 			{
-				obj->GetParent()->RemoveChild(obj);
+				obj.GetParent()->RemoveChild(obj);
 			}
 		}
 		if (ImGui::MenuItem(ICON_CLONE " Clone"))

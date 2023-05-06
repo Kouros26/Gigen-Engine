@@ -8,8 +8,12 @@ RigidBody::RigidBody(GameObject* pOwner)
 
 RigidBody::~RigidBody()
 {
-    WorldPhysics::RemoveRigidBodyFromWorld(body);
+    WorldPhysics::GetInstance().RemoveRigidBodyFromWorld(*body);
+
+    owner = nullptr;
     delete body;
+    delete collisionCallBacks;
+    delete rbShape;
 }
 
 void RigidBody::SetRBState(const RBState& pState) const

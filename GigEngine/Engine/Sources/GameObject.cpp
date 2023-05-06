@@ -64,10 +64,7 @@ GameObject::GameObject(const GameObject& other)
 		components.push_back(component->Clone(this));
 
 	for (const auto& child : other.children)
-		AddChild(GameObjectManager::CreateGameObject(*child));
-
-	for (const auto& child : other.children)
-		AddChild(GameObjectManager::CreateGameObject(*child));
+		AddChild(*GameObjectManager::CreateGameObject(*child));
 
 	if (other.model != nullptr)
 		model = ResourceManager::Get<Model>(other.model->GetFilePath());
@@ -86,7 +83,7 @@ GameObject& GameObject::operator=(const GameObject& other)
 		components.push_back(component->Clone(this));
 
 	for (const auto& child : other.children)
-		AddChild(GameObjectManager::CreateGameObject(*child));
+		AddChild(*GameObjectManager::CreateGameObject(*child));
 
 	if (other.model != nullptr)
 		model = ResourceManager::Get<Model>(other.model->GetFilePath());
@@ -102,14 +99,14 @@ GameObject::~GameObject()
 	delete rigidBody;
 
 	if (parent)
-		parent->RemoveChild(this);
+		parent->RemoveChild(*this);
 }
 
 void GameObject::CreateBoxRigidBody(const lm::FVec3& halfExtents = { 1.0f }, const lm::FVec3& scale = { 1.0f }, float mass = 1.0f)
 {
 	delete rigidBody;
 
-	rigidBody = new BoxRigidBody(halfExtents, lm::FVec3::Normalize(scale * transform.GetWorldScale()), transform.GetWorldPosition(), mass, this);
+	rigidBody = new BoxRigidBody(halfExtents, scale, transform.GetWorldPosition(), mass, this);
 	rigidBody->GetShapeType() = RigidBodyType::BOX;
 	transform.SetOwnerRigidBody(rigidBody);
 }
@@ -118,7 +115,7 @@ void GameObject::CreateCapsuleRigidBody(float radius, float height, const lm::FV
 {
 	delete rigidBody;
 
-	rigidBody = new CapsuleRigidBody(radius, height, lm::FVec3::Normalize(scale * transform.GetWorldScale()), transform.GetWorldPosition(), mass, this);
+	rigidBody = new CapsuleRigidBody(radius, height, scale, transform.GetWorldPosition(), mass, this);
 	rigidBody->GetShapeType() = RigidBodyType::CAPSULE;
 	transform.SetOwnerRigidBody(rigidBody);
 }
@@ -127,7 +124,7 @@ void GameObject::CreateSphereRigidBody(float radius, const lm::FVec3& scale, flo
 {
 	delete rigidBody;
 
-	rigidBody = new SphereRigidBody(radius, lm::FVec3::Normalize(scale * transform.GetWorldScale()), transform.GetWorldPosition(), mass, this);
+	rigidBody = new SphereRigidBody(radius, scale, transform.GetWorldPosition(), mass, this);
 	rigidBody->GetShapeType() = RigidBodyType::SPHERE;
 	transform.SetOwnerRigidBody(rigidBody);
 }
@@ -205,32 +202,32 @@ std::string GameObject::GetType()
 	return type.substr(6, type.size() - 16);
 }
 
-void GameObject::AddChild(GameObject* child)
+void GameObject::AddChild(GameObject& child)
 {
-	if (child->parent == this)
+	if (child.parent == this)
 		return;
 
-	if (child->parent != nullptr)
-		child->parent->RemoveChild(child);
+	if (child.parent != nullptr)
+		child.parent->RemoveChild(child);
 
-	child->parent = this;
+	child.parent = this;
 
-	child->GetTransform().AssignLocalPosition(child->GetTransform().GetWorldPosition() - GetTransform().GetWorldPosition());
-	child->GetTransform().AssignLocalScale(child->GetTransform().GetWorldScale() / GetTransform().GetWorldScale());
+	child.GetTransform().AssignLocalPosition(child.GetTransform().GetWorldPosition() - GetTransform().GetWorldPosition());
+	child.GetTransform().AssignLocalScale(child.GetTransform().GetWorldScale() / GetTransform().GetWorldScale());
 
-	children.push_back(child);
+	children.push_back(&child);
 }
 
-void GameObject::RemoveChild(GameObject* child)
+void GameObject::RemoveChild(GameObject& child)
 {
-	if (child->parent != this)
+	if (child.parent != this)
 		return;
 
-	child->GetTransform().SetLocalPosition(child->GetTransform().GetWorldPosition());
-	child->GetTransform().SetLocalRotation(child->GetTransform().GetWorldRotation());
+	child.GetTransform().AssignLocalPosition(child.GetTransform().GetWorldPosition());
+	child.GetTransform().AssignLocalRotation(child.GetTransform().GetWorldRotation());
 
-	child->parent = nullptr;
-	children.remove(child);
+	child.parent = nullptr;
+	children.remove(&child);
 }
 
 void GameObject::OnCollisionEnter(const Collision& collision)
@@ -276,7 +273,7 @@ void GameObject::CheckForScript(Component* pComponent)
 	}
 }
 
-GigScripting::Behaviour* GameObject::GetBehaviour(const std::string& pName)
+GigScripting::Behaviour* GameObject::GetBehaviour(const std::string& pName) const
 {
     for (const auto& component : components)
     {
@@ -350,14 +347,13 @@ GameObject*& GameObject::GetParent()
 	return parent;
 }
 
-void GameObject::SetParent(GameObject* newParent)
+void GameObject::SetParent(GameObject& newParent)
 {
     if (parent)
-    {
-        parent->RemoveChild(this);
-    }
-    parent = newParent;
-    newParent->AddChild(this);
+        parent->RemoveChild(*this);
+
+    parent = &newParent;
+    newParent.AddChild(*this);
 }
 
 std::list<GameObject*>& GameObject::GetChildren()
@@ -376,7 +372,7 @@ GameObject* GameObject::GetChild(unsigned int index)
 	return *c;
 }
 
-unsigned int GameObject::GetChildrenCount()
+unsigned int GameObject::GetChildrenCount() const
 {
 	return children.size();
 }

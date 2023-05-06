@@ -43,6 +43,8 @@ public:
 	static void LoadScene(const std::string& pSceneName);
 	static void ReloadScene(const std::string& pSceneName);
 
+	static std::string& GetCurrentSceneName();
+
 private:
 
 	static void GetValues(GameObject* pGameObject);
@@ -62,6 +64,7 @@ private:
 	static std::vector<std::string> SplitString(const std::string& pString, char delimiter = ' ');
 
 	inline static std::string sceneFolder = "Scenes/";
+	inline static std::string currentScene = "default.chad";
 
 	inline static std::vector<std::pair<std::string, std::string>> parentChildMemory;
 };

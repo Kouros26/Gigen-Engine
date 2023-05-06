@@ -53,8 +53,8 @@ public:
 
     [[nodiscard]] unsigned int GetId() const;
 
-    void AddChild(GameObject* child);
-    void RemoveChild(GameObject* child);
+    void AddChild(GameObject& child);
+    void RemoveChild(GameObject& child);
 
     virtual void OnCollisionEnter(const Collision& collision);
     virtual void OnCollisionExit(const Collision& collision);
@@ -87,9 +87,9 @@ public:
     [[nodiscard]] RigidBody* GetRigidBody() const;
 
     GameObject*& GetParent();
-    void SetParent(GameObject* newParent);
+    void SetParent(GameObject& newParent);
     GameObject* GetChild(unsigned int index);
-    unsigned int GetChildrenCount();
+    [[nodiscard]] unsigned int GetChildrenCount() const;
     std::list<GameObject*>& GetChildren();
 
     bool IsAParent(GameObject* obj) const;
@@ -98,7 +98,7 @@ public:
 
     void CheckForScript(Component* pComponent);
 
-    GigScripting::Behaviour* GetBehaviour(const std::string& pName);
+    [[nodiscard]] GigScripting::Behaviour* GetBehaviour(const std::string& pName) const;
 
 private:
 

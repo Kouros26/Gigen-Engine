@@ -55,7 +55,7 @@ void ToolsDisplay::DrawExplorer()
 
 void ToolsDisplay::DrawFiles(const std::string& path)
 {
-	int columnCount = (int)(width / (cellSize + padding));
+	int columnCount = static_cast<int>(width / (cellSize + padding));
 	if (columnCount < 1)
 		columnCount = 1;
 
