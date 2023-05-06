@@ -195,6 +195,20 @@ void Transform::AddScale(const lm::FVec3& scl)
         ownerRigidBody->AddRigidBodyScale(scl);
 }
 
+void Transform::RigidBodyAddPosition(const lm::FVec3& pPosition)
+{
+	worldPosition += pPosition;
+	localPosition += pPosition;
+	hasChanged = true;
+}
+
+void Transform::RigidBodyAddRotation(const lm::FVec3& pRotation)
+{
+	worldRotation += pRotation;
+	localRotation += pRotation;
+	hasChanged = true;
+}
+
 void Transform::SetOwnerRigidBody(RigidBody* rigidBody)
 {
     ownerRigidBody = rigidBody;

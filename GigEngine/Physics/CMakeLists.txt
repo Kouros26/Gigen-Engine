@@ -49,8 +49,14 @@ foreach(include_i ${THIRD_PARTY_INCLUDE})
 	include_directories(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/${include_i}/${INCLUDE_FOLDER})
 endforeach( include_i )
 
+#link assimp
+target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/assimp/lib/assimp-vc143-mt.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/assimp/lib/IrrXML.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/assimp/lib/zlibstatic.lib)
+
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${BULLET_INCLUDE_DIR})
+message(STATUS "BULLET_INCLUDE_DIR: ${BULLET_INCLUDE_DIR}")
 target_link_libraries(${PROJECT_NAME} PUBLIC
 	debug ${BULLET_COLLISION_LIBRARY_DEBUG}
 	debug ${BULLET_DYNAMICS_LIBRARY_DEBUG}

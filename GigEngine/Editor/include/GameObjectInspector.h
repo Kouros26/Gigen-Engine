@@ -27,5 +27,9 @@ private:
 	void DrawLight(GameObject* pObject) const;
 	void DrawCamera(Camera* pObject) const;
 
+	void DrawAddComponent(GameObject* pObject) const;
+
+	void DrawDropTarget(GameObject* pObject) const;
+
 	static std::string GetFilePathFromExplorer(const char* filter);
 };

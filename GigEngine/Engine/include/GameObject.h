@@ -36,15 +36,15 @@ public:
     void UpdateComponents() const;
     void UpdateHierarchy();
 
-    void Destroy();
-
     void SetModel(const std::string& filePath);
+	void SetModel(Model* pModel);
     void SetModelWithPathLua(const std::string& filePath);
     void SetTexture(const std::string& filePath);
     void SetTextureWithPathLua(const std::string& filePath);
 
-    Model* GetModel();
-    Texture* GetTexture();
+    [[nodiscard]] Model* GetModel() const;
+    [[nodiscard]] Texture* GetTexture() const;
+    virtual std::string GetType();
 
     void LateUpdate() const;
 
@@ -93,7 +93,7 @@ public:
     std::list<GameObject*>& GetChildren();
 
     bool IsAParent(GameObject* obj) const;
-    bool IsActive() const;
+	[[nodiscard]] bool IsActive() const;
     void SetActive(bool b);
 
     void CheckForScript(Component* pComponent);

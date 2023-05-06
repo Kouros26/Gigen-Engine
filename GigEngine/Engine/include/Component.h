@@ -19,7 +19,7 @@ public:
     Component& operator=(const Component& other) = default;
     Component& operator=(Component&& other) noexcept = default;
 
-    GameObject* GetGameObject() const;
+    [[nodiscard]] GameObject* GetGameObject() const;
 
 protected:
     GameObject* gameObject;

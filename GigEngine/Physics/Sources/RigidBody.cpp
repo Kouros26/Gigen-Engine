@@ -271,13 +271,15 @@ void RigidBody::SetScale(const lm::FVec3& pNewScale)
     rbShape->setLocalScaling({ pNewScale.x, pNewScale.y, pNewScale.z });
 }
 
-void RigidBody::SetGravityEnabled(const bool pState) const
+void RigidBody::SetGravityEnabled(const bool pState)
 {
     if (!pState)
         body->setGravity({ 0,0,0, });
 
     else
         body->setGravity({ 0,-9.81f,0, });
+
+    gravity = pState;
 }
 
 void RigidBody::ClearForces() const

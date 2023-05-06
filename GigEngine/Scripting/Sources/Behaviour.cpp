@@ -1,6 +1,8 @@
 #include "Behaviour.h"
 #include <ScriptInterpreter.h>
 
+#include "ScriptInterpreter.h"
+
 GigScripting::Behaviour::Behaviour(GameObject* obj) : Component(obj)
 {
     scriptTable = sol::nil;

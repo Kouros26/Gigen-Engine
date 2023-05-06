@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "RigidBody.h"
+#include "SceneSaver.h"
 #include "WorldPhysics.h"
 #include "ScriptInterpreter.h"
 
@@ -22,7 +23,7 @@ Application::Application()
 	Init();
 
 	WorldPhysics::InitPhysicWorld();
-	CreateGameObjects();
+	Scene::LoadScene(defaultScene);
 }
 
 Application::~Application()
@@ -30,7 +31,6 @@ Application::~Application()
 	Lines::Clear();
 	GameObjectManager::Cleanup();
 	WorldPhysics::DestroyPhysicWorld();
-	delete skybox;
 }
 
 Window& Application::GetWindow()
@@ -69,6 +69,7 @@ void Application::Play()
 	else
 	{
 		Stop();
+		isPause = false;
 	}
 }
 
@@ -79,7 +80,8 @@ void Application::Pause()
 
 void Application::Stop()
 {
-	//reload
+	GameObjectManager::SetCurrentCamera(nullptr);
+	Scene::ReloadScene(defaultScene);
 	isEditor = true;
 }
 
@@ -102,6 +104,8 @@ bool Application::IsUsingEditorCam()
 }
 void Application::StartGame()
 {
+	Scene::SaveScene(defaultScene);
+
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		const GameObject* object = GameObjectManager::GetGameObject(i);
@@ -141,41 +145,6 @@ void Application::Init()
 	InitMainShader();
 }
 
-void Application::CreateGameObjects()
-{
-	//to remove =====================================================
-
-	skybox = new Skybox();
-
-	GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 10, 10 }, { 0 }, { 1 });
-	chest->SetModel("Engine/Models/chest.obj");
-	chest->SetTexture("Engine/Textures/test.png");
-
-	GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 10, 10 }, { 0 }, { 1 });
-	car->SetModel("Engine/Models/Car.fbx");
-	//car->AddComponent<TestComponent>();
-	car->AddComponent<testComponent2>();
-	GameObjectManager::SetFocusedGameObject(car);
-	car->AddChild(chest);
-	car->CreateCapsuleRigidBody(1, 5, { 1 }, 10);
-
-	GameObject* ground = GameObjectManager::CreateGameObject("Ground");
-	ground->SetModel("Engine/Models/Basics/Cube.FBX");
-	ground->GetTransform().SetWorldScale({ 50, 1, 50 });
-	ground->CreateBoxRigidBody({ 1 }, { 1 }, 0.f);
-
-	GameObject* TH = GameObjectManager::CreateGameObject("Thierry-Henri", { -5, 15, 8 }, { 0, 90, 0 }, { 20 });
-	TH->SetModel("Engine/Models/Thierry-Henri.obj");
-	TH->CreateSphereRigidBody(2, { 0.05f }, 10.0f);
-	TH->GetRigidBody()->SetGravityEnabled(false);
-	TH->AddComponent<GigScripting::Behaviour>("test");
-
-	//chest->CreateBoxRigidBody({ 10 }, { 1 }, 10.f);
-
-	GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
-	dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
-}
-
 void Application::InitMainShader()
 {
 	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Engine/Shaders/core_vert.vert");
@@ -198,7 +167,8 @@ void Application::Draw()
 	ClearWindow();
 
 	RENDERER.Disable(RD_DEPTH_TEST);
-	skybox->Draw();
+	if (GameObjectManager::GetSkyBox())
+		GameObjectManager::GetSkyBox()->Draw();
 
 	if (isEditor || useEditorCam)
 	{
@@ -271,7 +241,7 @@ void Application::UpdateLights()
 	GameObjectManager::SendLightsToShader();
 }
 
-void Application::UpdateUniforms()
+void Application::UpdateUniforms() const
 {
 	Camera* cam = nullptr;
 	if (isEditor || useEditorCam)

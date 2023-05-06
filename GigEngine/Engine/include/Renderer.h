@@ -109,6 +109,7 @@ namespace GigRenderer
         void ClearColor(float pRed, float pGreen, float pBlue, float pAlpha);
         void Clear(unsigned int pMask);
         void LoadTexture(unsigned int& pTexture, int pWidth, int pHeight, const void* pData);
+        void LoadImguiTexture(unsigned int& pTexture, int pWidth, int pHeight, const void* pData);
         void BindTexture(unsigned int pTarget, unsigned int pTexture);
         void DeleteTexture(unsigned int pTexture);
         void DepthFunction(unsigned int pFunc);
