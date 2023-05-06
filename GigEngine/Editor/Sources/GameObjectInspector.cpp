@@ -76,7 +76,7 @@ void GameObjectInspector::DrawGameObject()
 	DrawDropTarget(object);
 }
 
-void GameObjectInspector::DrawTransform(GameObject * pObject) const
+void GameObjectInspector::DrawTransform(GameObject* pObject) const
 {
 	if (ImGui::CollapsingHeader(ICON_TRANSFORM " Transform"))
 	{
@@ -96,7 +96,7 @@ void GameObjectInspector::DrawTransform(GameObject * pObject) const
 		}
 
 		ImGui::Text("Scale"); ImGui::SameLine();
-		if (ImGui::DragFloat3("##4", scale, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat3("##4", scale, g_maxStep, 0.000000001f, g_floatMax, g_floatFormat))
 		{
 			pObject->GetTransform().SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
 		}
@@ -109,7 +109,7 @@ void GameObjectInspector::DrawTransform(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawModel(GameObject * pObject) const
+void GameObjectInspector::DrawModel(GameObject* pObject) const
 {
 	if (ImGui::CollapsingHeader(ICON_MODEL " Model"))
 	{
@@ -152,7 +152,7 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawTexture(GameObject * pObject) const
+void GameObjectInspector::DrawTexture(GameObject* pObject) const
 {
 	if (ImGui::CollapsingHeader(ICON_TEXTURE " Texture"))
 	{
@@ -175,7 +175,7 @@ void GameObjectInspector::DrawTexture(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawSpecials(GameObject * pObject) const
+void GameObjectInspector::DrawSpecials(GameObject* pObject) const
 {
 	if (auto light = dynamic_cast<DirLight*>(pObject))
 	{
@@ -187,12 +187,12 @@ void GameObjectInspector::DrawSpecials(GameObject * pObject) const
 		DrawCamera(cam);
 }
 
-void GameObjectInspector::DrawComponents(GameObject * pObject)
+void GameObjectInspector::DrawComponents(GameObject* pObject)
 {
 	//TO DO
 }
 
-void GameObjectInspector::DrawLight(GameObject * pObject) const
+void GameObjectInspector::DrawLight(GameObject* pObject) const
 {
 	const auto dirlight = dynamic_cast<DirLight*>(pObject);
 	if (ImGui::CollapsingHeader(ICON_LIGHT " Light"))
@@ -268,7 +268,7 @@ void GameObjectInspector::DrawLight(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawCamera(Camera * pObject) const
+void GameObjectInspector::DrawCamera(Camera* pObject) const
 {
 	float fov = pObject->GetFov();
 	float tNear = pObject->GetNear();
@@ -296,7 +296,7 @@ void GameObjectInspector::DrawCamera(Camera * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
+void GameObjectInspector::DrawAddComponent(GameObject* pObject) const
 {
 	const ImGuiStyle& style = ImGui::GetStyle();
 
@@ -330,7 +330,7 @@ void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawDropTarget(GameObject * pObject) const
+void GameObjectInspector::DrawDropTarget(GameObject* pObject) const
 {
 	ImGui::BeginChild("##");
 	ImGui::EndChild();
