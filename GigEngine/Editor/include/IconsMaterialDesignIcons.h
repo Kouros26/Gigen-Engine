@@ -3,7 +3,7 @@
 // for use with https://github.com/google/material-design-icons/blob/master/font/MaterialIcons-Regular.ttf
 #pragma once
 
-#define FONT_ICON_FILE_NAME_MD "Resources/Fonts/MaterialIcons-Regular.ttf"
+#define FONT_ICON_FILE_NAME_MD "Engine/Fonts/MaterialIcons-Regular.ttf"
 
 #define ICON_MIN_MD 0xe000
 #define ICON_MAX_16_MD 0xf8ff
@@ -2243,7 +2243,7 @@
 #define ICON_MD_ZOOM_OUT "\xee\xa4\x80"	// U+e900
 #define ICON_MD_ZOOM_OUT_MAP "\xee\x95\xab"	// U+e56b
 
-//our stuff 
+//our stuff
 #define ICON_MINUS ICON_MD_REMOVE_CIRCLE
 #define ICON_PLUS ICON_MD_ADD_CIRCLE
 

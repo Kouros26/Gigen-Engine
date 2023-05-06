@@ -115,8 +115,12 @@ add_custom_command(TARGET ${MAIN_PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${RESOURCES_DIR}/Engine
         $<TARGET_FILE_DIR:${MAIN_PROJECT_NAME}>/Engine)
-
-
+		
+		
+add_custom_command(TARGET ${MAIN_PROJECT_NAME} POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${RESOURCES_DIR}/Scenes
+		$<TARGET_FILE_DIR:${MAIN_PROJECT_NAME}>/Scenes)
 #look for shader
 file(GLOB_RECURSE TARGET_SHADER_FILES #any name for extentions --> choice
 	${RESOURCES_DIR}/*.vert

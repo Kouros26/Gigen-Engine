@@ -74,7 +74,7 @@ void Scene::SaveScene(const std::string& pSceneName)
 
 	file.close();
 
-	copy_file(sceneFolder + pSceneName, "../../../" + sceneFolder + pSceneName, std::filesystem::copy_options::update_existing);
+	copy_file(sceneFolder + pSceneName, "../../../Resources/" + sceneFolder + pSceneName, std::filesystem::copy_options::update_existing);
 }
 
 void Scene::LoadScene(const std::string& pSceneName)
@@ -215,11 +215,11 @@ void Scene::GetValues(GameObject* pGameObject)
 	}
 
 	//model
-	if (pGameObject->GetModel()) 
+	if (pGameObject->GetModel())
 		ProcessedObject::model = pGameObject->GetModel()->GetFilePath();
 
 	//texture
-	if (pGameObject->GetTexture()) 
+	if (pGameObject->GetTexture())
 		ProcessedObject::texture = pGameObject->GetTexture()->GetFilePath();
 }
 
@@ -246,7 +246,7 @@ void Scene::GetLightValues(DirLight* pGameObject)
 void Scene::GetCameraValues(const Camera* pGameObject)
 {
 	ProcessedObject::otherValues += VecToString(pGameObject->GetFov(), pGameObject->GetNear(), pGameObject->GetFar())
-	+ ' ' + std::to_string(pGameObject->GetRatio());
+		+ ' ' + std::to_string(pGameObject->GetRatio());
 }
 
 bool Scene::IsLight(const std::string& pType)
@@ -335,8 +335,8 @@ void Scene::ProcessTransform(const std::string& pLine, GameObject* pOutGameObjec
 		data.at(i) = std::stof(strings[i]);
 
 	pOutGameObject->GetTransform() = Transform(lm::FVec3{ data[0], data[1], data[2] },
-											lm::FVec3{ data[3], data[4], data[5] },
-											lm::FVec3{ data[6], data[7], data[8] });
+		lm::FVec3{ data[3], data[4], data[5] },
+		lm::FVec3{ data[6], data[7], data[8] });
 }
 //
 void Scene::ProcessRigidBody(const std::string& pLine, GameObject* pOutGameObject)
@@ -346,8 +346,8 @@ void Scene::ProcessRigidBody(const std::string& pLine, GameObject* pOutGameObjec
 	if (strings[0] == "box")
 	{
 		pOutGameObject->CreateBoxRigidBody({ std::stof(strings[1]), std::stof(strings[2]), std::stof(strings[3]) },
-													{ std::stof(strings[4]), std::stof(strings[5]), std::stof(strings[6]) },
-															std::stof(strings[7]));
+			{ std::stof(strings[4]), std::stof(strings[5]), std::stof(strings[6]) },
+			std::stof(strings[7]));
 
 		if (strings[8] == "false")
 			pOutGameObject->GetRigidBody()->SetGravityEnabled(false);
@@ -356,8 +356,8 @@ void Scene::ProcessRigidBody(const std::string& pLine, GameObject* pOutGameObjec
 	else if (strings[0] == "capsule")
 	{
 		pOutGameObject->CreateCapsuleRigidBody(std::stof(strings[1]), std::stof(strings[2]),
-										{ std::stof(strings[3]), std::stof(strings[4]), std::stof(strings[5]) },
-												std::stof(strings[6]));
+			{ std::stof(strings[3]), std::stof(strings[4]), std::stof(strings[5]) },
+			std::stof(strings[6]));
 
 		if (strings[7] == "false")
 			pOutGameObject->GetRigidBody()->SetGravityEnabled(false);
@@ -399,7 +399,7 @@ std::vector<std::string> Scene::SplitString(const std::string& pString, char del
 	int start = 0;
 	int end = pString.find(delimiter);
 	std::vector<std::string> strings;
-	while (end != -1) 
+	while (end != -1)
 	{
 		strings.push_back(pString.substr(start, end - start));
 		start = end + 1;

@@ -61,7 +61,7 @@ private:
 	static std::string VecToString(const lm::FVec3& pVec);
 	static std::vector<std::string> SplitString(const std::string& pString, char delimiter = ' ');
 
-	inline static std::string sceneFolder = "Resources/Scenes/";
+	inline static std::string sceneFolder = "Scenes/";
 
 	inline static std::vector<std::pair<std::string, std::string>> parentChildMemory;
 };

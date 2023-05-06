@@ -11,7 +11,7 @@ public:
 	void Draw() override;
 
 private:
-	const std::string rootDirPath = "Resources";
+	const std::string rootDirPath = "../../../Resources";
 	std::string currentDirPath;
 	const float padding = 16.0f;
 	const float cellSize = 100.0f;
