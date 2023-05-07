@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <filesystem>
 #include <iostream>
+#include <stdlib.h>
 
 ToolsDisplay::ToolsDisplay()
 {
@@ -79,6 +80,12 @@ void ToolsDisplay::DrawFiles(const std::string& path)
 		std::string filename = relativePath.filename().string();
 
 		ImGui::Button(filename.c_str(), { cellSize, cellSize });
+
+		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0) && !directoryEntry.is_directory())
+		{
+			std::string itemPath = "start " + fullPath.string();
+			system(itemPath.c_str());
+		}
 
 		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0) && directoryEntry.is_directory())
 		{

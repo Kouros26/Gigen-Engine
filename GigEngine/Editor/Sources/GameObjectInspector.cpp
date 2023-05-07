@@ -12,6 +12,7 @@
 #include "GameObjectManager.h"
 #include <Windows.h>
 #include <filesystem>
+#include "Behaviour.h"
 
 GameObjectInspector::GameObjectInspector()
 {
@@ -65,11 +66,11 @@ void GameObjectInspector::DrawGameObject()
 
 	DrawTransform(object);
 	DrawSpecials(object);
-	DrawComponents(object);
 
 	if (object->GetModel())
 		DrawModel(object);
 
+	DrawComponents(object);
 	ImGui::Separator();
 	DrawAddComponent(object);
 
@@ -189,7 +190,45 @@ void GameObjectInspector::DrawSpecials(GameObject* pObject) const
 
 void GameObjectInspector::DrawComponents(GameObject* pObject)
 {
-	//TO DO
+	std::vector<GigScripting::Behaviour*> scripts;
+	pObject->GetComponents<GigScripting::Behaviour>(scripts);
+	if (scripts.size() == 0)
+	{
+		return;
+	}
+	using namespace GigScripting;
+	if (ImGui::CollapsingHeader(ICON_COMPONENT " Scripts"))
+	{
+		for (auto& script : scripts)
+		{
+			if (!script)
+			{
+				return;
+			}
+			const std::string& name = script->GetScriptName();
+			if (ImGui::TreeNode(name.c_str()))
+			{
+				if (ImGui::IsItemClicked(1))
+				{
+					ImGui::OpenPopup("ScriptPopUp");
+				}
+
+				if (ImGui::BeginPopup("ScriptPopUp"))
+				{
+					ImGui::SeparatorText("Script");
+					if (ImGui::MenuItem("Remove"))
+					{
+						pObject->RemoveScript(script);
+					}
+					ImGui::EndPopup();
+				}
+
+				ImGui::TreePop();
+			}
+		}
+	}
+
+	scripts.clear();
 }
 
 void GameObjectInspector::DrawLight(GameObject* pObject) const
@@ -326,6 +365,12 @@ void GameObjectInspector::DrawAddComponent(GameObject* pObject) const
 		if (ImGui::MenuItem(ICON_RIGIDBODY " RigidBody"))
 		{
 		}
+
+		if (ImGui::MenuItem(ICON_COMPONENT " Scripts"))
+		{
+			pObject->AddScript();
+		}
+
 		ImGui::EndPopup();
 	}
 }
@@ -356,7 +401,7 @@ void GameObjectInspector::DrawDropTarget(GameObject* pObject) const
 			}
 			else if (str.find(".lua") != std::string::npos)
 			{
-				std::cout << "its a component" << std::endl;
+				pObject->AddScript(path);
 			}
 		}
 

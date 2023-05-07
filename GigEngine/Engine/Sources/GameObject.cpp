@@ -10,6 +10,9 @@
 #include "ScriptInterpreter.h"
 #include "Behaviour.h"
 #include "SphereRigidBody.h"
+#include <filesystem>
+#include <iostream>
+#include <fstream>
 
 unsigned int GameObject::gameObjectIndex = 0;
 
@@ -164,15 +167,9 @@ void GameObject::SetModel(std::string const& filePath)
 
 void GameObject::SetModelWithPathLua(const std::string& filePath)
 {
-    const std::string& path = "../../../Resources/";
-    SetModel(path + filePath);
-}
+	const std::string& path = "../../../Resources/";
+	SetModel(path + filePath);
 
-Model* GameObject::GetModel()
-void GameObject::SetModelWithPathLua(const std::string& filePath)
-{
-    const std::string& path = "../../../Resources/";
-    SetModel(path + filePath);
 }
 
 void GameObject::SetModel(Model* pModel)
@@ -187,18 +184,18 @@ Model* GameObject::GetModel() const
 
 void GameObject::SetTexture(const std::string& filePath)
 {
-    texture = ResourceManager::Get<Texture>(filePath);
-    if (!texture->isValid())
-    {
-        std::cout << "texture invalid" << std::endl;
-        texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
-    }
+	texture = ResourceManager::Get<Texture>(filePath);
+	if (!texture->isValid())
+	{
+		std::cout << "texture invalid" << std::endl;
+		texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
+	}
 }
 
 void GameObject::SetTextureWithPathLua(const std::string& filePath)
 {
-    const std::string& path = "../../../Resources/";
-    SetTexture(path + filePath);
+	const std::string& path = "../../../Resources/";
+	SetTexture(path + filePath);
 }
 
 Texture* GameObject::GetTexture() const
@@ -285,30 +282,71 @@ void GameObject::CheckForScript(Component* pComponent)
 
 GigScripting::Behaviour* GameObject::GetBehaviour(const std::string& pName)
 {
-    for (const auto& component : components)
-    {
-        if (const auto script = dynamic_cast<GigScripting::Behaviour*>(component))
-        {
-            if (script->GetName() == pName)
-                return script;
-        }
-    }
+	for (const auto& component : components)
+	{
+		if (const auto script = dynamic_cast<GigScripting::Behaviour*>(component))
+		{
+			if (script->GetName() == pName)
+				return script;
+		}
+	}
 
-    return nullptr;
+	return nullptr;
 }
 
-GigScripting::Behaviour* GameObject::GetBehaviour(const std::string& pName)
+void GameObject::RemoveScript(GigScripting::Behaviour* pScript)
 {
-    for (const auto& component : components)
-    {
-        if (const auto script = dynamic_cast<GigScripting::Behaviour*>(component))
-        {
-            if (script->GetName() == pName)
-                return script;
-        }
-    }
+	for (int i = 0; i < components.size(); ++i)
+	{
+		if (components[i] == pScript)
+		{
+			delete components[i];
+			components.erase(components.begin() + i);
+			break;
+		}
+	}
+}
 
-    return nullptr;
+void GameObject::AddScript(const std::string& path)
+{
+	std::string name = path.substr(path.find_last_of("\\") + 1, path.find_last_of(".") - path.find_last_of("\\") - 1);
+	if (GetBehaviour(name))
+		return;
+	AddComponent<GigScripting::Behaviour>(name);
+}
+
+void GameObject::AddScript()
+{
+	std::string path = "../../../Resources/Editor/Scripts/";
+	std::string name = "NewScript";
+	std::string extension = ".lua";
+	int i = 0;
+	std::string fullName = path + name + std::to_string(i) + extension;
+	while (std::filesystem::exists(fullName))
+	{
+		fullName = path + name + std::to_string(i) + extension;
+		i++;
+	}
+
+	std::ofstream script(fullName);
+
+	script << "local " << name << " = \n { \n } \n \n function " << name << ":Start() \n \n end \n \n function " << name << ":Update(deltaTime) \n \n end \n \n return " << name;
+
+	script.close();
+
+	AddComponent<GigScripting::Behaviour>(name + std::to_string(i));
+}
+
+void GameObject::Destroy()
+{
+	for (const auto& component : components)
+		delete component;
+
+	if(rigidBody)
+	delete rigidBody;
+
+	if (parent)
+		parent->RemoveChild(this);
 }
 
 void GameObject::UpdateHierarchy()
@@ -373,12 +411,12 @@ GameObject*& GameObject::GetParent()
 
 void GameObject::SetParent(GameObject* newParent)
 {
-    if (parent)
-    {
-        parent->RemoveChild(this);
-    }
-    parent = newParent;
-    newParent->AddChild(this);
+	if (parent)
+	{
+		parent->RemoveChild(this);
+	}
+	parent = newParent;
+	newParent->AddChild(this);
 }
 
 std::list<GameObject*>& GameObject::GetChildren()
