@@ -94,6 +94,8 @@ namespace GigInput
 
 		double wheelOffsetY;
 
+		bool isOnViewPort = false;
+
 		bool rightClick;
 		bool leftClick;
 
@@ -105,11 +107,11 @@ namespace GigInput
 	public:
 		Inputs() = delete;
 
-		static bool GetKey(Keys pKey);
+		static bool GetKey(const Keys& pKey);
 
-		static bool GetKeyDown(Keys pKey);
+		static bool GetKeyDown(const Keys& pKey);
 
-		static bool GetKeyUp(Keys pKey);
+		static bool GetKeyUp(const Keys& pKey);
 
 		static Mouse GetMouse();
 
@@ -119,6 +121,7 @@ namespace GigInput
 
 		static void UpdateMouseButton(int button, int action);
 		static void UpdateMouseWheelOffset(double offset);
+		static void SetMouseIsOnViewPort(bool b);
 
 	private:
 		inline static Mouse mouse;

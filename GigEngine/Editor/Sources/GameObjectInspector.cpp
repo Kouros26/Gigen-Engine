@@ -144,7 +144,7 @@ void GameObjectInspector::DrawModel(GameObject* pObject) const
 
 		if (ImGui::Button("Locate##1"))
 		{
-			const std::string& filePath = GetFilePathFromExplorer("3D object \0 *.obj\0 *.OBJ\0 *.fbx\0 *.FBX\0");
+			const std::string& filePath = GetFilePathFromExplorer("3D object \0 *.obj; *.OBJ; *.fbx; *.FBX\0");
 
 			if (filePath.length() > 0)
 				pObject->SetModel(filePath);
@@ -174,7 +174,7 @@ void GameObjectInspector::DrawTexture(GameObject* pObject) const
 
 		if (ImGui::Button("Locate##2"))
 		{
-			const std::string& filePath = GetFilePathFromExplorer("image \0 *.png\0 *.jpeg\0 *.jpg\0");
+			const std::string& filePath = GetFilePathFromExplorer("image \0 *.png; *.jpeg; *.jpg\0");
 
 			if (filePath.length() > 0)
 				pObject->SetTexture(filePath);
@@ -183,7 +183,7 @@ void GameObjectInspector::DrawTexture(GameObject* pObject) const
 	ImGui::EndGroup();
 }
 
-void GameObjectInspector::DrawRigidBody(GameObject * pObject) const
+void GameObjectInspector::DrawRigidBody(GameObject* pObject) const
 {
 	if (ImGui::CollapsingHeader("RigidBody"))
 	{
@@ -229,7 +229,7 @@ void GameObjectInspector::DrawRigidBody(GameObject * pObject) const
 		ImGui::Combo("##20", &item_current, items, IM_ARRAYSIZE(items));
 		if (item_current != rigid->GetCollisionFlag())
 		{
-			rigid->SetRBState((RBState)item_current);
+			rigid->SetRBState(static_cast<RBState>(item_current));
 		}
 
 		DrawRigidShape(rigid);
@@ -244,7 +244,7 @@ void GameObjectInspector::DrawRigidShape(RigidBody * body) const
 	{
 		if (body->GetShapeType() == RigidBodyType::CAPSULE)
 		{
-			CapsuleRigidBody* caps = (CapsuleRigidBody*)body;
+			const auto caps = static_cast<CapsuleRigidBody*>(body);
 			float radius = caps->GetRadius();
 			float height = caps->GetHeight();
 
@@ -261,7 +261,7 @@ void GameObjectInspector::DrawRigidShape(RigidBody * body) const
 		}
 		else if (body->GetShapeType() == RigidBodyType::SPHERE)
 		{
-			SphereRigidBody* sphere = (SphereRigidBody*)body;
+			const auto sphere = static_cast<SphereRigidBody*>(body);
 			float radius = sphere->GetRadius();
 
 			ImGui::Text("Radius"); ImGui::SameLine();
@@ -320,7 +320,7 @@ void GameObjectInspector::DrawComponents(GameObject* pObject) const
 	//TODO: do it
 }
 
-void GameObjectInspector::DrawLight(GameObject* pObject) const
+void GameObjectInspector::DrawLight(GameObject * pObject) const
 {
 	const auto dirlight = dynamic_cast<DirLight*>(pObject);
 	if (ImGui::CollapsingHeader(ICON_LIGHT " Light"))

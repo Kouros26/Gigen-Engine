@@ -11,7 +11,7 @@
 
 EditorCamera::EditorCamera()
 {
-	GetTransform().SetWorldPosition({ 0,10,0 });
+	GetTransform().SetWorldPosition({ 0, 10, 0 });
 }
 
 EditorCamera::~EditorCamera()
@@ -21,7 +21,13 @@ void EditorCamera::Update()
 {
 	ChangeSpeed();
 	Move();
-	Look();
+
+	if (GigInput::Inputs::GetMouse().isOnViewPort)
+	{
+		Translate();
+		Zoom();
+		Look();
+	}
 }
 
 void EditorCamera::ChangeSpeed()
@@ -85,13 +91,20 @@ void EditorCamera::Move()
 
 	if (GigInput::Inputs::GetKey(GigInput::Keys::Q) || GigInput::Inputs::GetKey(GigInput::Keys::LEFT_CONTROL))
 		GetTransform().AddPosition(GetUp() * -scaleSpeed);
+}
 
+void EditorCamera::Translate()
+{
 	if (GigInput::Inputs::GetMouse().wheelClick)
 	{
-		GetTransform().AddPosition(GetRight() * GigInput::Inputs::GetMouse().mouseOffsetX);
-		GetTransform().AddPosition(GetUp() * -GigInput::Inputs::GetMouse().mouseOffsetY);
+		Application::GetWindow().SetMouseIcon(CursorShape::CROSSHAIR);
+		GetTransform().AddPosition(GetRight() * GigInput::Inputs::GetMouse().mouseOffsetX * static_cast<float>(Time::GetDeltaTime()));
+		GetTransform().AddPosition(GetUp() * -GigInput::Inputs::GetMouse().mouseOffsetY * static_cast<float>(Time::GetDeltaTime()));
 	}
+}
 
+void EditorCamera::Zoom()
+{
 	if (GigInput::Inputs::GetMouse().wheelOffsetY != 0)
 	{
 		GetTransform().AddPosition(GetFront() * GigInput::Inputs::GetMouse().wheelOffsetY);
@@ -103,7 +116,7 @@ void EditorCamera::Look()
 {
 	if (GigInput::Inputs::GetMouse().rightClick == 1)
 	{
-		Application::GetWindow().setCursorShow(false);
+		Application::GetWindow().SetMouseIcon(CursorShape::HAND);
 		const float Ry = static_cast<float>(GigInput::Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity));
 		const float Rx = static_cast<float>(GigInput::Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity));
 
@@ -112,7 +125,4 @@ void EditorCamera::Look()
 		const lm::FVec3 vecRot = { -Rx, Ry, 0 };
 		GetTransform().AddRotation(vecRot);
 	}
-
-	else if (GigInput::Inputs::GetMouse().rightClick == 0)
-		Application::GetWindow().setCursorShow(true);
 }

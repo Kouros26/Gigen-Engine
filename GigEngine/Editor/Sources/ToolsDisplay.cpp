@@ -4,14 +4,9 @@
 #include "Console.h"
 #include "imgui.h"
 
-#include <stdio.h>
-#include <filesystem>
-#include <iostream>
-
 ToolsDisplay::ToolsDisplay()
 {
 	InterfaceManager::AddEditorElement(this);
-	currentDirPath = rootDirPath;
 }
 
 ToolsDisplay::~ToolsDisplay()
@@ -42,6 +37,11 @@ void ToolsDisplay::Draw()
 			DrawConsole();
 			ImGui::EndTabItem();
 		}
+		if (ImGui::BeginTabItem("Profiler"))
+		{
+			DrawProfiler();
+			ImGui::EndTabItem();
+		}
 		ImGui::EndTabBar();
 	}
 
@@ -50,56 +50,12 @@ void ToolsDisplay::Draw()
 
 void ToolsDisplay::DrawExplorer()
 {
-	DrawFiles(currentDirPath);
+	fileExplorer.Draw();
 }
 
-void ToolsDisplay::DrawFiles(const std::string& path)
+void ToolsDisplay::DrawProfiler()
 {
-	int columnCount = static_cast<int>(width / (cellSize + padding));
-	if (columnCount < 1)
-		columnCount = 1;
-
-	ImGui::Columns(columnCount, 0, false);
-
-	if (path != rootDirPath)
-	{
-		ImGui::Button("..", { cellSize, cellSize });
-		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
-		{
-			int pos = currentDirPath.find_last_of("/");
-			currentDirPath = currentDirPath.substr(0, pos);
-		}
-		ImGui::NextColumn();
-	}
-
-	for (auto& directoryEntry : std::filesystem::directory_iterator(path))
-	{
-		const auto fullPath = directoryEntry.path();
-		auto relativePath = std::filesystem::relative(fullPath, path);
-		std::string filename = relativePath.filename().string();
-
-		ImGui::Button(filename.c_str(), { cellSize, cellSize });
-
-		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0) && directoryEntry.is_directory())
-		{
-			currentDirPath += "/" + filename;
-		}
-
-		if (!directoryEntry.is_directory())
-		{
-			if (ImGui::BeginDragDropSource())
-			{
-				std::string itemPath = fullPath.string();
-				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath.c_str(), sizeof(wchar_t) * (itemPath.length() + 1));
-				ImGui::EndDragDropSource();
-			}
-		}
-
-		ImGui::TextWrapped(filename.c_str());
-		ImGui::NextColumn();
-	}
-
-	ImGui::Columns(1);
+	fps.Draw();
 }
 
 void ToolsDisplay::DrawConsole()

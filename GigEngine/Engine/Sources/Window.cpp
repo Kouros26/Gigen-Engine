@@ -61,12 +61,12 @@ void Window::ProcessInput() const
 		//here stop running in editor
 }
 
-void Window::Close()
+void Window::Close() const
 {
 	glfwSetWindowShouldClose(window, true);
 }
 
-void Window::SetIcon(std::string pPath)
+void Window::SetIcon(const std::string& pPath) const
 {
 	GLFWimage images[1];
 	images[0].pixels = stbi_load(pPath.c_str(), &images[0].width, &images[0].height, 0, 4); //rgba channels
@@ -99,7 +99,7 @@ void Window::scrollCallback(GLFWwindow* /*window*/, double /*xoffset*/, double y
 	GigInput::Inputs::UpdateMouseWheelOffset(yoffset);
 }
 
-void Window::setCursorShow(bool pShowCursor)
+void Window::setCursorShow(bool pShowCursor) const
 {
 	if (pShowCursor)
 	{
@@ -119,6 +119,27 @@ void Window::swapBuffers() const
 void Window::getCursorPosition(double& xpos, double& ypos) const
 {
 	glfwGetCursorPos(window, &xpos, &ypos);
+}
+
+void Window::SetMouseIcon(CursorShape shape) const
+{
+	GLFWcursor* cursor;
+	switch (shape)
+	{
+	case CursorShape::BEAM:
+		cursor = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+		break;
+	case CursorShape::CROSSHAIR:
+		cursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+		break;
+	case CursorShape::HAND:
+		cursor = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+		break;
+	default:
+		cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+		break;
+	}
+	glfwSetCursor(window, cursor);
 }
 
 void Window::ToggleVSync(int input)
@@ -151,7 +172,7 @@ std::string& Window::GetGLSLVersion()
 	return version;
 }
 
-float Window::GetViewPortRatio()
+float Window::GetViewPortRatio() const
 {
 	return viewPortRatio;
 }
@@ -159,6 +180,18 @@ float Window::GetViewPortRatio()
 void Window::SetViewPort(unsigned int pX, unsigned int pY, unsigned int pWidth, unsigned int pHeight)
 {
 	RENDERER.ViewPort(pX, pY, pWidth, pHeight);
-	viewPortRatio = (float)pWidth / (float)pHeight;
+
+	GigInput::Mouse m = GigInput::Inputs::GetMouse();
+
+	GigInput::Inputs::SetMouseIsOnViewPort(false);
+	if (m.x > pX && m.x < pX + pWidth)
+	{
+		if (m.y > height - (pY + pHeight) && m.y < height - pY)
+		{
+			GigInput::Inputs::SetMouseIsOnViewPort(true);
+		}
+	}
+
+	viewPortRatio = static_cast<float>(pWidth) / static_cast<float>(pHeight);
 	Application::GetEditorCamera().SetRatio(viewPortRatio);
 }
