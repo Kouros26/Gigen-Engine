@@ -60,3 +60,13 @@ float CapsuleRigidBody::GetHeight() const
 {
 	return height;
 }
+
+void CapsuleRigidBody::SetRadius(float pRadius)
+{
+	//do somethimg
+}
+
+void CapsuleRigidBody::SetHeight(float pHeight)
+{
+	//do somethimg
+}

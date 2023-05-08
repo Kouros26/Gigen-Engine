@@ -83,8 +83,9 @@ public:
 
     [[nodiscard]] unsigned int GetComponentCount() const;
 
-    Transform& GetTransform();
-    [[nodiscard]] RigidBody* GetRigidBody() const;
+	Transform& GetTransform();
+	[[nodiscard]] RigidBody* GetRigidBody() const;
+	void RemoveRigidBody();
 
     GameObject*& GetParent();
     void SetParent(GameObject& newParent);
