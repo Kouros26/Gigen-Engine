@@ -52,8 +52,7 @@ void GigScripting::LuaBindGameObject::BindGameObject(sol::state& pLuaState)
 				return behaviour->GetScriptTable();
 			else
 				return sol::nil;
-		},
-		"Destroy", &GameObject::Destroy
+		}
 
 			);
 }

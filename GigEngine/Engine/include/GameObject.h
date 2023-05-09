@@ -104,7 +104,7 @@ public:
 
 	void AddScript(const std::string& path);
 	void AddScript();
-	void Destroy();
+
 private:
 
 	bool isActive;
