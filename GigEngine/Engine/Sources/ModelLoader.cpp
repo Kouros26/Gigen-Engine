@@ -70,6 +70,8 @@ void ModelLoader::ProcessMesh(const aiMesh* pMesh, const aiScene* pScene, std::v
     }
 
     meshes.emplace_back(mesh);
+
+
 }
 
 void ModelLoader::ProcessMaterial(const aiScene* pScene, std::vector<Material*>& materials)

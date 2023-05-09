@@ -10,12 +10,20 @@ void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
 
     auto& luaState = pLuaState;
 
-    //luaState.new_usertype<GameObjectManager>("GameObjectManager",
-    //    "GetGameObject", &GameObjectManager::GetGameObject,
-    //    "GetGameObjectByName", &GameObjectManager::FindObjectByName,
-    //    "GetObjectById", &GameObjectManager::FindObjectById,
-    //    "GetAllObjectsByName", &GameObjectManager::FindObjectsByName
-    //);
+    luaState.new_usertype<GameObjectManager>("GameObjectManager",
+        "GetGameObject", &GameObjectManager::GetGameObject,
+        "GetGameObjectByName", &GameObjectManager::FindObjectByName,
+        "GetObjectById", &GameObjectManager::FindObjectById,
+        "GetAllObjectsByName", &GameObjectManager::FindObjectsByName,
+        "Instantiate", sol::overload
+        (
+            sol::resolve<GameObject * (const std::string&)>(&GameObjectManager::CreateGameObject),
+            sol::resolve<GameObject * (const std::string&, const lm::FVec3&, const lm::FVec3&, const lm::FVec3&)>(&GameObjectManager::CreateGameObject),
+            sol::resolve<GameObject * (const lm::FVec3&, const lm::FVec3&, const lm::FVec3&)>(&GameObjectManager::CreateGameObject)
+
+        ),
+        "Destroy", &GameObjectManager::RemoveGameObject
+    );
 
     luaState.new_enum<Keys>("Keys",
         {
@@ -84,6 +92,7 @@ void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
 
     luaState.create_named_table("Debug");
     luaState.create_named_table("Inputs");
+    luaState.create_named_table("Tools");
 
     luaState["Debug"]["Log"] = [](const std::string& pMessage) { GIG_LOG(pMessage); };
     luaState["Debug"]["LogWarning"] = [](const std::string& pMessage) { GIG_WARNING(pMessage); };
@@ -98,4 +107,9 @@ void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
         auto mouse = Inputs::GetMouse();
         return lm::FVec2(static_cast<float>(mouse.x), static_cast<float>(mouse.y));
     };
+
+    luaState["Tools"]["BoolToInt"] = [](bool pBool) { return (int)(pBool); };
+    luaState["Tools"]["IntToBool"] = [](int pInt) { return (bool)(pInt); };
+    luaState["Tools"]["FloatToInt"] = [](float pFloat) { return (int)(pFloat); };
+    luaState["Tools"]["IntToFloat"] = [](int pInt) { return (float)(pInt); };
 }
