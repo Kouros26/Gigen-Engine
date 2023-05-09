@@ -14,6 +14,7 @@
 #include "RigidBody.h"
 #include "SceneSaver.h"
 #include "WorldPhysics.h"
+#include "ScriptInterpreter.h"
 
 using namespace GigRenderer;
 
@@ -21,15 +22,15 @@ Application::Application()
 {
 	Init();
 
-	WorldPhysics::InitPhysicWorld();
-	Scene::LoadScene(defaultScene);
+	WorldPhysics::GetInstance().InitPhysicWorld();
+	Scene::LoadScene(Scene::GetCurrentSceneName());
 }
 
 Application::~Application()
 {
 	Lines::Clear();
 	GameObjectManager::Cleanup();
-	WorldPhysics::DestroyPhysicWorld();
+	WorldPhysics::GetInstance().DestroyPhysicWorld();
 }
 
 Window& Application::GetWindow()
@@ -61,12 +62,14 @@ void Application::Play()
 {
 	if (isEditor)
 	{
+		SCRIPT_INTERPRETER.RefreshBehaviours();
 		StartGame();
 		isEditor = false;
 	}
 	else
 	{
 		Stop();
+		isPause = false;
 	}
 }
 
@@ -78,7 +81,7 @@ void Application::Pause()
 void Application::Stop()
 {
 	GameObjectManager::SetCurrentCamera(nullptr);
-	Scene::ReloadScene(defaultScene);
+	Scene::ReloadScene(Scene::GetCurrentSceneName());
 	isEditor = true;
 }
 
@@ -101,8 +104,6 @@ bool Application::IsUsingEditorCam()
 }
 void Application::StartGame()
 {
-	Scene::SaveScene(defaultScene);
-
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		const GameObject* object = GameObjectManager::GetGameObject(i);
@@ -122,10 +123,9 @@ void Application::Run()
 	Draw();
 
 	if (!isEditor && !isPause)
-	{
-		WorldPhysics::UpdatePhysics(Time::GetDeltaTime());
-	}
-	WorldPhysics::DrawDebug();
+		WorldPhysics::GetInstance().UpdatePhysics(Time::GetDeltaTime());
+
+	WorldPhysics::GetInstance().DrawDebug();
 }
 
 void Application::SwapFrames()
@@ -144,8 +144,8 @@ void Application::Init()
 
 void Application::InitMainShader()
 {
-	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/core_vert.vert");
-	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/core_frag.frag");
+	auto* mainVertex = ResourceManager::Get<VertexShader>("Engine/Shaders/core_vert.vert");
+	auto* mainFragment = ResourceManager::Get<FragmentShader>("Engine/Shaders/core_frag.frag");
 
 	if (!mainShader.Link(mainVertex, mainFragment))
 		std::cout << "Error linking main shader" << std::endl;
@@ -185,6 +185,7 @@ void Application::Draw()
 	RENDERER.Enable(RD_DEPTH_TEST);
 	RENDERER.DepthFunction(RD_LESS);
 	UpdateGameObjectRender(); //render model if they have one
+
 	mainShader.UnUse(); //stop using the main shader
 
 	Lines::DrawLines(); //render debug lines or guizmos
@@ -211,7 +212,7 @@ void Application::UpdateGameObjectComponent()
 	}
 }
 
-void Application::UpdateGameObjectRender()
+void Application::UpdateGameObjectRender() const
 {
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
@@ -219,12 +220,12 @@ void Application::UpdateGameObjectRender()
 
 		object->UpdateHierarchy();
 
-		RENDERER.SetUniformValue(ModelLocation, UniformType::MAT4, lm::FMat4::ToArray(object->GetTransform().GetMatrix()));
+		RENDERER.SetUniformValue(ModelLocation, UniformType::MAT4, &object->GetTransform().MatrixGetter());
 		object->UpdateRender();
 	}
 }
 
-void Application::UpdateLights()
+void Application::UpdateLights() const
 {
 	int nbDirLight = GameObjectManager::GetDirLightSize();
 	int nbPointLight = GameObjectManager::GetPointLightSize();
@@ -266,6 +267,6 @@ void Application::UpdateUniforms() const
 		viewPos = lm::FVec3(0);
 	}
 
-	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(viewProj));
+	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, &viewProj);
 	RENDERER.SetUniformValue(viewPosLocation, UniformType::VEC3, &viewPos);
 }

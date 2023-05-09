@@ -18,7 +18,7 @@ private:
 
 	void CreatePopUp() const;
 
-	void DisplayGameObject(GameObject* obj, bool isChild);
-	void GameObjectClicked(GameObject* obj) const;
-	void GameObjectPopUp(GameObject* obj) const;
+	void DisplayGameObject(GameObject& obj, bool isChild);
+	void GameObjectClicked(GameObject& obj) const;
+	void GameObjectPopUp(GameObject& obj) const;
 };

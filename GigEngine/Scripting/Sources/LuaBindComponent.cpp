@@ -1,9 +1,7 @@
 #include "LuaBindComponent.h"
 #include "Component.h"
 #include "Transform.h"
-#include "Model.h"
 #include "RigidBody.h"
-#include "Texture.h"
 #include "GameObject.h"
 
 void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
@@ -18,12 +16,12 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
         "AddPosition", &Transform::AddPosition,
         "AddRotation", &Transform::AddRotation,
         "AddScale", &Transform::AddScale,
-        "SetLocalPosition", &Transform::SetLocalPosition,
-        "SetLocalRotation", &Transform::SetLocalRotation,
-        "SetLocalScale", &Transform::SetLocalScale,
-        "GetLocalPosition", &Transform::GetLocalPosition,
-        "GetLocalRotation", &Transform::GetLocalRotation,
-        "GetLocalScale", &Transform::GetLocalScale,
+        "SetPosition", &Transform::SetLocalPosition,
+        "SetRotation", &Transform::SetLocalRotation,
+        "SetScale", &Transform::SetLocalScale,
+        "GetPosition", &Transform::GetLocalPosition,
+        "GetRotation", &Transform::GetLocalRotation,
+        "GetScale", &Transform::GetLocalScale,
         "GetWorldPosition", &Transform::GetWorldPosition,
         "GetWorldRotation", &Transform::GetWorldRotation,
         "GetWorldScale", &Transform::GetWorldScale,
@@ -33,7 +31,8 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
         "GetOrientation", &Transform::GetOrientation,
         "SetWorldPosition", &Transform::SetWorldPosition,
         "SetWorldRotation", &Transform::SetWorldRotation,
-        "SetWorldScale", &Transform::SetWorldScale
+        "SetWorldScale", &Transform::SetWorldScale,
+        "LookAt", &Transform::LookAt
 
     );
 
@@ -49,17 +48,18 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
         "SetMass", &RigidBody::SetMass,
         "AddForce", sol::overload
         (
-            sol::resolve<void(const lm::FVec3&)>(&RigidBody::AddForce),
-            sol::resolve<void(const float)>(&RigidBody::AddForce)
+            sol::resolve<void(const lm::FVec3&)const >(&RigidBody::AddForce),
+            sol::resolve<void(const float)const >(&RigidBody::AddForce)
 
         ),
         "AddTorque", sol::overload
         (
-            sol::resolve<void(const lm::FVec3&)>(&RigidBody::AddTorque),
-            sol::resolve<void(const float)>(&RigidBody::AddTorque)
+            sol::resolve<void(const lm::FVec3&)const>(&RigidBody::AddTorque),
+            sol::resolve<void(const float)const>(&RigidBody::AddTorque)
 
         ),
         "SetVelocity", &RigidBody::SetVelocity,
+        "GetVelocity", &RigidBody::GetLinearVelocity,
         "SetAngularVelocity", &RigidBody::SetAngularVelocity,
         "GetMass", &RigidBody::GetMass,
         "ClearForces", &RigidBody::ClearForces,
@@ -67,14 +67,12 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
         "SetFriction", &RigidBody::SetFriction,
         "GetBounciness", &RigidBody::GetBounciness,
         "SetBounciness", &RigidBody::SetBounciness,
-        "SetLinearVelocity", &RigidBody::SetLinearVelocity,
-        "GetLinearVelocity", &RigidBody::GetLinearVelocity,
         "GetAngularVelocity", &RigidBody::GetAngularVelocity,
         "SetLinearFactor", sol::overload
         (
 
-            sol::resolve<void(const lm::FVec3&)>(&RigidBody::SetLinearFactor),
-            sol::resolve<void(const float)>(&RigidBody::SetLinearFactor)
+            sol::resolve<void(const lm::FVec3&)const>(&RigidBody::SetLinearFactor),
+            sol::resolve<void(const float)const>(&RigidBody::SetLinearFactor)
         ),
         "SetAngularFactor", &RigidBody::SetAngularFactor,
         "GetLinearFactor", &RigidBody::GetLinearFactor,
@@ -83,9 +81,12 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
         "SetTrigger", &RigidBody::SetTrigger,
         "AddImpulse", sol::overload
         (
-            sol::resolve<void(const lm::FVec3&)>(&RigidBody::AddImpulse),
-            sol::resolve<void(const float)>(&RigidBody::AddImpulse)
-        )
+            sol::resolve<void(const lm::FVec3&)const>(&RigidBody::AddImpulse),
+            sol::resolve<void(const float)const>(&RigidBody::AddImpulse)
+        ),
+        "SetGravity", &RigidBody::SetGravity,
+        "SetGravityEnabled", &RigidBody::SetGravityEnabled,
+        "GetGravity", &RigidBody::GetGravity
 
     );
 }

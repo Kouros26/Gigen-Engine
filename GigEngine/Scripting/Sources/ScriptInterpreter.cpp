@@ -40,6 +40,7 @@ void GigScripting::ScriptInterpreter::DestroyLuaContext()
 		{
 			behaviour->UnregisterFromLuaContext();
 		}
+		luaState->collect_garbage();
 		luaState.reset();
 		isOk = false;
 	}
@@ -96,6 +97,7 @@ GigScripting::ScriptInterpreter::ScriptInterpreter(const std::string& pScriptFol
 
 GigScripting::ScriptInterpreter::ScriptInterpreter()
 {
-	scriptFolderRoot = "Resources/Scripts/";
+	scriptFolderRoot = "../../../Resources/Editor/Scripts/";
+
 	CreateLuaContextAndBindGlobal();
 }

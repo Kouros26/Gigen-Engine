@@ -41,7 +41,7 @@ CapsuleRigidBody::CapsuleRigidBody(float pRadius, float pHeight, const lm::FVec3
 	collisionCallBacks->onExit = CollisionExitCallBack(exit);
 	body->setUserPointer(owner);
 
-	WorldPhysics::AddRigidBodyInWorld(body);
+	WorldPhysics::GetInstance().AddRigidBodyInWorld(*body);
 }
 
 CapsuleRigidBody::~CapsuleRigidBody()
@@ -59,4 +59,14 @@ float CapsuleRigidBody::GetRadius() const
 float CapsuleRigidBody::GetHeight() const
 {
 	return height;
+}
+
+void CapsuleRigidBody::SetRadius(float pRadius)
+{
+	//do somethimg
+}
+
+void CapsuleRigidBody::SetHeight(float pHeight)
+{
+	//do somethimg
 }

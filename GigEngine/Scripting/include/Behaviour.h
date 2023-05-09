@@ -33,6 +33,8 @@ namespace GigScripting
 
         void UnregisterFromLuaContext();
 
+        std::string GetName() const;
+
     public:
         const std::string scriptName;
 
