@@ -1,5 +1,6 @@
 #pragma once
-#include "Displayable.h"
+#include "FileExplorer.h"
+#include "FPSDisplay.h"
 
 class ToolsDisplay : public Displayable
 {
@@ -9,7 +10,12 @@ public:
 
 	void Draw() override;
 
-private :
+private:
+
+	FileExplorer fileExplorer;
+	FPSDisplay fps;
+
 	void DrawExplorer();
+	void DrawProfiler();
 	void DrawConsole();
 };

@@ -3,6 +3,14 @@
 
 #include <GLFW/glfw3.h>
 
+enum class CursorShape
+{
+	ARROW,
+	BEAM,
+	CROSSHAIR,
+	HAND
+};
+
 class Window
 {
 public:
@@ -10,10 +18,11 @@ public:
 	void ProcessInput() const;
 
 	static void ToggleVSync(int input);
-	void setCursorShow(bool pShowCursor);
+	void setCursorShow(bool pShowCursor) const;
 	void swapBuffers() const;
 	void getCursorPosition(double& xpos, double& ypos) const;
-	void Close();
+	void SetMouseIcon(CursorShape shape) const;
+	void Close() const;
 
 	[[nodiscard]] unsigned int GetWidth() const;
 	[[nodiscard]] unsigned int GetHeight() const;
@@ -22,7 +31,7 @@ public:
 	[[nodiscard]] GLFWwindow* GetGLFWWindow() const;
 	std::string& GetGLSLVersion();
 
-	float GetViewPortRatio();
+	float GetViewPortRatio() const;
 	void SetViewPort(unsigned int pX, unsigned int pY, unsigned int pWidth, unsigned int pHeight);
 
 private:
@@ -38,6 +47,8 @@ private:
 	unsigned int height = 0;
 
 	float viewPortRatio = 1;
+
+	void SetIcon(const std::string& pPath) const;
 
 	static void KeyCallback(GLFWwindow*, int key, int, int action, int);
 	static void MouseButtonCallback(GLFWwindow*, int button, int action, int);

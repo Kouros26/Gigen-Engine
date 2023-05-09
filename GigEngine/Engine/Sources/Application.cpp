@@ -12,7 +12,9 @@
 #include <iostream>
 
 #include "RigidBody.h"
+#include "SceneSaver.h"
 #include "WorldPhysics.h"
+#include "ScriptInterpreter.h"
 
 using namespace GigRenderer;
 
@@ -20,16 +22,15 @@ Application::Application()
 {
 	Init();
 
-	WorldPhysics::InitPhysicWorld();
-	CreateGameObjects();
+	WorldPhysics::GetInstance().InitPhysicWorld();
+	Scene::LoadScene(Scene::GetCurrentSceneName());
 }
 
 Application::~Application()
 {
 	Lines::Clear();
 	GameObjectManager::Cleanup();
-	WorldPhysics::DestroyPhysicWorld();
-	delete skybox;
+	WorldPhysics::GetInstance().DestroyPhysicWorld();
 }
 
 Window& Application::GetWindow()
@@ -63,10 +64,12 @@ void Application::Play()
 	{
 		StartGame();
 		isEditor = false;
+		SCRIPT_INTERPRETER.RefreshBehaviours();
 	}
 	else
 	{
 		Stop();
+		isPause = false;
 	}
 }
 
@@ -77,7 +80,8 @@ void Application::Pause()
 
 void Application::Stop()
 {
-	//reload
+	GameObjectManager::SetCurrentCamera(nullptr);
+	Scene::ReloadScene(Scene::GetCurrentSceneName());
 	isEditor = true;
 }
 
@@ -119,10 +123,9 @@ void Application::Run()
 	Draw();
 
 	if (!isEditor && !isPause)
-	{
-		WorldPhysics::UpdatePhysics(Time::GetDeltaTime());
-	}
-	WorldPhysics::DrawDebug();
+		WorldPhysics::GetInstance().UpdatePhysics(Time::GetDeltaTime());
+
+	WorldPhysics::GetInstance().DrawDebug();
 }
 
 void Application::SwapFrames()
@@ -139,45 +142,10 @@ void Application::Init()
 	InitMainShader();
 }
 
-void Application::CreateGameObjects()
-{
-	//to remove =====================================================
-
-	skybox = new Skybox();
-
-	GameObject* chest = GameObjectManager::CreateGameObject("chest", { 5, 10, 10 }, { 0 }, { 1 });
-	chest->SetModel("Resources/Models/chest.obj");
-	chest->SetTexture("Resources/Textures/test.png");
-	chest->AddComponent<GigScripting::Behaviour>("test");
-
-	GameObject* car = GameObjectManager::CreateGameObject("car", { -5, 10, 10 }, { 0 }, { 1 });
-	car->SetModel("Resources/Models/Car.fbx");
-	//car->AddComponent<TestComponent>();
-	car->AddComponent<testComponent2>();
-	GameObjectManager::SetFocusedGameObject(car);
-	car->AddChild(chest);
-	car->CreateCapsuleRigidBody(1, 5, { 1 }, 10);
-
-	GameObject* ground = GameObjectManager::CreateGameObject("Ground");
-	ground->SetModel("Resources/Models/Basics/Cube.FBX");
-	ground->GetTransform().SetWorldScale({ 50, 1, 50 });
-	ground->CreateBoxRigidBody({ 1 }, { 1 }, 0.f);
-
-	GameObject* TH = GameObjectManager::CreateGameObject("Thierry-Henri", { -5, 15, 8 }, { 0, 90, 0 }, { 20 });
-	TH->SetModel("Resources/Models/Thierry-Henri.obj");
-	TH->CreateSphereRigidBody(2, { 0.05f }, 10.0f);
-	TH->GetRigidBody()->SetGravityEnabled(false);
-
-	//chest->CreateBoxRigidBody({ 10 }, { 1 }, 10.f);
-
-	GameObject* dirlight = GameObjectManager::CreateDirLight(0.5f, 0.5f, 0.7f, lm::FVec3(1));
-	dirlight->GetTransform().SetWorldRotation(lm::FVec3(45, 20, 0));
-}
-
 void Application::InitMainShader()
 {
-	VertexShader* mainVertex = ResourceManager::Get<VertexShader>("Resources/Shaders/core_vert.vert");
-	FragmentShader* mainFragment = ResourceManager::Get<FragmentShader>("Resources/Shaders/core_frag.frag");
+	auto* mainVertex = ResourceManager::Get<VertexShader>("Engine/Shaders/core_vert.vert");
+	auto* mainFragment = ResourceManager::Get<FragmentShader>("Engine/Shaders/core_frag.frag");
 
 	if (!mainShader.Link(mainVertex, mainFragment))
 		std::cout << "Error linking main shader" << std::endl;
@@ -196,7 +164,8 @@ void Application::Draw()
 	ClearWindow();
 
 	RENDERER.Disable(RD_DEPTH_TEST);
-	skybox->Draw();
+	if (GameObjectManager::GetSkyBox())
+		GameObjectManager::GetSkyBox()->Draw();
 
 	if (isEditor || useEditorCam)
 	{
@@ -216,6 +185,7 @@ void Application::Draw()
 	RENDERER.Enable(RD_DEPTH_TEST);
 	RENDERER.DepthFunction(RD_LESS);
 	UpdateGameObjectRender(); //render model if they have one
+
 	mainShader.UnUse(); //stop using the main shader
 
 	Lines::DrawLines(); //render debug lines or guizmos
@@ -242,7 +212,7 @@ void Application::UpdateGameObjectComponent()
 	}
 }
 
-void Application::UpdateGameObjectRender()
+void Application::UpdateGameObjectRender() const
 {
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
@@ -255,7 +225,7 @@ void Application::UpdateGameObjectRender()
 	}
 }
 
-void Application::UpdateLights()
+void Application::UpdateLights() const
 {
 	int nbDirLight = GameObjectManager::GetDirLightSize();
 	int nbPointLight = GameObjectManager::GetPointLightSize();
@@ -268,7 +238,7 @@ void Application::UpdateLights()
 	GameObjectManager::SendLightsToShader();
 }
 
-void Application::UpdateUniforms()
+void Application::UpdateUniforms() const
 {
 	Camera* cam = nullptr;
 	if (isEditor || useEditorCam)

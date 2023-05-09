@@ -2,68 +2,73 @@
 #include "Application.h"
 void GigInput::Inputs::UpdateMousePosition()
 {
-    Application::GetWindow().getCursorPosition(mouse.x, mouse.y);
+	Application::GetWindow().getCursorPosition(mouse.x, mouse.y);
 
-    mouse.mouseOffsetX = mouse.x - mouse.lastX;
-    mouse.mouseOffsetY = mouse.y - mouse.lastY;
+	mouse.mouseOffsetX = mouse.x - mouse.lastX;
+	mouse.mouseOffsetY = mouse.y - mouse.lastY;
 
-    mouse.lastX = mouse.x;
-    mouse.lastY = mouse.y;
+	mouse.lastX = mouse.x;
+	mouse.lastY = mouse.y;
 }
 
-bool GigInput::Inputs::GetKey(GigInput::Keys pKey)
+bool GigInput::Inputs::GetKey(const GigInput::Keys& pKey)
 {
-    auto key = (int)pKey;
-    if ('a' <= key && key <= 'z')
-    {
-        key -= ('a' - 'A');
-    }
-    return inputs[key];
+	auto key = static_cast<int>(pKey);
+	if ('a' <= key && key <= 'z')
+	{
+		key -= ('a' - 'A');
+	}
+	return inputs[key];
 }
 
-bool GigInput::Inputs::GetKeyDown(Keys pKey)
+bool GigInput::Inputs::GetKeyDown(const Keys& pKey)
 {
-    auto key = (int)pKey;
-    if ('a' <= key && key <= 'z')
-    {
-        key -= ('a' - 'A');
-    }
-    return inputs[key] == (int)KeyState::PRESS;
+	auto key = static_cast<int>(pKey);
+	if ('a' <= key && key <= 'z')
+	{
+		key -= ('a' - 'A');
+	}
+	return inputs[key] == static_cast<int>(KeyState::PRESS);
 }
 
-bool GigInput::Inputs::GetKeyUp(Keys pKey)
+bool GigInput::Inputs::GetKeyUp(const Keys& pKey)
 {
-    auto key = (int)pKey;
-    if ('a' <= key && key <= 'z')
-    {
-        key -= ('a' - 'A');
-    }
-    return inputs[key] == (int)KeyState::RELEASE;
+	auto key = static_cast<int>(pKey);
+	if ('a' <= key && key <= 'z')
+	{
+		key -= ('a' - 'A');
+	}
+	return inputs[key] == static_cast<int>(KeyState::RELEASE);
 }
 
 GigInput::Mouse GigInput::Inputs::GetMouse()
 {
-    return mouse;
+	return mouse;
 }
 
 void GigInput::Inputs::UpdateKey(int key, int action)
 {
-    inputs[key] = action == (int)MouseState::RELEASE ? false : true;
+	inputs[key] = action == static_cast<int>(MouseState::RELEASE) ? false : true;
 }
 
 void GigInput::Inputs::UpdateMouseButton(int button, int action)
 {
-    if (button == (int)MouseButton::LEFT)
-        mouse.leftClick = action;
+	if (button == static_cast<int>(MouseButton::LEFT))
+		mouse.leftClick = action;
 
-    if (button == (int)MouseButton::RIGHT)
-        mouse.rightClick = action;
+	if (button == static_cast<int>(MouseButton::RIGHT))
+		mouse.rightClick = action;
 
-    if (button == (int)MouseButton::MIDDLE)
-        mouse.wheelClick = action;
+	if (button == static_cast<int>(MouseButton::MIDDLE))
+		mouse.wheelClick = action;
 }
 
 void GigInput::Inputs::UpdateMouseWheelOffset(double offset)
 {
-    mouse.wheelOffsetY = offset;
+	mouse.wheelOffsetY = offset;
+}
+
+void GigInput::Inputs::SetMouseIsOnViewPort(bool b)
+{
+	mouse.isOnViewPort = b;
 }

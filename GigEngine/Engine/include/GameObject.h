@@ -3,9 +3,13 @@
 #include "Transform.h"
 #include <vector>
 
+namespace GigScripting
+{
+    class Behaviour;
+}
+
 struct Collision;
 class Component;
-class Script;
 class Model;
 class Texture;
 
@@ -32,14 +36,15 @@ public:
     void UpdateComponents() const;
     void UpdateHierarchy();
 
-    void Destroy();
-
     void SetModel(const std::string& filePath);
 	void SetModel(Model* pModel);
+    void SetModelWithPathLua(const std::string& filePath);
     void SetTexture(const std::string& filePath);
+    void SetTextureWithPathLua(const std::string& filePath);
 
-    Model* GetModel();
-    Texture* GetTexture();
+    [[nodiscard]] Model* GetModel() const;
+    [[nodiscard]] Texture* GetTexture() const;
+    virtual std::string GetType();
 
     void LateUpdate() const;
 
@@ -48,8 +53,8 @@ public:
 
     [[nodiscard]] unsigned int GetId() const;
 
-    void AddChild(GameObject* child);
-    void RemoveChild(GameObject* child);
+    void AddChild(GameObject& child);
+    void RemoveChild(GameObject& child);
 
     virtual void OnCollisionEnter(const Collision& collision);
     virtual void OnCollisionExit(const Collision& collision);
@@ -78,12 +83,14 @@ public:
 
     [[nodiscard]] unsigned int GetComponentCount() const;
 
-    Transform& GetTransform();
-    [[nodiscard]] RigidBody* GetRigidBody() const;
+	Transform& GetTransform();
+	[[nodiscard]] RigidBody* GetRigidBody() const;
+	void RemoveRigidBody();
 
     GameObject*& GetParent();
+    void SetParent(GameObject& newParent);
     GameObject* GetChild(unsigned int index);
-    unsigned int GetChildrenCount();
+    [[nodiscard]] unsigned int GetChildrenCount() const;
     std::list<GameObject*>& GetChildren();
 
     bool IsAParent(GameObject* obj) const;
@@ -91,6 +98,8 @@ public:
     void SetActive(bool b);
 
     void CheckForScript(Component* pComponent);
+
+    [[nodiscard]] GigScripting::Behaviour* GetBehaviour(const std::string& pName) const;
 
 private:
 
@@ -105,7 +114,6 @@ private:
     std::list<GameObject*> children{};
 
     std::vector<Component*> components{};
-    std::vector<Script*> scripts{};
 
     Model* model = nullptr;
     Texture* texture = nullptr;

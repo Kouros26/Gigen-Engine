@@ -1,5 +1,6 @@
 #include "Interface.h"
 #include "InterfaceManager.h"
+#include "IconsMaterialDesignIcons.h"
 #include <imgui_impl_opengl3.h>
 #include "imgui_impl_glfw.h"
 
@@ -76,6 +77,12 @@ void Interface::SetColorDark()
 void Interface::SetFont()
 {
 	ImGuiIO& io = ImGui::GetIO();
-	io.Fonts->AddFontFromFileTTF("Resources/Fonts/Ruda-Bold.ttf", 16.0f);
-	io.FontDefault = io.Fonts->AddFontFromFileTTF("Resources/Fonts/Ruda-Bold.ttf", 16.0f);
+	io.FontDefault = io.Fonts->AddFontFromFileTTF("Engine/Fonts/Ruda-Bold.ttf", 16.0f);
+
+	ImFontConfig config;
+	config.MergeMode = true;
+	config.GlyphMinAdvanceX = 13.0f; // Use if you want to make the icon monospaced
+	static const ImWchar icon_ranges[] = { ICON_MIN_MD, (ImWchar)ICON_MAX_MD, 0 };
+
+	io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MD, 12.0f, &config, icon_ranges);
 }

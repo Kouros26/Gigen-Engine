@@ -245,6 +245,24 @@ void Renderer::LoadTexture(unsigned int& pTexture, int pWidth, int pHeight, cons
     BindTexture(GL_TEXTURE_2D, RD_FALSE);
 }
 
+void Renderer::LoadImguiTexture(unsigned int& pTexture, int pWidth, int pHeight, const void* pData)
+{
+    glGenTextures(1, &pTexture);
+    BindTexture(GL_TEXTURE_2D, pTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+
+    // Upload pixels into texture
+#if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+#endif
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pWidth, pHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData);
+
+    BindTexture(GL_TEXTURE_2D, RD_FALSE);
+}
+
 void Renderer::BindTexture(unsigned int pTarget, unsigned int pTexture)
 {
     glBindTexture(pTarget, pTexture);
