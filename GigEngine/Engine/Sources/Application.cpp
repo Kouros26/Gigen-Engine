@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Model.h"
 #include "GameObjectManager.h"
+#include "UIManager.h"
 #include "ResourceManager.h"
 #include "DrawLine.h"
 #include "Light.h"
@@ -15,6 +16,8 @@
 #include "SceneSaver.h"
 #include "WorldPhysics.h"
 #include "ScriptInterpreter.h"
+
+#include "UIImage.h"
 
 using namespace GigRenderer;
 
@@ -139,7 +142,11 @@ void Application::Init()
 	editorCamera.SetRatio(window.GetViewPortRatio());
 	RENDERER.Init();
 	Lines::Init();
+	UIManager::Init();
 	InitMainShader();
+
+	//to remove
+	UIManager::AddImageElement();
 }
 
 void Application::InitMainShader()
@@ -189,6 +196,7 @@ void Application::Draw()
 	mainShader.UnUse(); //stop using the main shader
 
 	Lines::DrawLines(); //render debug lines or guizmos
+	UIManager::DrawUI(); // render UI
 }
 
 void Application::ClearWindow()
