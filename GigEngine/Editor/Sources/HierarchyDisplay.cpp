@@ -1,6 +1,7 @@
 #include "HierarchyDisplay.h"
 #include "imgui.h"
 #include "GameObjectManager.h"
+#include "UIManager.h"
 #include "Application.h"
 #include "InterfaceManager.h"
 
@@ -24,8 +25,17 @@ void HierarchyDisplay::Draw()
 	ImGui::SetWindowSize("Scene", { width, height });
 
 	CreatePopUp();
-	ImGui::Separator();
-	DisplayHierarchy();
+	if (GameObjectManager::GetSize() > 0)
+	{
+		ImGui::SeparatorText("Objects");
+		DisplayHierarchy();
+	}
+
+	if (UIManager::GetSize() > 0)
+	{
+		ImGui::SeparatorText("UI");
+		DisplayUI();
+	}
 
 	ImGui::BeginChild("##");
 	ImGui::EndChild();
@@ -53,6 +63,56 @@ void HierarchyDisplay::DisplayHierarchy()
 	{
 		DisplayGameObject(*GameObjectManager::GetGameObject(i), false);
 	}
+}
+
+void HierarchyDisplay::DisplayUI()
+{
+	for (int i = 0; i < UIManager::GetSize(); i++)
+	{
+		DisplayUIElement(*UIManager::GetElement(i));
+	}
+}
+
+void HierarchyDisplay::DisplayUIElement(UIElement & element)
+{
+	const bool isFocused = (&element == UIManager::GetFocusedElement());
+	int flags = ImGuiTreeNodeFlags_Leaf;
+
+	if (isFocused)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, { 1,1,0.5f,1 });
+	}
+
+	ImGui::TreeNodeEx(element.GetName().c_str(), flags);
+
+	if (isFocused)
+	{
+		ImGui::PopStyleColor();
+	}
+
+	ImGui::PushID(element.GetId());
+	ImGui::PopID();
+
+	if (ImGui::IsItemClicked(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+	{
+		UIManager::SetFocusedElement(&element);
+	}
+	if (ImGui::IsItemClicked(1))
+	{
+		ImGui::OpenPopup(element.GetName().c_str());
+	}
+
+	if (ImGui::BeginPopup(element.GetName().c_str()))
+	{
+		ImGui::SeparatorText(element.GetName().c_str());
+		if (ImGui::MenuItem(ICON_DESTROY " Destroy"))
+		{
+			UIManager::RemoveElement(&element);
+		}
+		ImGui::EndPopup();
+	}
+
+	ImGui::TreePop();
 }
 
 void HierarchyDisplay::CreatePopUp() const
@@ -126,11 +186,23 @@ void HierarchyDisplay::CreatePopUp() const
 		{
 			GameObjectManager::CreateCamera();
 		}
+		if (ImGui::BeginMenu(ICON_TEXTURE " UI"))
+		{
+			if (ImGui::MenuItem("Image"))
+			{
+				UIManager::AddImageElement();
+			}
+			if (ImGui::MenuItem("Text"))
+			{
+				UIManager::AddTextElement();
+			}
+			ImGui::EndMenu();
+		}
 		ImGui::EndPopup();
 	}
 }
 
-void HierarchyDisplay::DisplayGameObject(GameObject& obj, bool isChild)
+void HierarchyDisplay::DisplayGameObject(GameObject & obj, bool isChild)
 {
 	if (obj.GetParent() && !isChild)
 	{
@@ -199,7 +271,7 @@ void HierarchyDisplay::DisplayGameObject(GameObject& obj, bool isChild)
 	}
 }
 
-void HierarchyDisplay::GameObjectClicked(GameObject& obj) const
+void HierarchyDisplay::GameObjectClicked(GameObject & obj) const
 {
 	if (ImGui::IsItemClicked(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 	{
@@ -216,7 +288,7 @@ void HierarchyDisplay::GameObjectClicked(GameObject& obj) const
 	}
 }
 
-void HierarchyDisplay::GameObjectPopUp(GameObject& obj) const
+void HierarchyDisplay::GameObjectPopUp(GameObject & obj) const
 {
 	if (ImGui::BeginPopup(obj.GetName().c_str()))
 	{

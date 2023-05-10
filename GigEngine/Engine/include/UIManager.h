@@ -14,7 +14,16 @@ public:
 	static void AddTextElement();
 	static void DrawUI();
 
+	static int GetSize();
+	static UIElement* GetElement(unsigned int i);
+
+	static void SetFocusedElement(UIElement* elem);
+	static UIElement* GetFocusedElement();
+
+	static void RemoveElement(UIElement* elem);
+
 private:
+	inline static UIElement* focusedElement = nullptr;
 	inline static std::vector<UIElement*> elements;
 	inline static unsigned int PROJLocation;
 	inline static unsigned int MODELLocation;

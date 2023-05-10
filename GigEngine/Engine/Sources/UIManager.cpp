@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "Mat4/FMat4.hpp"
 #include "Vec3/FVec3.hpp"
+#include "GameObjectManager.h"
 
 using namespace GigRenderer;
 
@@ -33,7 +34,10 @@ void UIManager::Init()
 
 void UIManager::AddImageElement()
 {
-	elements.push_back(new UIImage());
+	UIImage* img = new UIImage();
+	img->SetTexture("Engine/Textures/ok.png");
+	img->SetColor(lm::FVec3(1, 1, 0));
+	elements.push_back(img);
 }
 
 void UIManager::AddTextElement()
@@ -52,9 +56,47 @@ void UIManager::DrawUI()
 		RENDERER.SetUniformValue(MODELLocation, UniformType::MAT4, &elem->GetTransform().getMatrix());
 
 		RENDERER.SetUniformValue(COLORLocation, UniformType::VEC3, &elem->GetColor());
-		
+
 		elem->Draw();
 	}
 
 	shaderProgram.UnUse();
+}
+
+int UIManager::GetSize()
+{
+	return elements.size();
+}
+
+UIElement* UIManager::GetElement(unsigned int i)
+{
+	if (i < GetSize())
+	{
+		return elements.at(i);
+	}
+	return nullptr;
+}
+
+void UIManager::SetFocusedElement(UIElement* elem)
+{
+	focusedElement = elem;
+	if (elem)
+		GameObjectManager::SetFocusedGameObject(nullptr);
+}
+
+UIElement* UIManager::GetFocusedElement()
+{
+	return focusedElement;
+}
+
+void UIManager::RemoveElement(UIElement* elem)
+{
+	const auto it = std::ranges::find(elements, elem);
+
+	if (it == elements.end())
+		return;
+
+	elements.erase(it);
+
+	elem->~UIElement();
 }

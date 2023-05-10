@@ -56,18 +56,21 @@ void FileExplorer::Draw()
 		ImGui::Button(icon, { cellSize, cellSize });
 		ImGui::SetWindowFontScale(1);
 
-		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0) && directoryEntry.is_directory())
+		if (ImGui::IsItemHovered())
 		{
-			currentDirPath += "/" + filename;
-		}
-
-		if (!directoryEntry.is_directory())
-		{
-			if (ImGui::BeginDragDropSource())
+			if (ImGui::IsMouseDoubleClicked(0) && directoryEntry.is_directory())
 			{
-				std::string itemPath = fullPath.string();
-				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath.c_str(), sizeof(wchar_t) * (itemPath.length() + 1));
-				ImGui::EndDragDropSource();
+				currentDirPath += "/" + filename;
+			}
+
+			if (!directoryEntry.is_directory())
+			{
+				if (ImGui::BeginDragDropSource())
+				{
+					std::string itemPath = fullPath.string();
+					ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath.c_str(), sizeof(wchar_t) * (itemPath.length() + 1));
+					ImGui::EndDragDropSource();
+				}
 			}
 		}
 

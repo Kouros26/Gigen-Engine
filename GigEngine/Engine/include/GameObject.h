@@ -53,8 +53,8 @@ public:
 
 	[[nodiscard]] unsigned int GetId() const;
 
-    void AddChild(GameObject& child);
-    void RemoveChild(GameObject& child);
+	void AddChild(GameObject& child);
+	void RemoveChild(GameObject& child);
 
 	virtual void OnCollisionEnter(const Collision& collision);
 	virtual void OnCollisionExit(const Collision& collision);
@@ -89,19 +89,19 @@ public:
 
 	void RemoveRigidBody();
 
-    GameObject*& GetParent();
-    void SetParent(GameObject& newParent);
-    GameObject* GetChild(unsigned int index);
-    [[nodiscard]] unsigned int GetChildrenCount() const;
-    std::list<GameObject*>& GetChildren();
+	GameObject*& GetParent();
+	void SetParent(GameObject& newParent);
+	GameObject* GetChild(unsigned int index);
+	[[nodiscard]] unsigned int GetChildrenCount() const;
+	std::list<GameObject*>& GetChildren();
 
-    bool IsAParent(GameObject* obj) const;
+	bool IsAParent(GameObject* obj) const;
 	[[nodiscard]] bool IsActive() const;
 	void SetActive(bool b);
 
 	void CheckForScript(Component* pComponent);
 
-    [[nodiscard]] GigScripting::Behaviour* GetBehaviour(const std::string& pName) const;
+	[[nodiscard]] GigScripting::Behaviour* GetBehaviour(const std::string& pName) const;
 	void RemoveScript(GigScripting::Behaviour* pScript);
 
 	void AddScript(const std::string& path);
@@ -125,7 +125,7 @@ private:
 	Texture* texture = nullptr;
 
 	//use so every gameObject has a different id
-	static unsigned int gameObjectIndex;
+	inline static unsigned int gameObjectIndex = 0;
 };
 
 template<class T>

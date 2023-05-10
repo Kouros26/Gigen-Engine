@@ -11,6 +11,7 @@ public:
 	UIImage();
 	~UIImage();
 
+	virtual void SetTexture(const std::string& path);
 	virtual void Draw() override;
 
 private:

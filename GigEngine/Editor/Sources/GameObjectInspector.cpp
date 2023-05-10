@@ -82,7 +82,7 @@ void GameObjectInspector::DrawGameObject()
 	DrawDropTarget(object);
 }
 
-void GameObjectInspector::DrawTransform(GameObject* pObject) const
+void GameObjectInspector::DrawTransform(GameObject * pObject) const
 {
 	if (ImGui::CollapsingHeader(ICON_TRANSFORM " Transform"))
 	{
@@ -115,7 +115,7 @@ void GameObjectInspector::DrawTransform(GameObject* pObject) const
 	}
 }
 
-void GameObjectInspector::DrawModel(GameObject* pObject) const
+void GameObjectInspector::DrawModel(GameObject * pObject) const
 {
 	if (ImGui::CollapsingHeader(ICON_MODEL " Model"))
 	{
@@ -158,7 +158,7 @@ void GameObjectInspector::DrawModel(GameObject* pObject) const
 	}
 }
 
-void GameObjectInspector::DrawTexture(GameObject* pObject) const
+void GameObjectInspector::DrawTexture(GameObject * pObject) const
 {
 	ImGui::SetCursorPosX(30);
 	ImGui::BeginGroup();
@@ -184,7 +184,7 @@ void GameObjectInspector::DrawTexture(GameObject* pObject) const
 	ImGui::EndGroup();
 }
 
-void GameObjectInspector::DrawRigidBody(GameObject* pObject) const
+void GameObjectInspector::DrawRigidBody(GameObject * pObject) const
 {
 	if (ImGui::CollapsingHeader("RigidBody"))
 	{
@@ -316,7 +316,7 @@ void GameObjectInspector::DrawSpecials(GameObject * pObject) const
 		DrawCamera(cam);
 }
 
-void GameObjectInspector::DrawComponents(GameObject* pObject) const
+void GameObjectInspector::DrawComponents(GameObject * pObject) const
 {
 	std::vector<GigScripting::Behaviour*> scripts;
 	pObject->GetComponents<GigScripting::Behaviour>(scripts);
@@ -435,7 +435,7 @@ void GameObjectInspector::DrawLight(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawCamera(Camera* pObject) const
+void GameObjectInspector::DrawCamera(Camera * pObject) const
 {
 	float fov = pObject->GetFov();
 	float tNear = pObject->GetNear();
@@ -463,7 +463,7 @@ void GameObjectInspector::DrawCamera(Camera* pObject) const
 	}
 }
 
-void GameObjectInspector::DrawAddComponent(GameObject* pObject) const
+void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 {
 	const ImGuiStyle& style = ImGui::GetStyle();
 
@@ -515,7 +515,7 @@ void GameObjectInspector::DrawAddComponent(GameObject* pObject) const
 	}
 }
 
-void GameObjectInspector::DrawDropTarget(GameObject* pObject) const
+void GameObjectInspector::DrawDropTarget(GameObject * pObject) const
 {
 	ImGui::BeginChild("##");
 	ImGui::EndChild();

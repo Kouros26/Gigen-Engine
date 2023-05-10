@@ -3,6 +3,13 @@
 
 UIElement::UIElement()
 {
+	id = uiElementIndex;
+	uiElementIndex++;
+}
+
+UIElement::UIElement(const std::string& name) : UIElement()
+{
+	this->name = name;
 }
 
 UIElement::~UIElement()
@@ -26,4 +33,14 @@ lm::FVec3& UIElement::GetColor()
 RectTransform& UIElement::GetTransform()
 {
 	return transform;
+}
+
+std::string UIElement::GetName()
+{
+	return name;
+}
+
+unsigned int UIElement::GetId()
+{
+	return id;
 }
