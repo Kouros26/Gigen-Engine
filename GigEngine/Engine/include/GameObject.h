@@ -1,4 +1,5 @@
 #pragma once
+#include "Object.h"
 #include <list>
 #include "Transform.h"
 #include <vector>
@@ -13,7 +14,7 @@ class Component;
 class Model;
 class Texture;
 
-class GameObject
+class GameObject : public Object
 {
 public:
 	GameObject();
@@ -26,7 +27,9 @@ public:
 	GameObject& operator=(const GameObject& other);
 	GameObject& operator=(GameObject&& other) noexcept = delete;
 
-	virtual ~GameObject();
+	virtual ~GameObject() override;
+
+	std::string GetType() override;
 
 	void CreateBoxRigidBody(const lm::FVec3& halfExtents, const lm::FVec3& scale, float mass);
 	void CreateCapsuleRigidBody(float radius, float height, const lm::FVec3& scale, float mass);
@@ -44,14 +47,8 @@ public:
 
 	[[nodiscard]] Model* GetModel() const;
 	[[nodiscard]] Texture* GetTexture() const;
-	virtual std::string GetType();
 
 	void LateUpdate() const;
-
-	std::string GetName();
-	void SetName(const std::string& pName);
-
-	[[nodiscard]] unsigned int GetId() const;
 
 	void AddChild(GameObject& child);
 	void RemoveChild(GameObject& child);
@@ -96,8 +93,7 @@ public:
 	std::list<GameObject*>& GetChildren();
 
 	bool IsAParent(GameObject* obj) const;
-	[[nodiscard]] bool IsActive() const;
-	void SetActive(bool b);
+	virtual void SetActive(bool b) override;
 
 	void CheckForScript(Component* pComponent);
 
@@ -109,10 +105,6 @@ public:
 
 private:
 
-	bool isActive;
-	std::string name{};
-	unsigned int id{};
-
 	Transform transform{};
 	RigidBody* rigidBody = nullptr;
 
@@ -123,9 +115,6 @@ private:
 
 	Model* model = nullptr;
 	Texture* texture = nullptr;
-
-	//use so every gameObject has a different id
-	inline static unsigned int gameObjectIndex = 0;
 };
 
 template<class T>

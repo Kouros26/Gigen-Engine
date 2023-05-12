@@ -1,15 +1,12 @@
 #include "UIElement.h"
 #include "UIManager.h"
 
-UIElement::UIElement()
+UIElement::UIElement() : Object()
 {
-	id = uiElementIndex;
-	uiElementIndex++;
 }
 
-UIElement::UIElement(const std::string& name) : UIElement()
+UIElement::UIElement(const std::string& name) : Object(name)
 {
-	this->name = name;
 }
 
 UIElement::~UIElement()
@@ -33,14 +30,4 @@ lm::FVec3& UIElement::GetColor()
 RectTransform& UIElement::GetTransform()
 {
 	return transform;
-}
-
-std::string UIElement::GetName()
-{
-	return name;
-}
-
-unsigned int UIElement::GetId()
-{
-	return id;
 }

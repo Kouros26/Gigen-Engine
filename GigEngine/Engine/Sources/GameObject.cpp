@@ -14,51 +14,29 @@
 #include <iostream>
 #include <fstream>
 
-GameObject::GameObject()
+GameObject::GameObject() : Object()
 {
-	gameObjectIndex++;
-	id = gameObjectIndex;
-
-	name = "GameObject " + std::to_string(id);
 }
 
 GameObject::GameObject(const std::string& name)
-	: GameObject()
+	: Object(name)
 {
-	if (!name.empty())
-		this->name = name;
 }
 
 GameObject::GameObject(const std::string& name, const lm::FVec3& position, const lm::FVec3& rotation,
 	const lm::FVec3& scale)
-	: transform(position, rotation, scale)
+	: Object(name), transform(position, rotation, scale)
 {
-	gameObjectIndex++;
-	id = gameObjectIndex;
-
-	if (!name.empty())
-		this->name = name;
-
-	else
-		this->name = "GameObject " + std::to_string(id);
 }
 
 GameObject::GameObject(const lm::FVec3& position, const lm::FVec3& rotation, const lm::FVec3& scale)
-	: transform(position, rotation, scale)
+	: Object(), transform(position, rotation, scale)
 {
-	gameObjectIndex++;
-	id = gameObjectIndex;
-
-	name = "GameObject " + std::to_string(id);
 }
 
 GameObject::GameObject(const GameObject& other)
+	: Object(other.GetName())
 {
-	gameObjectIndex++;
-	id = gameObjectIndex;
-
-	name = other.name + " " + std::to_string(id);
-
 	transform = other.transform;
 
 	for (const auto& component : other.components)
@@ -76,7 +54,7 @@ GameObject& GameObject::operator=(const GameObject& other)
 	if (this == &other)
 		return *this;
 
-	name = other.name + " " + std::to_string(id);
+	SetName(other.GetName() + " " + std::to_string(GetId()));
 
 	transform = other.transform;
 
@@ -101,6 +79,12 @@ GameObject::~GameObject()
 
 	if (parent)
 		parent->RemoveChild(*this);
+}
+
+std::string GameObject::GetType()
+{
+	const std::string type(typeid(this).name());
+	return type.substr(6, type.size() - 16);
 }
 
 void GameObject::CreateBoxRigidBody(const lm::FVec3& halfExtents = { 1.0f }, const lm::FVec3& scale = { 1.0f }, float mass = 1.0f)
@@ -128,27 +112,6 @@ void GameObject::CreateSphereRigidBody(float radius, const lm::FVec3& scale, flo
 	rigidBody = new SphereRigidBody(radius, scale, transform.GetWorldPosition(), mass, this);
 	rigidBody->GetShapeType() = RigidBodyType::SPHERE;
 	transform.SetOwnerRigidBody(rigidBody);
-}
-
-std::string GameObject::GetName()
-{
-	return name;
-}
-
-void GameObject::SetName(const std::string& pName)
-{
-	if (pName.length() == 0)
-	{
-		name = "GameObject " + std::to_string(id);
-		return;
-	}
-
-	name = pName;
-}
-
-unsigned int GameObject::GetId() const
-{
-	return id;
 }
 
 void GameObject::SetModel(std::string const& filePath)
@@ -195,12 +158,6 @@ void GameObject::SetTextureWithPathLua(const std::string& filePath)
 Texture* GameObject::GetTexture() const
 {
 	return texture;
-}
-
-std::string GameObject::GetType()
-{
-	const std::string type(typeid(this).name());
-	return type.substr(6, type.size() - 16);
 }
 
 void GameObject::AddChild(GameObject& child)
@@ -434,14 +391,9 @@ void GameObject::RemoveRigidBody()
 	rigidBody = nullptr;
 }
 
-bool GameObject::IsActive() const
-{
-	return isActive;
-}
-
 void GameObject::SetActive(bool b)
 {
-	isActive = b;
+	Object::SetActive(b);
 	for (GameObject* child : children)
 	{
 		child->SetActive(b);
