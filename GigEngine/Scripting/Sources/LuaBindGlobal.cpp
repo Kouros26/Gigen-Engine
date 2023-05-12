@@ -3,12 +3,39 @@
 #include "Inputs.h"
 #include "Vec2/FVec2.hpp"
 #include "GameObjectManager.h"
+#include "WorldPhysics.h"
 
 void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
 {
     using namespace GigInput;
 
     auto& luaState = pLuaState;
+
+    luaState.new_usertype<Collision>("Collision",
+        "other", &Collision::other,
+        "contactPoint", &Collision::contactPoint,
+        "collisionStrength", &Collision::collisionStrength
+
+    );
+
+    luaState.new_usertype<HitResult>("HitResult",
+        "hitObject", &HitResult::hitObject,
+        "hitPoint", &HitResult::hitPoint
+
+    );
+
+    luaState.new_enum<RayCastDebug>("RayCastDebug",
+        {
+            {"None", RayCastDebug::None },
+            { "OneFrame", RayCastDebug::OneFrame },
+            { "Timer", RayCastDebug::Timer },
+            { "Forever", RayCastDebug::Forever}
+        }
+
+    );
+
+    luaState.create_named_table("Physics");
+    luaState["Physics"]["RayCast"] = &WorldPhysics::RayCast;
 
     luaState.new_usertype<GameObjectManager>("GameObjectManager",
         "GetGameObject", &GameObjectManager::GetGameObject,

@@ -11,6 +11,7 @@
 
 ToolsDisplay::ToolsDisplay()
 {
+    InterfaceManager::AddEditorElement(this);
 	InterfaceManager::AddEditorElement(this);
 	currentDirPath = rootDirPath;
 }
@@ -21,16 +22,35 @@ ToolsDisplay::~ToolsDisplay()
 
 void ToolsDisplay::Draw()
 {
-	width = InterfaceManager::GetWidth() - InterfaceManager::GetClassWidth<HierarchyDisplay>();
-	ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width,  InterfaceManager::GetHeight() - height });
-	ImGui::SetNextWindowSize({ width, height });
+    width = InterfaceManager::GetWidth() - InterfaceManager::GetClassWidth<HierarchyDisplay>();
+    ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width,  InterfaceManager::GetHeight() - height });
+    ImGui::SetNextWindowSize({ width, height });
 
-	//noMove et NoCollapse
-	ImGui::Begin("Tools", NULL, 4 | 32);
+    //noMove et NoCollapse
+    ImGui::Begin("Tools", NULL, 4 | 32);
 
-	LimitHeightResize();
-	ImGui::SetWindowSize("Tools", { width, height });
+    LimitHeightResize();
+    ImGui::SetWindowSize("Tools", { width, height });
 
+    if (ImGui::BeginTabBar("MyTabBar"))
+    {
+        if (ImGui::BeginTabItem("Explorer"))
+        {
+            DrawExplorer();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Console"))
+        {
+            DrawConsole();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Profiler"))
+        {
+            DrawProfiler();
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+    }
 	if (ImGui::BeginTabBar("MyTabBar"))
 	{
 		if (ImGui::BeginTabItem("Explorer"))
@@ -46,7 +66,7 @@ void ToolsDisplay::Draw()
 		ImGui::EndTabBar();
 	}
 
-	ImGui::End();
+    ImGui::End();
 }
 
 void ToolsDisplay::DrawExplorer()
@@ -111,5 +131,5 @@ void ToolsDisplay::DrawFiles(const std::string& path)
 
 void ToolsDisplay::DrawConsole()
 {
-	Console::Draw();
+    Console::Draw();
 }
