@@ -38,17 +38,17 @@ void WorldPhysics::DestroyPhysicWorld() const
 
 void WorldPhysics::ClearCollisionCache()
 {
-	lastTickCollisionPairs.clear();
+    lastTickCollisionPairs.clear();
 }
 
-bool WorldPhysics::RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit, RayCastDebug pDrawProperties, float pTimer, const std::vector<GameObject*>& pIgnoredObjects, const lm::FVec3& pRayColor, const lm::FVec3& pHitColor) const
+bool WorldPhysics::RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit, RayCastDebug pDrawProperties, float pTimer, const std::vector<GameObject*>& pIgnoredObjects, const lm::FVec3& pRayColor, const lm::FVec3& pHitColor)
 {
     const btVector3 rayFrom(pStart.x, pStart.y, pStart.z);
     const btVector3 rayTo(pEnd.x, pEnd.y, pEnd.z);
 
     btCollisionWorld::AllHitsRayResultCallback rayCallback(rayFrom, rayTo);
 
-    world->rayTest(rayFrom, rayTo, rayCallback);
+    GetInstance().world->rayTest(rayFrom, rayTo, rayCallback);
 
     //if no hits draw hitless line
     if (!rayCallback.hasHit())
@@ -94,6 +94,39 @@ bool WorldPhysics::RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitRe
     return false;
 }
 
+bool WorldPhysics::RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit, const RayCastDebug pDrawProperties, float pTimer, const lm::FVec3& pRayColor)
+{
+    return SimpleRayCast(pStart, pEnd, pOutHit, pDrawProperties, pTimer, pRayColor);
+}
+
+bool WorldPhysics::SimpleRayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit,
+    const RayCastDebug pDrawProperties, float pTimer, const lm::FVec3& pRayColor)
+{
+    const btVector3 rayFrom(pStart.x, pStart.y, pStart.z);
+    const btVector3 rayTo(pEnd.x, pEnd.y, pEnd.z);
+
+    btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom, rayTo);
+
+    GetInstance().world->rayTest(rayFrom, rayTo, rayCallback);
+
+    if (!rayCallback.hasHit())
+    {
+        RayCastDebugDraw(pStart, pEnd, pRayColor, pDrawProperties, pTimer);
+
+        return false;
+    }
+
+    const auto body = const_cast<btRigidBody*>(btRigidBody::upcast(rayCallback.m_collisionObject));
+    const lm::FVec3 nextObj = { rayCallback.m_hitPointWorld.x(), rayCallback.m_hitPointWorld.y(), rayCallback.m_hitPointWorld.z() };
+
+    pOutHit.hitObject = static_cast<GameObject*>(body->getUserPointer());
+    pOutHit.hitPoint = nextObj;
+
+    RayCastDebugDraw(pStart, pOutHit.hitPoint, pRayColor, pDrawProperties, pTimer);
+
+    return true;
+}
+
 bool WorldPhysics::RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit, const RayCastDebug pDrawProperties /*= RayCastDebug::None*/, float pTimer /*= -1*/, const lm::FVec3& pRayColor /*= { 0,1,0 }*/, const lm::FVec3& pHitColor /*= { 1, 0, 0 }*/)
 {
     std::vector<GameObject*> emptyVector;
@@ -102,8 +135,7 @@ bool WorldPhysics::RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitRe
 
 bool WorldPhysics::RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit, const RayCastDebug pDrawProperties, float pTimer)
 {
-    std::vector<GameObject*> emptyVector;
-    return RayCast(pStart, pEnd, pOutHit, pDrawProperties, pTimer, emptyVector);
+    return SimpleRayCast(pStart, pEnd, pOutHit, pDrawProperties, pTimer, { 0,1,0 });
 }
 
 bool WorldPhysics::RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit)
@@ -114,25 +146,25 @@ bool WorldPhysics::RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitRe
 
 void WorldPhysics::AddRigidBodyInWorld(btRigidBody& pRigidBody) const
 {
-	world->addRigidBody(&pRigidBody);
+    world->addRigidBody(&pRigidBody);
 }
 
 void WorldPhysics::RemoveRigidBodyFromWorld(btRigidBody& pRigidBody) const
 {
-	for (int i = 0; i < pRigidBody.getNumConstraintRefs(); i++)
-		GetInstance().GetWorld()->removeConstraint(pRigidBody.getConstraintRef(i));
+    for (int i = 0; i < pRigidBody.getNumConstraintRefs(); i++)
+        GetInstance().GetWorld()->removeConstraint(pRigidBody.getConstraintRef(i));
 
-	world->removeRigidBody(&pRigidBody);
+    world->removeRigidBody(&pRigidBody);
 }
 
 void WorldPhysics::UpdatePhysics(double pDeltaTime) const
 {
-	world->stepSimulation(static_cast<float>(pDeltaTime));
+    world->stepSimulation(static_cast<float>(pDeltaTime));
 }
 
 void WorldPhysics::DrawDebug() const
 {
-	world->debugDrawWorld();
+    world->debugDrawWorld();
 }
 
 void WorldPhysics::CheckCollision()
@@ -217,7 +249,7 @@ void WorldPhysics::CheckCollision()
 
 void WorldPhysics::TickCallBack(btDynamicsWorld* pWorld, btScalar pTimeStep)
 {
-	GetInstance().CheckCollision();
+    GetInstance().CheckCollision();
 }
 
 void WorldPhysics::RayCastDebugDraw(const lm::FVec3& pStart, const lm::FVec3& pEnd, const lm::FVec3& pColor, const RayCastDebug& pDrawProperties, float pTimer)
@@ -243,12 +275,12 @@ void WorldPhysics::RayCastDebugDraw(const lm::FVec3& pStart, const lm::FVec3& pE
 
 btDiscreteDynamicsWorld* WorldPhysics::GetWorld()
 {
-	return world;
+    return world;
 }
 
 WorldPhysics& WorldPhysics::GetInstance()
 {
-	static WorldPhysics physics;
+    static WorldPhysics physics;
 
-	return physics;
+    return physics;
 }

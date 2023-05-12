@@ -33,47 +33,49 @@ class WorldPhysics
 {
 public:
 
-	void InitPhysicWorld();
-	void DestroyPhysicWorld() const;
+    void InitPhysicWorld();
+    void DestroyPhysicWorld() const;
 
-	void ClearCollisionCache();
+    void ClearCollisionCache();
 
-	bool RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, 
-				 HitResult& pOutHit, const RayCastDebug pDrawProperties = RayCastDebug::None,
-				 float pTimer = -1, const std::vector<GameObject*>& pIgnoredObjects = {},
-				 const lm::FVec3& pRayColor = { 0,1,0 }, const lm::FVec3& pHitColor = { 1, 0, 0 }) const;
-      bool RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd,
-        HitResult& pOutHit, const RayCastDebug pDrawProperties,
-        float pTimer, const lm::FVec3& pRayColor, const lm::FVec3& pHitColor);
+    static bool RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd,
+        HitResult& pOutHit, const RayCastDebug pDrawProperties = RayCastDebug::None,
+        float pTimer = -1, const std::vector<GameObject*>& pIgnoredObjects = {},
+        const lm::FVec3& pRayColor = { 0,1,0 }, const lm::FVec3& pHitColor = { 1, 0, 0 });
 
-     bool RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit, const RayCastDebug pDrawProperties, float pTimer);
+    static bool RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit, const RayCastDebug pDrawProperties, float pTimer);
 
-     bool RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit);
+    static bool RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit);
 
+    static bool RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit, const RayCastDebug pDrawProperties, float pTimer, const lm::FVec3& pRayColor);
 
+    static bool RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit,
+        const RayCastDebug pDrawProperties, float pTimer, const lm::FVec3& pRayColor, const lm::FVec3& pHitColor);
 
-	void AddRigidBodyInWorld(btRigidBody& pRigidBody) const;
-	void RemoveRigidBodyFromWorld(btRigidBody& pRigidBody) const;
-	void UpdatePhysics(double pDeltaTime) const;
-	void DrawDebug() const;
+    static bool SimpleRayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit, const RayCastDebug pDrawProperties, float pTimer, const lm::FVec3& pRayColor);
 
-	btDiscreteDynamicsWorld* GetWorld();
+    void AddRigidBodyInWorld(btRigidBody& pRigidBody) const;
+    void RemoveRigidBodyFromWorld(btRigidBody& pRigidBody) const;
+    void UpdatePhysics(double pDeltaTime) const;
+    void DrawDebug() const;
 
-	static WorldPhysics& GetInstance();
+    btDiscreteDynamicsWorld* GetWorld();
+
+    static WorldPhysics& GetInstance();
 
 private:
 
-	static void TickCallBack(btDynamicsWorld* pWorld, btScalar pTimeStep);
-	void CheckCollision();
-	static void RayCastDebugDraw(const lm::FVec3& pStart, const lm::FVec3& pEnd, const lm::FVec3& pColor, const RayCastDebug& pDrawProperties, float pTimer);
+    static void TickCallBack(btDynamicsWorld* pWorld, btScalar pTimeStep);
+    void CheckCollision();
+    static void RayCastDebugDraw(const lm::FVec3& pStart, const lm::FVec3& pEnd, const lm::FVec3& pColor, const RayCastDebug& pDrawProperties, float pTimer);
 
-	using CollisionSet = std::set< std::tuple<btCollisionObject const*, btCollisionObject const*, btPersistentManifold const*>>;
-	CollisionSet lastTickCollisionPairs;
+    using CollisionSet = std::set< std::tuple<btCollisionObject const*, btCollisionObject const*, btPersistentManifold const*>>;
+    CollisionSet lastTickCollisionPairs;
 
-	btBroadphaseInterface* broadphase = nullptr;
-	btCollisionConfiguration* collisionConfiguration = nullptr;
-	btCollisionDispatcher* dispatcher = nullptr;
-	btSequentialImpulseConstraintSolver* solver = nullptr;
-	btDiscreteDynamicsWorld* world = nullptr;
-	DebugDrawer* debugDrawer = nullptr;
+    btBroadphaseInterface* broadphase = nullptr;
+    btCollisionConfiguration* collisionConfiguration = nullptr;
+    btCollisionDispatcher* dispatcher = nullptr;
+    btSequentialImpulseConstraintSolver* solver = nullptr;
+    btDiscreteDynamicsWorld* world = nullptr;
+    DebugDrawer* debugDrawer = nullptr;
 };

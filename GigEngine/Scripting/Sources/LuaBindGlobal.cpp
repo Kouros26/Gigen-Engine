@@ -39,13 +39,15 @@ void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
     luaState["Physics"]["RayCast"] = sol::overload
     (
         sol::resolve<bool(const lm::FVec3&, const lm::FVec3&, HitResult&,
-            const RayCastDebug, float, const std::vector<GameObject*>&, const lm::FVec3&, const lm::FVec3&)>(&WorldPhysics::RayCast),
+            const RayCastDebug, float, const std::vector<GameObject*>&, const lm::FVec3&, const lm::FVec3&) >(&WorldPhysics::RayCast),
+        sol::resolve<bool(const lm::FVec3&, const lm::FVec3&, HitResult&)>(&WorldPhysics::RayCast),
         sol::resolve<bool(const lm::FVec3&, const lm::FVec3&, HitResult&,
             const RayCastDebug, float)>(&WorldPhysics::RayCast),
         sol::resolve<bool(const lm::FVec3&, const lm::FVec3&, HitResult&,
-            const RayCastDebug, float, const lm::FVec3&, const lm::FVec3&)>(&WorldPhysics::RayCast),
-        sol::resolve<bool(const lm::FVec3&, const lm::FVec3&, HitResult&
-            )>(&WorldPhysics::RayCast)
+            const RayCastDebug, float, const lm::FVec3&)>(&WorldPhysics::RayCast),
+
+        sol::resolve<bool(const lm::FVec3&, const lm::FVec3&, HitResult&,
+            const RayCastDebug, float, const lm::FVec3&, const lm::FVec3&)>(&WorldPhysics::RayCast)
 
     );
 
