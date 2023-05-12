@@ -9,6 +9,13 @@ UIElement::UIElement(const std::string& name) : Object(name)
 {
 }
 
+UIElement::UIElement(UIElement& other)
+	: Object(other.GetName())
+{
+	transform = other.GetTransform();
+	color = other.GetColor();
+}
+
 UIElement::~UIElement()
 {
 }

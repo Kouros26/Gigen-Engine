@@ -58,7 +58,7 @@ void Window::ProcessInput() const
 	GigInput::Inputs::UpdateMousePosition();
 
 	//if (GigInput::Inputs::GetKey(GigInput::Keys::ESCAPE))
-		//here stop running in editor
+		//here stop running in editor ok
 }
 
 void Window::Close() const
@@ -157,6 +157,26 @@ unsigned int Window::GetHeight() const
 	return height;
 }
 
+unsigned int Window::GetVPWidth() const
+{
+	return vpWidth;
+}
+
+unsigned int Window::GetVPHeight() const
+{
+	return vpHeight;
+}
+
+unsigned int Window::GetVPX() const
+{
+	return vpPosx;
+}
+
+unsigned int Window::GetVPY() const
+{
+	return vpPosy;
+}
+
 bool Window::ShouldClose() const
 {
 	return glfwWindowShouldClose(window);
@@ -179,18 +199,14 @@ float Window::GetViewPortRatio() const
 
 void Window::SetViewPort(unsigned int pX, unsigned int pY, unsigned int pWidth, unsigned int pHeight)
 {
+	if (pX == vpPosx && pY == vpPosy && pWidth == vpWidth && pHeight == vpHeight) return;
+
 	RENDERER.ViewPort(pX, pY, pWidth, pHeight);
 
-	GigInput::Mouse m = GigInput::Inputs::GetMouse();
-
-	GigInput::Inputs::SetMouseIsOnViewPort(false);
-	if (m.x > pX && m.x < pX + pWidth)
-	{
-		if (m.y > height - (pY + pHeight) && m.y < height - pY)
-		{
-			GigInput::Inputs::SetMouseIsOnViewPort(true);
-		}
-	}
+	vpPosx = pX;
+	vpPosy = pY;
+	vpWidth = pWidth;
+	vpHeight = pHeight;
 
 	viewPortRatio = static_cast<float>(pWidth) / static_cast<float>(pHeight);
 	Application::GetEditorCamera().SetRatio(viewPortRatio);

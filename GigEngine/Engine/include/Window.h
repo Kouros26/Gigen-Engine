@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-
 #include <GLFW/glfw3.h>
 
 enum class CursorShape
@@ -27,6 +26,11 @@ public:
 	[[nodiscard]] unsigned int GetWidth() const;
 	[[nodiscard]] unsigned int GetHeight() const;
 
+	[[nodiscard]] unsigned int GetVPWidth() const;
+	[[nodiscard]] unsigned int GetVPHeight() const;
+	[[nodiscard]] unsigned int GetVPX() const;
+	[[nodiscard]] unsigned int GetVPY() const;
+
 	[[nodiscard]] bool ShouldClose() const;
 	[[nodiscard]] GLFWwindow* GetGLFWWindow() const;
 	std::string& GetGLSLVersion();
@@ -45,6 +49,11 @@ private:
 
 	unsigned int width = 0;
 	unsigned int height = 0;
+
+	unsigned int vpWidth = 0;
+	unsigned int vpHeight = 0;
+	unsigned int vpPosx = 0;
+	unsigned int vpPosy = 0;
 
 	float viewPortRatio = 1;
 

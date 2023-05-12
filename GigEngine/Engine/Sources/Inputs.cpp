@@ -2,13 +2,23 @@
 #include "Application.h"
 void GigInput::Inputs::UpdateMousePosition()
 {
-	Application::GetWindow().getCursorPosition(mouse.x, mouse.y);
+	Window& window = Application::GetWindow();
+	window.getCursorPosition(mouse.x, mouse.y);
 
 	mouse.mouseOffsetX = mouse.x - mouse.lastX;
 	mouse.mouseOffsetY = mouse.y - mouse.lastY;
 
 	mouse.lastX = mouse.x;
 	mouse.lastY = mouse.y;
+
+	mouse.isOnViewPort = false;
+	if (mouse.x > window.GetVPX() && mouse.x < window.GetVPX() + window.GetVPWidth())
+	{
+		if (mouse.y > window.GetHeight() - (window.GetVPY() + window.GetVPHeight()) && mouse.y < window.GetHeight() - window.GetVPY())
+		{
+			mouse.isOnViewPort = true;
+		}
+	}
 }
 
 bool GigInput::Inputs::GetKey(const GigInput::Keys& pKey)
@@ -66,9 +76,4 @@ void GigInput::Inputs::UpdateMouseButton(int button, int action)
 void GigInput::Inputs::UpdateMouseWheelOffset(double offset)
 {
 	mouse.wheelOffsetY = offset;
-}
-
-void GigInput::Inputs::SetMouseIsOnViewPort(bool b)
-{
-	mouse.isOnViewPort = b;
 }

@@ -4,7 +4,7 @@ RectTransform::RectTransform()
 {
 	SetSize({ 0.1f,0.1f });
 	SetPosition({ 0,0 });
-	matrix = lm::FMat4::Transform({ position.x, position.y, 0 }, { 0, 0, rotation }, { scale.x, scale.y, 0 });
+	matrix = lm::FMat4::Transform({ position.x, position.y, 0 }, { rotation, 0, 0 }, { scale.x, scale.y, 0 });
 }
 
 RectTransform::~RectTransform()
@@ -64,7 +64,7 @@ float RectTransform::GetRotation()
 
 lm::FMat4& RectTransform::getMatrix()
 {
-	if (hasChanged) 
+	if (hasChanged)
 	{
 		matrix = lm::FMat4::Transform({ position.x, position.y, 0 }, { rotation, 0, 0 }, { scale.x, scale.y, 0 });
 		hasChanged = false;

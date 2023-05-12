@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "Mat4/FMat4.hpp"
 #include "Vec3/FVec3.hpp"
+#include "Application.h"
 #include "GameObjectManager.h"
 
 using namespace GigRenderer;
@@ -35,9 +36,7 @@ void UIManager::Init()
 void UIManager::AddImageElement()
 {
 	UIImage* img = new UIImage();
-	img->SetTexture("Engine/Textures/ok.png");
-	img->SetColor(lm::FVec3(1, 1, 0));
-	elements.push_back(img);
+	AddUIElement(img);
 }
 
 void UIManager::AddTextElement()
@@ -53,11 +52,14 @@ void UIManager::DrawUI()
 
 	for (UIElement* elem : elements)
 	{
-		RENDERER.SetUniformValue(MODELLocation, UniformType::MAT4, &elem->GetTransform().getMatrix());
+		if (elem->IsActive())
+		{
+			RENDERER.SetUniformValue(MODELLocation, UniformType::MAT4, &elem->GetTransform().getMatrix());
 
-		RENDERER.SetUniformValue(COLORLocation, UniformType::VEC3, &elem->GetColor());
+			RENDERER.SetUniformValue(COLORLocation, UniformType::VEC3, &elem->GetColor());
 
-		elem->Draw();
+			elem->Draw();
+		}
 	}
 
 	shaderProgram.UnUse();
@@ -99,4 +101,17 @@ void UIManager::RemoveElement(UIElement* elem)
 	elements.erase(it);
 
 	elem->~UIElement();
+}
+
+UIElement* UIManager::CreateUIElement(UIElement* elem)
+{
+	const auto newElem = new UIElement(*elem);
+
+	return AddUIElement(newElem);
+}
+
+UIElement* UIManager::AddUIElement(UIElement* elem)
+{
+	elements.push_back(elem);
+	return elem;
 }

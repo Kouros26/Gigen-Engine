@@ -91,7 +91,6 @@ void HierarchyDisplay::DisplayUIElement(UIElement & element)
 	}
 
 	ImGui::PushID(element.GetId());
-	ImGui::PopID();
 
 	if (ImGui::IsItemClicked(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
 	{
@@ -109,9 +108,14 @@ void HierarchyDisplay::DisplayUIElement(UIElement & element)
 		{
 			UIManager::RemoveElement(&element);
 		}
+		if (ImGui::MenuItem(ICON_CLONE " Clone"))
+		{
+			UIManager::CreateUIElement(&element);
+		}
 		ImGui::EndPopup();
 	}
 
+	ImGui::PopID();
 	ImGui::TreePop();
 }
 
@@ -230,10 +234,11 @@ void HierarchyDisplay::DisplayGameObject(GameObject & obj, bool isChild)
 	}
 
 	ImGui::PushID(obj.GetId());
-	ImGui::PopID();
 
 	GameObjectClicked(obj);
 	GameObjectPopUp(obj);
+
+	ImGui::PopID();
 
 	if (ImGui::BeginDragDropSource())
 	{

@@ -3,6 +3,8 @@
 #include <string>
 
 class GameObject;
+class UIElement;
+class UIImage;
 class Camera;
 class RigidBody;
 
@@ -16,7 +18,12 @@ public:
 	void Draw() override;
 
 private:
-	void DrawGameObject();
+	void DrawObject();
+	void DrawGameObject(GameObject* pObject) const;
+
+	void DrawUIElement(UIElement* pUI) const;
+	void DrawTransform2D(UIElement* pUI) const;
+	void DrawDropTargetImage(UIImage* pImage) const;
 
 	void DrawTransform(GameObject* pObject) const;
 	void DrawModel(GameObject* pObject) const;

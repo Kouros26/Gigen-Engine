@@ -21,11 +21,12 @@ public:
 	static UIElement* GetFocusedElement();
 
 	static void RemoveElement(UIElement* elem);
+	static UIElement* CreateUIElement(UIElement* elem);
+	static UIElement* AddUIElement(UIElement* elem);
 
 private:
 	inline static UIElement* focusedElement = nullptr;
 	inline static std::vector<UIElement*> elements;
-	inline static unsigned int PROJLocation;
 	inline static unsigned int MODELLocation;
 	inline static unsigned int COLORLocation;
 	inline static ShaderProgram shaderProgram;

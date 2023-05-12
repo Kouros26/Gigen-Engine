@@ -7,6 +7,7 @@ class UIElement : public Object
 public:
 	UIElement();
 	UIElement(const std::string& name);
+	UIElement(UIElement& other);
 	virtual ~UIElement() override;
 
 	virtual void Draw();
