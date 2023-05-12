@@ -1,7 +1,10 @@
 #include <GLAD/glad.h>
 #include "Renderer.h"
+#include "Font.h"
 #include "GLFW/glfw3.h"
 #include <iostream>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 using namespace GigRenderer;
 
@@ -37,6 +40,11 @@ void Renderer::DeleteBuffer(int n, const unsigned int* pBuffer)
 void Renderer::BindVertexArray(const unsigned int pArray)
 {
 	glBindVertexArray(pArray);
+}
+
+void GigRenderer::Renderer::BufferSubData(BufferType pType, int n, int size, float f[][4])
+{
+	glBufferSubData(GL_ARRAY_BUFFER, n, size, f);
 }
 
 void Renderer::BindBuffer(unsigned int pTarget, unsigned int pBuffer)
@@ -417,4 +425,77 @@ bool GigRenderer::Renderer::LinkShader(unsigned int& pProgram, unsigned int& pVe
 	}
 
 	return true;
+}
+
+void GigRenderer::Renderer::LoadFont(Font* f)
+{
+	FT_Library ft;
+	if (FT_Init_FreeType(&ft))
+	{
+		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+		return;
+	}
+
+	FT_Face face;
+	if (FT_New_Face(ft, f->GetFilePath().c_str(), 0, &face))
+	{
+		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+		return;
+	}
+
+	FT_Set_Pixel_Sizes(face, 0, 48);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
+
+	for (unsigned int c = 0; c < 128; c++)
+	{
+		// load character glyph
+		if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+		{
+			std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+			continue;
+		}
+		// generate texture
+		unsigned int texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			GL_RED,
+			face->glyph->bitmap.width,
+			face->glyph->bitmap.rows,
+			0,
+			GL_RED,
+			GL_UNSIGNED_BYTE,
+			face->glyph->bitmap.buffer
+		);
+		// set texture options
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// now store character for later use
+		Character character = {
+			texture,
+			lm::FVec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+			lm::FVec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+			face->glyph->advance.x
+		};
+
+		f->AddCharacter(std::pair<char, Character>(c, character));
+	}
+
+	glGenVertexArrays(1, &f->GetVAO());
+	glGenBuffers(1, &f->GetVBO());
+	glBindVertexArray(f->GetVAO());
+	glBindBuffer(GL_ARRAY_BUFFER, f->GetVBO());
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	FT_Done_Face(face);
+	FT_Done_FreeType(ft);
 }

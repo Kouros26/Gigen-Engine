@@ -146,7 +146,7 @@ void Application::Init()
 	InitMainShader();
 
 	//to remove
-	UIManager::AddImageElement();
+	UIManager::AddTextElement();
 }
 
 void Application::InitMainShader()

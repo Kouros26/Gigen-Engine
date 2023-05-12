@@ -27,7 +27,4 @@ public:
 private:
 	inline static UIElement* focusedElement = nullptr;
 	inline static std::vector<UIElement*> elements;
-	inline static unsigned int MODELLocation;
-	inline static unsigned int COLORLocation;
-	inline static ShaderProgram shaderProgram;
 };

@@ -2,6 +2,7 @@
 #include "GameObjectInspector.h"
 #include "UIManager.h"
 #include "UIImage.h"
+#include "UIText.h"
 #include "InterfaceManager.h"
 #include "ToolsDisplay.h"
 #include "imgui.h"
@@ -84,6 +85,7 @@ void GameObjectInspector::DrawObject()
 	else
 	{
 		DrawUIElement(dynamic_cast<UIElement*>(object));
+		DrawUIText(dynamic_cast<UIText*>(object));
 		DrawDropTargetImage(dynamic_cast<UIImage*>(object));
 	}
 }
@@ -167,6 +169,37 @@ void GameObjectInspector::DrawDropTargetImage(UIImage * pImage) const
 				str.find(".jpeg") != std::string::npos)
 			{
 				pImage->SetTexture(path);
+			}
+		}
+
+		ImGui::EndDragDropTarget();
+	}
+}
+
+void GameObjectInspector::DrawUIText(UIText * pText) const
+{
+	if (!pText) return;
+
+	static char text[250];
+	strcpy_s(text, pText->GetText().c_str());
+
+	if (ImGui::InputText("##6", text, 250))
+	{
+		pText->SetText(text);
+	}
+
+	ImGui::BeginChild("##");
+	ImGui::EndChild();
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+		{
+			const char* path = static_cast<const char*>(payload->Data);
+			const std::string str(path);
+			if (str.find(".ttf") != std::string::npos)
+			{
+				pText->SetFont(path);
 			}
 		}
 

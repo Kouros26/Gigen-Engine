@@ -5,6 +5,7 @@
 class GameObject;
 class UIElement;
 class UIImage;
+class UIText;
 class Camera;
 class RigidBody;
 
@@ -24,6 +25,7 @@ private:
 	void DrawUIElement(UIElement* pUI) const;
 	void DrawTransform2D(UIElement* pUI) const;
 	void DrawDropTargetImage(UIImage* pImage) const;
+	void DrawUIText(UIText* pText) const;
 
 	void DrawTransform(GameObject* pObject) const;
 	void DrawModel(GameObject* pObject) const;

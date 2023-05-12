@@ -192,6 +192,11 @@ std::string& Window::GetGLSLVersion()
 	return version;
 }
 
+lm::FMat4& Window::GetOrthoMatrix()
+{
+	return orthoMatrix;
+}
+
 float Window::GetViewPortRatio() const
 {
 	return viewPortRatio;
@@ -207,6 +212,8 @@ void Window::SetViewPort(unsigned int pX, unsigned int pY, unsigned int pWidth, 
 	vpPosy = pY;
 	vpWidth = pWidth;
 	vpHeight = pHeight;
+
+	orthoMatrix = lm::FMat4::Orthographic(0, pWidth, 0, pHeight, 0, 1);
 
 	viewPortRatio = static_cast<float>(pWidth) / static_cast<float>(pHeight);
 	Application::GetEditorCamera().SetRatio(viewPortRatio);
