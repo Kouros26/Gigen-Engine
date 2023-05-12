@@ -88,6 +88,11 @@ void Application::Stop()
 	isEditor = true;
 }
 
+void Application::ShowUI()
+{
+	showUI = !showUI;
+}
+
 void Application::UseEditorCam()
 {
 	useEditorCam = !useEditorCam;
@@ -104,6 +109,10 @@ bool Application::IsInPause()
 bool Application::IsUsingEditorCam()
 {
 	return useEditorCam;
+}
+bool Application::IsShowUI()
+{
+	return showUI;
 }
 void Application::StartGame()
 {
@@ -197,7 +206,9 @@ void Application::Draw()
 	mainShader.UnUse(); //stop using the main shader
 
 	Lines::DrawLines(); //render debug lines or guizmos
-	UIManager::DrawUI(); // render UI
+
+	if (showUI)
+		UIManager::DrawUI(); // render UI
 }
 
 void Application::ClearWindow()
