@@ -40,15 +40,15 @@ protected:
     RigidBodyType rbType{};
     btScalar mass{};
     lm::FVec3 scale;
-    bool gravity;
 
 public:
 
     RigidBody(GameObject* pOwner);
     ~RigidBody();
 
-    void SetRBState(const RBState& pState) const;
-    void SetMotionState(CustomMotionState* pMotionState);
+	void SetRBState(const RBState& pState) const;
+	void RemoveRBState(const RBState& pState) const;
+	void SetMotionState(CustomMotionState* pMotionState);
 
     void SetRigidBodyPosition(const lm::FVec3& pNewPosition);
     void SetRigidBodyRotation(const lm::FVec3& pNewRotation);
@@ -89,10 +89,12 @@ public:
     [[nodiscard]] CollisionCallBacks* GetCallBacks() const;
     RigidBodyType& GetShapeType();
     btScalar& GetMass();
+    int GetCollisionFlag() const;
     const lm::FVec3& GetScale();
+    btTransform GetTransfrom() const;
     void SetMass(const float pValue);
-    void SetScale(const lm::FVec3& pNewScale);
-    void SetGravityEnabled(const bool pState);
+	void SetScale(const lm::FVec3& pNewScale);
+    void SetGravityEnabled(const bool pState) const;
     void ClearForces() const;
     void SetGravity(const lm::FVec3& pValue) const;
     [[nodiscard]] lm::FVec3 GetGravity() const;

@@ -11,6 +11,7 @@
 #include "SphereRigidBody.h"
 #include "Texture.h"
 #include "Behaviour.h"
+#include "WorldPhysics.h"
 
 void ProcessedObject::Clear()
 {
@@ -143,13 +144,21 @@ void Scene::LoadScene(const std::string& pSceneName)
 	}
 
 	for (const auto& i : parentChildMemory)
-		GameObjectManager::FindObjectByName(i.first)->AddChild(GameObjectManager::FindObjectByName(i.second));
+		GameObjectManager::FindObjectByName(i.first)->AddChild(*GameObjectManager::FindObjectByName(i.second));
+
+	currentScene = pSceneName;
 }
 
 void Scene::ReloadScene(const std::string& pSceneName)
 {
+	WorldPhysics::GetInstance().ClearCollisionCache();
 	GameObjectManager::Cleanup();
 	LoadScene(pSceneName);
+}
+
+std::string& Scene::GetCurrentSceneName()
+{
+	return currentScene;
 }
 
 void Scene::GetValues(GameObject* pGameObject)

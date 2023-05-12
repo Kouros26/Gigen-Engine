@@ -10,6 +10,7 @@ set(THIRD_PARTY_DLL
 	${DEPENDS_DIR}/assimp/bin/assimp-vc143-mt.dll
 	${DEPENDS_DIR}/assimp/bin/assimp-vc143-mtd.dll
 	${DEPENDS_DIR}/Lua/bin/lua53.dll
+	${DEPENDS_DIR}/FREETYPE/freetype.dll
 
 )
 
@@ -60,7 +61,7 @@ STB
 IMGUI
 Lua
 BULLET
-
+FREETYPE
 )
 
 include_directories(${MAIN_PROJECT_NAME} PRIVATE ${glfw_SOURCE_DIR}/include)
@@ -104,7 +105,6 @@ target_include_directories(${MAIN_PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE_DIR})
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${THIRD_PARTY_PROJECT})
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE glfw)
 target_link_libraries(${MAIN_PROJECT_NAME} PRIVATE ${LIBMATHS_LIBRARY})
-
 
 
 set_target_properties(${MAIN_PROJECT_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/$(Configuration))

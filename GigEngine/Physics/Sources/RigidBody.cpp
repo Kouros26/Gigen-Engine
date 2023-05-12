@@ -8,8 +8,12 @@ RigidBody::RigidBody(GameObject* pOwner)
 
 RigidBody::~RigidBody()
 {
-    WorldPhysics::RemoveRigidBodyFromWorld(body);
+    WorldPhysics::GetInstance().RemoveRigidBodyFromWorld(*body);
+
+    owner = nullptr;
     delete body;
+    delete collisionCallBacks;
+    delete rbShape;
 }
 
 void RigidBody::SetRBState(const RBState& pState) const
@@ -222,7 +226,7 @@ void RigidBody::AddImpulse(const lm::FVec3& pValue) const
 
 bool RigidBody::IsGravityEnabled() const
 {
-    return body->getGravity().length() > 0;
+    return body->getGravity() != btVector3({ 0,0,0 });
 }
 
 btRigidBody* RigidBody::GetRigidBody() const
@@ -255,14 +259,32 @@ btScalar& RigidBody::GetMass()
     return mass;
 }
 
+int RigidBody::GetCollisionFlag() const
+{
+	switch (body->getCollisionFlags())
+	{
+	case btCollisionObject::CF_KINEMATIC_OBJECT:
+		return static_cast<int>(RBState::KINETIC);
+	case btCollisionObject::CF_STATIC_OBJECT:
+		return static_cast<int>(RBState::STATIC);
+	default: 
+        return static_cast<int>(RBState::DYNAMIC);
+	}
+}
+
 const lm::FVec3& RigidBody::GetScale()
 {
     return scale;
 }
 
-void RigidBody::SetMass(const float pValue)
+btTransform RigidBody::GetTransfrom() const
 {
-    mass = pValue;
+	return transform;
+}
+
+void RigidBody::SetMass(btScalar pMass)
+{
+	mass = pMass;
 }
 
 void RigidBody::SetScale(const lm::FVec3& pNewScale)
@@ -271,15 +293,13 @@ void RigidBody::SetScale(const lm::FVec3& pNewScale)
     rbShape->setLocalScaling({ pNewScale.x, pNewScale.y, pNewScale.z });
 }
 
-void RigidBody::SetGravityEnabled(const bool pState)
+void RigidBody::SetGravityEnabled(const bool pState) const
 {
     if (!pState)
         body->setGravity({ 0,0,0, });
 
     else
         body->setGravity({ 0,-9.81f,0, });
-
-    gravity = pState;
 }
 
 void RigidBody::ClearForces() const
@@ -296,6 +316,6 @@ void RigidBody::SetGravity(const lm::FVec3& pValue) const
 
 lm::FVec3 RigidBody::GetGravity() const
 {
-    btVector3 gravity = body->getGravity();
-    return lm::FVec3(gravity.x(), gravity.y(), gravity.z());
+	const btVector3 gravity = body->getGravity();
+    return {gravity.x(), gravity.y(), gravity.z()};
 }

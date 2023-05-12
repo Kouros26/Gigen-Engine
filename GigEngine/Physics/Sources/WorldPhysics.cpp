@@ -26,7 +26,7 @@ void WorldPhysics::InitPhysicWorld()
     world->setInternalTickCallback(TickCallBack, world);
 }
 
-void WorldPhysics::DestroyPhysicWorld()
+void WorldPhysics::DestroyPhysicWorld() const
 {
     delete world;
     delete solver;
@@ -36,7 +36,12 @@ void WorldPhysics::DestroyPhysicWorld()
     delete debugDrawer;
 }
 
-bool WorldPhysics::RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit, RayCastDebug pDrawProperties, float pTimer, const std::vector<GameObject*>& pIgnoredObjects, const lm::FVec3& pRayColor, const lm::FVec3& pHitColor)
+void WorldPhysics::ClearCollisionCache()
+{
+	lastTickCollisionPairs.clear();
+}
+
+bool WorldPhysics::RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitResult& pOutHit, RayCastDebug pDrawProperties, float pTimer, const std::vector<GameObject*>& pIgnoredObjects, const lm::FVec3& pRayColor, const lm::FVec3& pHitColor) const
 {
     const btVector3 rayFrom(pStart.x, pStart.y, pStart.z);
     const btVector3 rayTo(pEnd.x, pEnd.y, pEnd.z);
@@ -107,30 +112,27 @@ bool WorldPhysics::RayCast(const lm::FVec3& pStart, const lm::FVec3& pEnd, HitRe
     return RayCast(pStart, pEnd, pOutHit, RayCastDebug::None, -1, emptyVector);
 }
 
-void WorldPhysics::AddRigidBodyInWorld(btRigidBody* pRigidBody)
+void WorldPhysics::AddRigidBodyInWorld(btRigidBody& pRigidBody) const
 {
-    world->addRigidBody(pRigidBody);
+	world->addRigidBody(&pRigidBody);
 }
 
-void WorldPhysics::RemoveRigidBodyFromWorld(btRigidBody* pRigidBody)
+void WorldPhysics::RemoveRigidBodyFromWorld(btRigidBody& pRigidBody) const
 {
-    world->removeRigidBody(pRigidBody);
+	for (int i = 0; i < pRigidBody.getNumConstraintRefs(); i++)
+		GetInstance().GetWorld()->removeConstraint(pRigidBody.getConstraintRef(i));
+
+	world->removeRigidBody(&pRigidBody);
 }
 
-void WorldPhysics::UpdatePhysics(double pDeltaTime)
+void WorldPhysics::UpdatePhysics(double pDeltaTime) const
 {
-    if (world)
-    {
-        world->stepSimulation(static_cast<float>(pDeltaTime));
-    }
+	world->stepSimulation(static_cast<float>(pDeltaTime));
 }
 
-void WorldPhysics::DrawDebug()
+void WorldPhysics::DrawDebug() const
 {
-    if (world)
-    {
-        world->debugDrawWorld();
-    }
+	world->debugDrawWorld();
 }
 
 void WorldPhysics::CheckCollision()
@@ -215,7 +217,7 @@ void WorldPhysics::CheckCollision()
 
 void WorldPhysics::TickCallBack(btDynamicsWorld* pWorld, btScalar pTimeStep)
 {
-    CheckCollision();
+	GetInstance().CheckCollision();
 }
 
 void WorldPhysics::RayCastDebugDraw(const lm::FVec3& pStart, const lm::FVec3& pEnd, const lm::FVec3& pColor, const RayCastDebug& pDrawProperties, float pTimer)
@@ -241,5 +243,12 @@ void WorldPhysics::RayCastDebugDraw(const lm::FVec3& pStart, const lm::FVec3& pE
 
 btDiscreteDynamicsWorld* WorldPhysics::GetWorld()
 {
-    return world;
+	return world;
+}
+
+WorldPhysics& WorldPhysics::GetInstance()
+{
+	static WorldPhysics physics;
+
+	return physics;
 }

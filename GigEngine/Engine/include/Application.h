@@ -29,7 +29,6 @@ public:
 
 private:
 
-	static inline std::string defaultScene = "default.chad";
 	static inline Window window;
 	static inline EditorCamera editorCamera;
 
@@ -54,8 +53,8 @@ private:
 	void Draw();
 	void ClearWindow();
 	void UpdateGameObjectComponent();
-	void UpdateGameObjectRender();
-	void UpdateLights();
+	void UpdateGameObjectRender() const;
+	void UpdateLights() const;
 	void UpdateUniforms() const;
 
 	static void StartGame();

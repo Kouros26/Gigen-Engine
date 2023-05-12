@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "Application.h"
+#include "SceneSaver.h"
 
 MenuBarDisplay::MenuBarDisplay()
 {
@@ -32,7 +33,7 @@ void MenuBarDisplay::Draw()
 	}
 	if (ImGui::Button(ICON_SAVE)) 
 	{
-		//save
+		Scene::SaveScene(Scene::GetCurrentSceneName());
 	}
 
 	DrawPlayPause();
@@ -50,7 +51,7 @@ void MenuBarDisplay::Draw()
 	ImGui::EndMainMenuBar();
 }
 
-void MenuBarDisplay::DrawPlayPause()
+void MenuBarDisplay::DrawPlayPause() const
 {
 	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() / 2 - 75);
 

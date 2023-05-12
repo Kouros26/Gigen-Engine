@@ -8,6 +8,8 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Texture.h"
+#include "CapsuleRigidBody.h"
+#include "SphereRigidBody.h"
 #include "ResourceManager.h"
 #include "GameObjectManager.h"
 #include <Windows.h>
@@ -66,6 +68,9 @@ void GameObjectInspector::DrawGameObject()
 
 	DrawTransform(object);
 	DrawSpecials(object);
+
+	if (object->GetRigidBody())
+		DrawRigidBody(object);
 
 	if (object->GetModel())
 		DrawModel(object);
@@ -140,7 +145,7 @@ void GameObjectInspector::DrawModel(GameObject* pObject) const
 
 		if (ImGui::Button("Locate##1"))
 		{
-			const std::string& filePath = GetFilePathFromExplorer("3D object \0 *.obj\0 *.OBJ\0 *.fbx\0 *.FBX\0");
+			const std::string& filePath = GetFilePathFromExplorer("3D object \0 *.obj; *.OBJ; *.fbx; *.FBX\0");
 
 			if (filePath.length() > 0)
 				pObject->SetModel(filePath);
@@ -155,6 +160,8 @@ void GameObjectInspector::DrawModel(GameObject* pObject) const
 
 void GameObjectInspector::DrawTexture(GameObject* pObject) const
 {
+	ImGui::SetCursorPosX(30);
+	ImGui::BeginGroup();
 	if (ImGui::CollapsingHeader(ICON_TEXTURE " Texture"))
 	{
 		std::string path;
@@ -168,15 +175,136 @@ void GameObjectInspector::DrawTexture(GameObject* pObject) const
 
 		if (ImGui::Button("Locate##2"))
 		{
-			const std::string& filePath = GetFilePathFromExplorer("image \0 *.png\0 *.jpeg\0 *.jpg\0");
+			const std::string& filePath = GetFilePathFromExplorer("image \0 *.png; *.jpeg; *.jpg\0");
 
 			if (filePath.length() > 0)
 				pObject->SetTexture(filePath);
 		}
 	}
+	ImGui::EndGroup();
 }
 
-void GameObjectInspector::DrawSpecials(GameObject* pObject) const
+void GameObjectInspector::DrawRigidBody(GameObject* pObject) const
+{
+	if (ImGui::CollapsingHeader("RigidBody"))
+	{
+		if (ImGui::IsItemClicked(1))
+		{
+			ImGui::OpenPopup("RigidPopUp");
+		}
+
+		if (ImGui::BeginPopup("RigidPopUp"))
+		{
+			ImGui::SeparatorText("RigidBody");
+			if (ImGui::MenuItem("Remove"))
+			{
+				pObject->RemoveRigidBody();
+			}
+			ImGui::EndPopup();
+			if (!pObject->GetRigidBody())
+			{
+				return;
+			}
+		}
+
+		RigidBody* rigid = pObject->GetRigidBody();
+
+		ImGui::Text("Mass"); ImGui::SameLine();
+		btScalar mass = rigid->GetMass();
+		if (ImGui::DragFloat("##18", &mass, g_maxStep, 0, g_floatMax, g_floatFormat))
+		{
+			rigid->SetMass(mass);
+		}
+
+		ImGui::Text("Gravity"); ImGui::SameLine();
+		bool grav = rigid->IsGravityEnabled();
+		ImGui::Checkbox("##19", &grav);
+		if (grav != rigid->IsGravityEnabled())
+		{
+			rigid->SetGravityEnabled(grav);
+		}
+
+		ImGui::Text("Collision type"); ImGui::SameLine();
+		const char* items[] = { "Dynamic", "Kinetic", "Static" };
+		int item_current = rigid->GetCollisionFlag();
+		ImGui::Combo("##20", &item_current, items, IM_ARRAYSIZE(items));
+		if (item_current != rigid->GetCollisionFlag())
+		{
+			rigid->SetRBState(static_cast<RBState>(item_current));
+		}
+
+		DrawRigidShape(rigid);
+	}
+}
+
+void GameObjectInspector::DrawRigidShape(RigidBody * body) const
+{
+	ImGui::SetCursorPosX(30);
+	ImGui::BeginGroup();
+	if (ImGui::CollapsingHeader("Shape"))
+	{
+		if (body->GetShapeType() == RigidBodyType::CAPSULE)
+		{
+			const auto caps = static_cast<CapsuleRigidBody*>(body);
+			float radius = caps->GetRadius();
+			float height = caps->GetHeight();
+
+			ImGui::Text("Radius"); ImGui::SameLine();
+			if (ImGui::DragFloat("##21", &radius, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
+			{
+				caps->SetRadius(radius);
+			}
+			ImGui::Text("Height"); ImGui::SameLine();
+			if (ImGui::DragFloat("##22", &height, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
+			{
+				caps->SetHeight(height);
+			}
+		}
+		else if (body->GetShapeType() == RigidBodyType::SPHERE)
+		{
+			const auto sphere = static_cast<SphereRigidBody*>(body);
+			float radius = sphere->GetRadius();
+
+			ImGui::Text("Radius"); ImGui::SameLine();
+			if (ImGui::DragFloat("##23", &radius, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
+			{
+				sphere->SetRadius(radius);
+			}
+		}
+	}
+
+	if (ImGui::CollapsingHeader("Transform##2"))
+	{
+		//float rotation[3];
+		//body->GetTransfrom().getRotation().getEulerZYX((btScalar&)rotation[2], (btScalar&)rotation[1], (btScalar&)rotation[0]);
+
+		//btVector3 btPos = body->GetTransfrom().getOrigin();
+		//float translation[3] = { btPos.getX(), btPos.getY(), btPos.getZ() };
+
+		float scale[3] = { body->GetScale().x, body->GetScale().y, body->GetScale().z };
+
+		//ImGui::Text("Position"); ImGui::SameLine();
+		//if (ImGui::DragFloat3("##21", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+		//{
+		//	body->SetRigidBodyPosition(lm::FVec3(translation[0], translation[1], translation[2]));
+		//}
+
+		ImGui::Text("Scale"); ImGui::SameLine();
+		if (ImGui::DragFloat3("##22", scale, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
+		{
+			body->SetRigidBodyScale(lm::FVec3(scale[0], scale[1], scale[2]));
+		}
+
+		//ImGui::Text("Rotation"); ImGui::SameLine();
+		//if (ImGui::DragFloat3("##23", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
+		//{
+		//	body->SetRigidBodyRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
+		//}
+	}
+	ImGui::EndGroup();
+}
+
+void GameObjectInspector::DrawSpecials(GameObject * pObject) const
 {
 	if (auto light = dynamic_cast<DirLight*>(pObject))
 	{
@@ -188,7 +316,7 @@ void GameObjectInspector::DrawSpecials(GameObject* pObject) const
 		DrawCamera(cam);
 }
 
-void GameObjectInspector::DrawComponents(GameObject* pObject)
+void GameObjectInspector::DrawComponents(GameObject* pObject) const
 {
 	std::vector<GigScripting::Behaviour*> scripts;
 	pObject->GetComponents<GigScripting::Behaviour>(scripts);
@@ -231,7 +359,7 @@ void GameObjectInspector::DrawComponents(GameObject* pObject)
 	scripts.clear();
 }
 
-void GameObjectInspector::DrawLight(GameObject* pObject) const
+void GameObjectInspector::DrawLight(GameObject * pObject) const
 {
 	const auto dirlight = dynamic_cast<DirLight*>(pObject);
 	if (ImGui::CollapsingHeader(ICON_LIGHT " Light"))
@@ -339,8 +467,8 @@ void GameObjectInspector::DrawAddComponent(GameObject* pObject) const
 {
 	const ImGuiStyle& style = ImGui::GetStyle();
 
-	float size = ImGui::CalcTextSize("Add component " ICON_PLUS).x + style.FramePadding.x * 2.0f;
-	float avail = ImGui::GetContentRegionAvail().x;
+	const float size = ImGui::CalcTextSize("Add component " ICON_PLUS).x + style.FramePadding.x * 2.0f;
+	const float avail = ImGui::GetContentRegionAvail().x;
 
 	const float off = (avail - size) * 0.5f;
 	if (off > 0.0f)
@@ -362,8 +490,20 @@ void GameObjectInspector::DrawAddComponent(GameObject* pObject) const
 			}
 		}
 
-		if (ImGui::MenuItem(ICON_RIGIDBODY " RigidBody"))
+		if (!pObject->GetRigidBody())
 		{
+			if (ImGui::MenuItem("RigidBody Capsule"))
+			{
+				pObject->CreateCapsuleRigidBody(1, 2, { 1 }, 1);
+			}
+			if (ImGui::MenuItem("RigidBody Cube"))
+			{
+				pObject->CreateBoxRigidBody({ 1 }, { 1 }, 1);
+			}
+			if (ImGui::MenuItem("RigidBody Sphere"))
+			{
+				pObject->CreateSphereRigidBody(1, { 1 }, 1);
+			}
 		}
 
 		if (ImGui::MenuItem(ICON_COMPONENT " Scripts"))
