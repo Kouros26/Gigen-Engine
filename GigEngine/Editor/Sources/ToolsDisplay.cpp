@@ -12,8 +12,8 @@
 ToolsDisplay::ToolsDisplay()
 {
     InterfaceManager::AddEditorElement(this);
-	InterfaceManager::AddEditorElement(this);
-	currentDirPath = rootDirPath;
+    InterfaceManager::AddEditorElement(this);
+    currentDirPath = rootDirPath;
 }
 
 ToolsDisplay::~ToolsDisplay()
@@ -46,87 +46,86 @@ void ToolsDisplay::Draw()
         }
         if (ImGui::BeginTabItem("Profiler"))
         {
-            DrawProfiler();
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
     }
-	if (ImGui::BeginTabBar("MyTabBar"))
-	{
-		if (ImGui::BeginTabItem("Explorer"))
-		{
-			DrawExplorer();
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Console"))
-		{
-			DrawConsole();
-			ImGui::EndTabItem();
-		}
-		ImGui::EndTabBar();
-	}
+    if (ImGui::BeginTabBar("MyTabBar"))
+    {
+        if (ImGui::BeginTabItem("Explorer"))
+        {
+            DrawExplorer();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Console"))
+        {
+            DrawConsole();
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+    }
 
     ImGui::End();
 }
 
 void ToolsDisplay::DrawExplorer()
 {
-	DrawFiles(currentDirPath);
+    DrawFiles(currentDirPath);
 }
 
 void ToolsDisplay::DrawFiles(const std::string& path)
 {
-	int columnCount = (int)(width / (cellSize + padding));
-	if (columnCount < 1)
-		columnCount = 1;
+    int columnCount = (int)(width / (cellSize + padding));
+    if (columnCount < 1)
+        columnCount = 1;
 
-	ImGui::Columns(columnCount, 0, false);
+    ImGui::Columns(columnCount, 0, false);
 
-	if (path != rootDirPath)
-	{
-		ImGui::Button("..", { cellSize, cellSize });
-		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
-		{
-			int pos = currentDirPath.find_last_of("/");
-			currentDirPath = currentDirPath.substr(0, pos);
-		}
-		ImGui::NextColumn();
-	}
+    if (path != rootDirPath)
+    {
+        ImGui::Button("..", { cellSize, cellSize });
+        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+        {
+            int pos = currentDirPath.find_last_of("/");
+            currentDirPath = currentDirPath.substr(0, pos);
+        }
+        ImGui::NextColumn();
+    }
 
-	for (auto& directoryEntry : std::filesystem::directory_iterator(path))
-	{
-		const auto fullPath = directoryEntry.path();
-		auto relativePath = std::filesystem::relative(fullPath, path);
-		std::string filename = relativePath.filename().string();
+    for (auto& directoryEntry : std::filesystem::directory_iterator(path))
+    {
+        const auto fullPath = directoryEntry.path();
+        auto relativePath = std::filesystem::relative(fullPath, path);
+        std::string filename = relativePath.filename().string();
 
-		ImGui::Button(filename.c_str(), { cellSize, cellSize });
+        ImGui::Button(filename.c_str(), { cellSize, cellSize });
 
-		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0) && !directoryEntry.is_directory())
-		{
-			std::string itemPath = "start " + fullPath.string();
-			system(itemPath.c_str());
-		}
+        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0) && !directoryEntry.is_directory())
+        {
+            std::string itemPath = "start " + fullPath.string();
+            system(itemPath.c_str());
+        }
 
-		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0) && directoryEntry.is_directory())
-		{
-			currentDirPath += "/" + filename;
-		}
+        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0) && directoryEntry.is_directory())
+        {
+            currentDirPath += "/" + filename;
+        }
 
-		if (!directoryEntry.is_directory())
-		{
-			if (ImGui::BeginDragDropSource())
-			{
-				std::string itemPath = fullPath.string();
-				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath.c_str(), sizeof(wchar_t) * (itemPath.length() + 1));
-				ImGui::EndDragDropSource();
-			}
-		}
+        if (!directoryEntry.is_directory())
+        {
+            if (ImGui::BeginDragDropSource())
+            {
+                std::string itemPath = fullPath.string();
+                ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath.c_str(), sizeof(wchar_t) * (itemPath.length() + 1));
+                ImGui::EndDragDropSource();
+            }
+        }
 
-		ImGui::TextWrapped(filename.c_str());
-		ImGui::NextColumn();
-	}
+        ImGui::TextWrapped(filename.c_str());
+        ImGui::NextColumn();
+    }
 
-	ImGui::Columns(1);
+    ImGui::Columns(1);
 }
 
 void ToolsDisplay::DrawConsole()

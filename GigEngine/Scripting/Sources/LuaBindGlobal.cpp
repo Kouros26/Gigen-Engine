@@ -19,6 +19,7 @@ void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
     );
 
     luaState.new_usertype<HitResult>("HitResult",
+        sol::constructors<void()>(),
         "hitObject", &HitResult::hitObject,
         "hitPoint", &HitResult::hitPoint
 
@@ -35,7 +36,18 @@ void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
     );
 
     luaState.create_named_table("Physics");
-    luaState["Physics"]["RayCast"] = &WorldPhysics::RayCast;
+    luaState["Physics"]["RayCast"] = sol::overload
+    (
+        sol::resolve<bool(const lm::FVec3&, const lm::FVec3&, HitResult&,
+            const RayCastDebug, float, const std::vector<GameObject*>&, const lm::FVec3&, const lm::FVec3&)>(&WorldPhysics::RayCast),
+        sol::resolve<bool(const lm::FVec3&, const lm::FVec3&, HitResult&,
+            const RayCastDebug, float)>(&WorldPhysics::RayCast),
+        sol::resolve<bool(const lm::FVec3&, const lm::FVec3&, HitResult&,
+            const RayCastDebug, float, const lm::FVec3&, const lm::FVec3&)>(&WorldPhysics::RayCast),
+        sol::resolve<bool(const lm::FVec3&, const lm::FVec3&, HitResult&
+            )>(&WorldPhysics::RayCast)
+
+    );
 
     luaState.new_usertype<GameObjectManager>("GameObjectManager",
         "GetGameObject", &GameObjectManager::GetGameObject,
