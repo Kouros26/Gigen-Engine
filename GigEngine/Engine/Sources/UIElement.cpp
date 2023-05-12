@@ -29,6 +29,16 @@ void UIElement::SetColor(lm::FVec3 c)
 	color = c;
 }
 
+int& UIElement::IsImage()
+{
+	return isImage;
+}
+
+void UIElement::SetIsImage(int n)
+{
+	isImage = n;
+}
+
 lm::FVec3& UIElement::GetColor()
 {
 	return color;

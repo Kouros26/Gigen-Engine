@@ -14,10 +14,13 @@ public:
 
 	void SetColor(lm::FVec3 c);
 
+	int& IsImage();
+	void SetIsImage(int n);
+
 	lm::FVec3& GetColor();
 	RectTransform& GetTransform();
 private:
-
+	int isImage = 0;
 	lm::FVec3 color = lm::FVec3(1);
 	RectTransform transform;
 };

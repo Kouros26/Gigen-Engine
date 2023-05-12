@@ -1,6 +1,7 @@
 #include <GLAD/glad.h>
 #include "Renderer.h"
 #include "Font.h"
+#include "UIImage.h"
 #include "GLFW/glfw3.h"
 #include <iostream>
 #include <ft2build.h>
@@ -425,6 +426,19 @@ bool GigRenderer::Renderer::LinkShader(unsigned int& pProgram, unsigned int& pVe
 	}
 
 	return true;
+}
+
+void GigRenderer::Renderer::LoadUIImage(UIImage* img)
+{
+	glGenVertexArrays(1, &img->GetVAO());
+	glGenBuffers(1, &img->GetVBO());
+	glBindVertexArray(img->GetVAO());
+	glBindBuffer(GL_ARRAY_BUFFER, img->GetVBO());
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 void GigRenderer::Renderer::LoadFont(Font* f)

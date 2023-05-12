@@ -25,6 +25,11 @@ public:
 	static UIElement* AddUIElement(UIElement* elem);
 
 private:
+	inline static unsigned int PROJECTIONLocation;
+	inline static unsigned int COLORLocation;
+	inline static unsigned int IMAGELocation;
+	inline static ShaderProgram shaderProgram;
+
 	inline static UIElement* focusedElement = nullptr;
 	inline static std::vector<UIElement*> elements;
 };

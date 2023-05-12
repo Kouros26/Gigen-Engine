@@ -13,17 +13,14 @@ public:
 	void SetWidth(float w);
 	void SetHeight(float h);
 	void SetSize(lm::FVec2 vec);
-	void SetRotation(float r);
 
 	lm::FVec2 GetPosition();
 	lm::FVec2 GetSize();
-	float GetRotation();
 
 	_NODISCARD lm::FMat4& getMatrix();
 private:
 	lm::FVec2 position;
 	lm::FVec2 scale;
-	float rotation = 0;
 
 	bool hasChanged = false;
 

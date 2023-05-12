@@ -24,8 +24,15 @@ UIManager::~UIManager()
 
 void UIManager::Init()
 {
-	UIText::Init();
-	UIImage::Init();
+	auto* mainVertex = ResourceManager::Get<VertexShader>("Engine/Shaders/UIVertText.vert");
+	auto* mainFragment = ResourceManager::Get<FragmentShader>("Engine/Shaders/UIFragText.frag");
+
+	if (!shaderProgram.Link(mainVertex, mainFragment))
+		std::cout << "Error linking UI shader" << std::endl;
+
+	PROJECTIONLocation = GigRenderer::RENDERER.GetUniformLocation(shaderProgram.GetId(), "projection");
+	COLORLocation = GigRenderer::RENDERER.GetUniformLocation(shaderProgram.GetId(), "textColor");
+	IMAGELocation = GigRenderer::RENDERER.GetUniformLocation(shaderProgram.GetId(), "isImage");
 }
 
 void UIManager::AddImageElement()
@@ -40,15 +47,21 @@ void UIManager::AddTextElement()
 
 void UIManager::DrawUI()
 {
+	shaderProgram.Use();
 	RENDERER.Disable(RD_DEPTH_TEST);
+
+	RENDERER.SetUniformValue(PROJECTIONLocation, GigRenderer::UniformType::MAT4, &Application::GetWindow().GetOrthoMatrix());
 
 	for (UIElement* elem : elements)
 	{
 		if (elem->IsActive())
 		{
+			RENDERER.SetUniformValue(IMAGELocation, GigRenderer::UniformType::INT, &elem->IsImage());
+			RENDERER.SetUniformValue(COLORLocation, GigRenderer::UniformType::VEC3, &elem->GetColor());
 			elem->Draw();
 		}
 	}
+	shaderProgram.UnUse();
 }
 
 int UIManager::GetSize()

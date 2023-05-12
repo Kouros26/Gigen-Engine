@@ -122,9 +122,10 @@ void GameObjectInspector::DrawUIElement(UIElement * pUI) const
 
 void GameObjectInspector::DrawTransform2D(UIElement * pUI) const
 {
+	if (!pUI) return;
+
 	if (ImGui::CollapsingHeader(ICON_TRANSFORM " Transform"))
 	{
-		float rotation = pUI->GetTransform().GetRotation();
 		const lm::FVec2 pos = pUI->GetTransform().GetPosition();
 		const lm::FVec2 scl = pUI->GetTransform().GetSize();
 
@@ -132,7 +133,7 @@ void GameObjectInspector::DrawTransform2D(UIElement * pUI) const
 		float scale[] = { scl.x, scl.y };
 
 		ImGui::Text("Position"); ImGui::SameLine();
-		if (ImGui::DragFloat2("##3", translation, g_maxStep, -1, 2, g_floatFormat))
+		if (ImGui::DragFloat2("##3", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
 		{
 			pUI->GetTransform().SetPosition(lm::FVec2(translation[0], translation[1]));
 		}
@@ -141,12 +142,6 @@ void GameObjectInspector::DrawTransform2D(UIElement * pUI) const
 		if (ImGui::DragFloat2("##4", scale, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
 		{
 			pUI->GetTransform().SetSize(lm::FVec2(scale[0], scale[1]));
-		}
-
-		ImGui::Text("Rotation"); ImGui::SameLine();
-		if (ImGui::DragFloat("##5", &rotation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
-		{
-			pUI->GetTransform().SetRotation(rotation);
 		}
 	}
 }
@@ -180,6 +175,7 @@ void GameObjectInspector::DrawUIText(UIText * pText) const
 {
 	if (!pText) return;
 
+	ImGui::Text("Text"); ImGui::SameLine();
 	static char text[250];
 	strcpy_s(text, pText->GetText().c_str());
 

@@ -4,9 +4,12 @@
 #include "ResourceManager.h"
 #include "Renderer.h"
 
+using namespace GigRenderer;
+
 UIText::UIText() : UIElement("Text")
 {
 	font = ResourceManager::Get<Font>(g_defaultFontPath);
+	GetTransform().SetSize({ 1 });
 }
 
 UIText::~UIText()
@@ -31,13 +34,10 @@ void UIText::SetText(const std::string& t)
 void UIText::Draw()
 {
 	// activate corresponding render state
-	shaderProgram.Use();
-	GigRenderer::RENDERER.SetUniformValue(ProjLocation, GigRenderer::UniformType::MAT4, &Application::GetWindow().GetOrthoMatrix());
-	GigRenderer::RENDERER.SetUniformValue(ColorLocation, GigRenderer::UniformType::VEC3, &GetColor());
-	GigRenderer::RENDERER.BindVertexArray(font->GetVAO());
+	RENDERER.BindVertexArray(font->GetVAO());
 
-	float x = GetTransform().GetPosition().x * Application::GetWindow().GetVPWidth();
-	float y = GetTransform().GetPosition().y * Application::GetWindow().GetVPHeight();
+	float x = GetTransform().GetPosition().x;
+	float y = GetTransform().GetPosition().y;
 
 	lm::FVec2 scale = GetTransform().GetSize();
 	// iterate through all characters
@@ -62,29 +62,14 @@ void UIText::Draw()
 			{ xpos + w, ypos + h,   1.0f, 0.0f }
 		};
 		// render glyph texture over quad
-		GigRenderer::RENDERER.BindTexture(GL_TEXTURE_2D, ch.TextureID);
-		// update content of VBO memory
-		GigRenderer::RENDERER.BindBuffer(GigRenderer::BufferType::VERTEX, font->GetVBO());
-		GigRenderer::RENDERER.BufferSubData(GigRenderer::BufferType::VERTEX, 0, sizeof(vertices), vertices);
-		GigRenderer::RENDERER.BindBuffer(GigRenderer::BufferType::VERTEX, 0);
-		// render quad
-		GigRenderer::RENDERER.DrawArray(GL_TRIANGLES, 0, 6);
+		RENDERER.BindTexture(GL_TEXTURE_2D, ch.TextureID);
+		RENDERER.BindBuffer(GigRenderer::BufferType::VERTEX, font->GetVBO());
+		RENDERER.BufferSubData(GigRenderer::BufferType::VERTEX, 0, sizeof(vertices), vertices);
+		RENDERER.BindBuffer(GigRenderer::BufferType::VERTEX, 0);
+		RENDERER.DrawArray(GL_TRIANGLES, 0, 6);
 		// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
 		x += (ch.Advance >> 6) * scale.x; // bitshift by 6 to get value in pixels (2^6 = 64)
 	}
-	GigRenderer::RENDERER.BindVertexArray(0);
-	GigRenderer::RENDERER.BindTexture(GL_TEXTURE_2D, 0);
-	shaderProgram.UnUse();
-}
-
-void UIText::Init()
-{
-	auto* mainVertex = ResourceManager::Get<VertexShader>("Engine/Shaders/UIVertText.vert");
-	auto* mainFragment = ResourceManager::Get<FragmentShader>("Engine/Shaders/UIFragText.frag");
-
-	if (!shaderProgram.Link(mainVertex, mainFragment))
-		std::cout << "Error linking UI shader" << std::endl;
-
-	ProjLocation = GigRenderer::RENDERER.GetUniformLocation(shaderProgram.GetId(), "projection");
-	ColorLocation = GigRenderer::RENDERER.GetUniformLocation(shaderProgram.GetId(), "textColor");
+	RENDERER.BindVertexArray(0);
+	RENDERER.BindTexture(GL_TEXTURE_2D, 0);
 }

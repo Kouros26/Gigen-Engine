@@ -22,6 +22,7 @@
 #define RD_LESS 0x0201
 
 class Font;
+class UIImage;
 
 namespace GigRenderer
 {
@@ -120,6 +121,7 @@ namespace GigRenderer
 		void SetupBuffer(Buffer& pVBO, BufferVAO& pVAO);
 		[[nodiscard]] bool LinkShader(unsigned int& pProgram, unsigned int& pVertexShader, unsigned int& pFragmentShader);
 
+		void LoadUIImage(UIImage* img);
 		void LoadFont(Font* f);
 	};
 };
