@@ -29,7 +29,7 @@ void UIElement::SetColor(lm::FVec3 c)
 	color = c;
 }
 
-int& UIElement::IsImage()
+int& UIElement::GetIsImage()
 {
 	return isImage;
 }
@@ -39,12 +39,27 @@ void UIElement::SetIsImage(int n)
 	isImage = n;
 }
 
+int& UIElement::GetIsWorld()
+{
+	return isWorld;
+}
+
+void UIElement::SetIsWorld(bool b)
+{
+	isWorld = b ? 1 : 0;
+}
+
 lm::FVec3& UIElement::GetColor()
 {
 	return color;
 }
 
-RectTransform& UIElement::GetTransform()
+RectTransform& UIElement::GetRectTransform()
+{
+	return rectTransform;
+}
+
+Transform& UIElement::GetTransform()
 {
 	return transform;
 }

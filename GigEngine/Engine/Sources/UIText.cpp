@@ -9,7 +9,7 @@ using namespace GigRenderer;
 UIText::UIText() : UIElement("Text")
 {
 	font = ResourceManager::Get<Font>(g_defaultFontPath);
-	GetTransform().SetSize({ 1 });
+	GetRectTransform().SetSize({ 1 });
 }
 
 UIText::~UIText()
@@ -36,21 +36,21 @@ void UIText::Draw()
 	// activate corresponding render state
 	RENDERER.BindVertexArray(font->GetVAO());
 
-	float x = GetTransform().GetPosition().x;
-	float y = GetTransform().GetPosition().y;
+	float x = GetRectTransform().GetPosition().x;
+	float y = GetRectTransform().GetPosition().y;
 
-	lm::FVec2 scale = GetTransform().GetSize();
+	lm::FVec2 size = GetRectTransform().GetSize();
 	// iterate through all characters
 	std::string::const_iterator c;
 	for (c = text.begin(); c != text.end(); c++)
 	{
 		Character ch = font->GetCharacter(*c);
 
-		float xpos = x + ch.Bearing.x * scale.x;
-		float ypos = y - (ch.Size.y - ch.Bearing.y) * scale.y;
+		float xpos = x + ch.Bearing.x * size.x;
+		float ypos = y - (ch.Size.y - ch.Bearing.y) * size.y;
 
-		float w = ch.Size.x * scale.x;
-		float h = ch.Size.y * scale.y;
+		float w = ch.Size.x * size.x;
+		float h = ch.Size.y * size.y;
 		// update VBO for each character
 		float vertices[6][4] = {
 			{ xpos,     ypos + h,   0.0f, 0.0f },
@@ -68,7 +68,7 @@ void UIText::Draw()
 		RENDERER.BindBuffer(GigRenderer::BufferType::VERTEX, 0);
 		RENDERER.DrawArray(GL_TRIANGLES, 0, 6);
 		// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		x += (ch.Advance >> 6) * scale.x; // bitshift by 6 to get value in pixels (2^6 = 64)
+		x += (ch.Advance >> 6) * size.x; // bitshift by 6 to get value in pixels (2^6 = 64)
 	}
 	RENDERER.BindVertexArray(0);
 	RENDERER.BindTexture(GL_TEXTURE_2D, 0);

@@ -92,7 +92,7 @@ void GameObjectInspector::DrawObject()
 
 void GameObjectInspector::DrawGameObject(GameObject * pObject) const
 {
-	DrawTransform(pObject);
+	DrawTransform(&pObject->GetTransform());
 	DrawSpecials(pObject);
 
 	if (pObject->GetRigidBody())
@@ -108,40 +108,50 @@ void GameObjectInspector::DrawGameObject(GameObject * pObject) const
 
 void GameObjectInspector::DrawUIElement(UIElement * pUI) const
 {
-	DrawTransform2D(pUI);
+	DrawRectTransform(&pUI->GetRectTransform());
+
+	bool isWorld = pUI->GetIsWorld() > 0;
+	if (isWorld)
+		DrawTransform(&pUI->GetTransform());
 
 	lm::FVec3 col = pUI->GetColor();
 	float color[3] = { col.x, col.y, col.z };
 
+	ImGui::Text("World"); ImGui::SameLine();
+	if (ImGui::Checkbox("##11", &isWorld))
+	{
+		pUI->SetIsWorld(isWorld);
+	}
+
 	ImGui::Text("Color"); ImGui::SameLine();
-	if (ImGui::ColorEdit3("##6", color))
+	if (ImGui::ColorEdit3("##10", color))
 	{
 		pUI->SetColor({ color[0],  color[1], color[2] });
 	}
 }
 
-void GameObjectInspector::DrawTransform2D(UIElement * pUI) const
+void GameObjectInspector::DrawRectTransform(RectTransform * rectTransform) const
 {
-	if (!pUI) return;
+	if (!rectTransform) return;
 
-	if (ImGui::CollapsingHeader(ICON_TRANSFORM " Transform"))
+	if (ImGui::CollapsingHeader(ICON_TRANSFORM " RectTransform"))
 	{
-		const lm::FVec2 pos = pUI->GetTransform().GetPosition();
-		const lm::FVec2 scl = pUI->GetTransform().GetSize();
+		const lm::FVec2 pos = rectTransform->GetPosition();
+		const lm::FVec2 scl = rectTransform->GetSize();
 
 		float translation[] = { pos.x, pos.y };
 		float scale[] = { scl.x, scl.y };
 
 		ImGui::Text("Position"); ImGui::SameLine();
-		if (ImGui::DragFloat2("##3", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat2("##30", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
 		{
-			pUI->GetTransform().SetPosition(lm::FVec2(translation[0], translation[1]));
+			rectTransform->SetPosition(lm::FVec2(translation[0], translation[1]));
 		}
 
 		ImGui::Text("Size"); ImGui::SameLine();
-		if (ImGui::DragFloat2("##4", scale, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+		if (ImGui::DragFloat2("##31", scale, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
 		{
-			pUI->GetTransform().SetSize(lm::FVec2(scale[0], scale[1]));
+			rectTransform->SetSize(lm::FVec2(scale[0], scale[1]));
 		}
 	}
 }
@@ -203,13 +213,15 @@ void GameObjectInspector::DrawUIText(UIText * pText) const
 	}
 }
 
-void GameObjectInspector::DrawTransform(GameObject * pObject) const
+void GameObjectInspector::DrawTransform(Transform * transform) const
 {
+	if (!transform) return;
+
 	if (ImGui::CollapsingHeader(ICON_TRANSFORM " Transform"))
 	{
-		const lm::FVec3 rot = pObject->GetTransform().GetWorldRotation();
-		const lm::FVec3 pos = pObject->GetTransform().GetWorldPosition();
-		const lm::FVec3 scl = pObject->GetTransform().GetWorldScale();
+		const lm::FVec3 rot = transform->GetWorldRotation();
+		const lm::FVec3 pos = transform->GetWorldPosition();
+		const lm::FVec3 scl = transform->GetWorldScale();
 
 		float translation[] = { pos.x, pos.y, pos.z };
 		float scale[] = { scl.x, scl.y, scl.z };
@@ -219,19 +231,19 @@ void GameObjectInspector::DrawTransform(GameObject * pObject) const
 
 		if (ImGui::DragFloat3("##3", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
 		{
-			pObject->GetTransform().SetWorldPosition(lm::FVec3(translation[0], translation[1], translation[2]));
+			transform->SetWorldPosition(lm::FVec3(translation[0], translation[1], translation[2]));
 		}
 
 		ImGui::Text("Scale"); ImGui::SameLine();
 		if (ImGui::DragFloat3("##4", scale, g_maxStep, 0.000000001f, g_floatMax, g_floatFormat))
 		{
-			pObject->GetTransform().SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
+			transform->SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
 		}
 
 		ImGui::Text("Rotation"); ImGui::SameLine();
 		if (ImGui::DragFloat3("##5", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
 		{
-			pObject->GetTransform().SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
+			transform->SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
 		}
 	}
 }

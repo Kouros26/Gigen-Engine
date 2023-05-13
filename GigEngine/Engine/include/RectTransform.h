@@ -20,7 +20,7 @@ public:
 	_NODISCARD lm::FMat4& getMatrix();
 private:
 	lm::FVec2 position;
-	lm::FVec2 scale;
+	lm::FVec2 size;
 
 	bool hasChanged = false;
 

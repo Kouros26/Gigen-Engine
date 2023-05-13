@@ -8,6 +8,8 @@ class UIImage;
 class UIText;
 class Camera;
 class RigidBody;
+class RectTransform;
+class Transform;
 
 class GameObjectInspector : public Displayable
 {
@@ -23,11 +25,11 @@ private:
 	void DrawGameObject(GameObject* pObject) const;
 
 	void DrawUIElement(UIElement* pUI) const;
-	void DrawTransform2D(UIElement* pUI) const;
+	void DrawRectTransform(RectTransform* rectTransform) const;
 	void DrawDropTargetImage(UIImage* pImage) const;
 	void DrawUIText(UIText* pText) const;
 
-	void DrawTransform(GameObject* pObject) const;
+	void DrawTransform(Transform* transform) const;
 	void DrawModel(GameObject* pObject) const;
 	void DrawTexture(GameObject* pObject) const;
 	void DrawRigidBody(GameObject* pObject) const;

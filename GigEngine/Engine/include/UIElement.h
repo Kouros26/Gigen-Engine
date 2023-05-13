@@ -1,6 +1,7 @@
 #pragma once
 #include "Object.h"
 #include "RectTransform.h"
+#include "Transform.h"
 
 class UIElement : public Object
 {
@@ -14,13 +15,19 @@ public:
 
 	void SetColor(lm::FVec3 c);
 
-	int& IsImage();
+	int& GetIsImage();
 	void SetIsImage(int n);
 
+	int& GetIsWorld();
+	void SetIsWorld(bool b);
+
 	lm::FVec3& GetColor();
-	RectTransform& GetTransform();
+	RectTransform& GetRectTransform();
+	Transform& GetTransform();
 private:
+	int isWorld = 0;
 	int isImage = 0;
 	lm::FVec3 color = lm::FVec3(1);
-	RectTransform transform;
+	RectTransform rectTransform;
+	Transform transform;
 };

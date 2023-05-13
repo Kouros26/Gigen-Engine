@@ -28,6 +28,8 @@ private:
 	inline static unsigned int PROJECTIONLocation;
 	inline static unsigned int COLORLocation;
 	inline static unsigned int IMAGELocation;
+	inline static unsigned int MODELLocation;
+	inline static unsigned int ISWORLDLocation;
 	inline static ShaderProgram shaderProgram;
 
 	inline static UIElement* focusedElement = nullptr;

@@ -9,7 +9,7 @@ UIImage::UIImage() : UIElement("Image")
 {
 	texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
 	SetIsImage(1);
-	GetTransform().SetSize({ 100 });
+	GetRectTransform().SetSize({ 100 });
 	RENDERER.LoadUIImage(this);
 }
 
@@ -36,15 +36,15 @@ void UIImage::Draw()
 {
 	GigRenderer::RENDERER.BindVertexArray(VAO);
 
-	lm::FVec2 scale = GetTransform().GetSize();
+	lm::FVec2 size = GetRectTransform().GetSize();
 	// iterate through all characters
 	std::string::const_iterator c;
 
-	float xpos = GetTransform().GetPosition().x;
-	float ypos = GetTransform().GetPosition().y;
+	float xpos = GetRectTransform().GetPosition().x;
+	float ypos = GetRectTransform().GetPosition().y;
 
-	float w = scale.x;
-	float h = scale.y;
+	float w = size.x;
+	float h = size.y;
 	// update VBO for each character
 	float vertices[6][4] = {
 		{ xpos,     ypos + h,   0.0f, 0.0f },
