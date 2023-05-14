@@ -6,9 +6,8 @@
 enum class CursorShape
 {
 	ARROW,
-	BEAM,
-	CROSSHAIR,
-	HAND
+	EYE,
+	GRAB,
 };
 
 class Window
@@ -39,6 +38,7 @@ private:
 	const char* APPLICATION_NAME = "Gigen Engine";
 
 	GLFWwindow* window = nullptr;
+	GLFWimage mouseIcons[2];
 	std::string version;
 	const int versionMajor = 4;
 	const int versionMinor = 6;

@@ -69,7 +69,6 @@ void Application::Play()
 	else
 	{
 		Stop();
-		isPause = false;
 	}
 }
 
@@ -80,6 +79,7 @@ void Application::Pause()
 
 void Application::Stop()
 {
+	isPause = false;
 	GameObjectManager::SetCurrentCamera(nullptr);
 	Scene::ReloadScene(Scene::GetCurrentSceneName());
 	isEditor = true;
