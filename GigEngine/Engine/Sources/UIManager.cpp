@@ -66,7 +66,7 @@ void UIManager::DrawUI()
 
 	for (UIElement* elem : worldElements)
 	{
-		if (elem->IsActive() && elem->GetIsWorld() > 0)
+		if (elem->IsActive())
 		{
 			RENDERER.SetUniformValue(MODELLocation, GigRenderer::UniformType::MAT4, &elem->GetTransform().MatrixGetter());
 			RENDERER.SetUniformValue(IMAGELocation, GigRenderer::UniformType::INT, &elem->GetIsImage());
@@ -81,7 +81,7 @@ void UIManager::DrawUI()
 
 	for (UIElement* elem : elements)
 	{
-		if (elem->IsActive() && elem->GetIsWorld() < 1)
+		if (elem->IsActive())
 		{
 			RENDERER.SetUniformValue(IMAGELocation, GigRenderer::UniformType::INT, &elem->GetIsImage());
 			RENDERER.SetUniformValue(COLORLocation, GigRenderer::UniformType::VEC3, &elem->GetColor());

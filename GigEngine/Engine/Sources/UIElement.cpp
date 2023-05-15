@@ -39,7 +39,7 @@ void UIElement::SetIsImage(int n)
 	isImage = n;
 }
 
-bool& UIElement::GetIsWorld()
+bool UIElement::GetIsWorld() const
 {
 	return isWorld;
 }

@@ -18,7 +18,7 @@ public:
 	int& GetIsImage();
 	void SetIsImage(int n);
 
-	bool& GetIsWorld();
+	bool GetIsWorld() const;
 	void SetIsWorld(bool b);
 
 	lm::FVec3& GetColor();
