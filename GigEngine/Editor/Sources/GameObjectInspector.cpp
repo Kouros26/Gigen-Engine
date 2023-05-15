@@ -1,4 +1,3 @@
-#include <Windows.h>
 #include "GameObjectInspector.h"
 #include "UIManager.h"
 #include "UIImage.h"
@@ -15,8 +14,6 @@
 #include "SphereRigidBody.h"
 #include "ResourceManager.h"
 #include "GameObjectManager.h"
-#include <Windows.h>
-#include <filesystem>
 #include "Behaviour.h"
 
 GameObjectInspector::GameObjectInspector()
@@ -276,14 +273,6 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 		ImGui::Text("Path :"); ImGui::SameLine();
 		ImGui::Text(path.c_str());
 
-		if (ImGui::Button("Locate##1"))
-		{
-			const std::string& filePath = GetFilePathFromExplorer("3D object \0 *.obj; *.OBJ; *.fbx; *.FBX\0");
-
-			if (filePath.length() > 0)
-				pObject->SetModel(filePath);
-		}
-
 		if (pObject->GetModel())
 		{
 			DrawTexture(pObject);
@@ -305,14 +294,6 @@ void GameObjectInspector::DrawTexture(GameObject * pObject) const
 
 		ImGui::Text("Path :"); ImGui::SameLine();
 		ImGui::Text(path.c_str());
-
-		if (ImGui::Button("Locate##2"))
-		{
-			const std::string& filePath = GetFilePathFromExplorer("image \0 *.png; *.jpeg; *.jpg\0");
-
-			if (filePath.length() > 0)
-				pObject->SetTexture(filePath);
-		}
 	}
 	ImGui::EndGroup();
 }
@@ -680,24 +661,4 @@ void GameObjectInspector::DrawDropTarget(GameObject * pObject) const
 
 		ImGui::EndDragDropTarget();
 	}
-}
-
-std::string GameObjectInspector::GetFilePathFromExplorer(const char* filter)
-{
-	OPENFILENAME ofn;
-	char fileName[1000] = "";
-	ZeroMemory(&ofn, sizeof(ofn));
-
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = NULL;
-	ofn.lpstrFilter = filter;
-	ofn.nMaxFile = 1000;
-	ofn.lpstrFile = fileName;
-	ofn.Flags = OFN_FILEMUSTEXIST;
-	ofn.lpstrDefExt = "";
-
-	if (GetOpenFileName(&ofn))
-		return { fileName };
-
-	return {};
 }
