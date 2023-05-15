@@ -39,14 +39,22 @@ void UIElement::SetIsImage(int n)
 	isImage = n;
 }
 
-int& UIElement::GetIsWorld()
+bool& UIElement::GetIsWorld()
 {
 	return isWorld;
 }
 
 void UIElement::SetIsWorld(bool b)
 {
-	isWorld = b ? 1 : 0;
+	isWorld = b;
+	if (isWorld)
+	{
+		UIManager::AddToWorldElements(this);
+	}
+	else
+	{
+		UIManager::AddToUIElements(this);
+	}
 }
 
 lm::FVec3& UIElement::GetColor()

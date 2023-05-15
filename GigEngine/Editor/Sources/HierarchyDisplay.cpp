@@ -31,7 +31,7 @@ void HierarchyDisplay::Draw()
 		DisplayHierarchy();
 	}
 
-	if (UIManager::GetSize() > 0)
+	if (UIManager::GetUISize() > 0 || UIManager::GetWorldSize() > 0)
 	{
 		ImGui::SeparatorText("UI");
 		DisplayUI();
@@ -67,9 +67,14 @@ void HierarchyDisplay::DisplayHierarchy()
 
 void HierarchyDisplay::DisplayUI()
 {
-	for (int i = 0; i < UIManager::GetSize(); i++)
+	for (int i = 0; i < UIManager::GetUISize(); i++)
 	{
-		DisplayUIElement(*UIManager::GetElement(i));
+		DisplayUIElement(*UIManager::GetUIElement(i));
+	}
+	ImGui::SeparatorText("World");
+	for (int i = 0; i < UIManager::GetWorldSize(); i++)
+	{
+		DisplayUIElement(*UIManager::GetWorldElement(i));
 	}
 }
 

@@ -20,6 +20,10 @@ UIManager::~UIManager()
 	{
 		delete elem;
 	}
+	for (UIElement* elem : worldElements)
+	{
+		delete elem;
+	}
 }
 
 void UIManager::Init()
@@ -40,53 +44,78 @@ void UIManager::Init()
 
 void UIManager::AddImageElement()
 {
-	AddUIElement(new UIImage());
+	AddToUIElements(new UIImage());
 }
 
 void UIManager::AddTextElement()
 {
-	elements.push_back(new UIText());
+	AddToUIElements(new UIText());
 }
 
 void UIManager::DrawUI()
 {
 	shaderProgram.Use();
+	RENDERER.Enable(RD_DEPTH_TEST);
 
 	RENDERER.SetUniformValue(ORTHOLocation, GigRenderer::UniformType::MAT4, &Application::GetWindow().GetOrthoMatrix());
 	RENDERER.SetUniformValue(PROJECTIONLocation, GigRenderer::UniformType::MAT4, &Application::GetViewProj());
 
-	for (UIElement* elem : elements)
+	int isWorld = 1;
+
+	RENDERER.SetUniformValue(ISWORLDLocation, GigRenderer::UniformType::INT, &isWorld);
+
+	for (UIElement* elem : worldElements)
 	{
-		if (elem->IsActive())
+		if (elem->IsActive() && elem->GetIsWorld() > 0)
 		{
-			if (elem->GetIsWorld() > 0)
-			{
-				RENDERER.Enable(RD_DEPTH_TEST);
-			}
-			else
-			{
-				RENDERER.Disable(RD_DEPTH_TEST);
-			}
-			RENDERER.SetUniformValue(ISWORLDLocation, GigRenderer::UniformType::INT, &elem->GetIsWorld());
 			RENDERER.SetUniformValue(MODELLocation, GigRenderer::UniformType::MAT4, &elem->GetTransform().MatrixGetter());
 			RENDERER.SetUniformValue(IMAGELocation, GigRenderer::UniformType::INT, &elem->GetIsImage());
 			RENDERER.SetUniformValue(COLORLocation, GigRenderer::UniformType::VEC3, &elem->GetColor());
 			elem->Draw();
 		}
 	}
+
+	RENDERER.Disable(RD_DEPTH_TEST);
+	isWorld = 0;
+	RENDERER.SetUniformValue(ISWORLDLocation, GigRenderer::UniformType::INT, &isWorld);
+
+	for (UIElement* elem : elements)
+	{
+		if (elem->IsActive() && elem->GetIsWorld() < 1)
+		{
+			RENDERER.SetUniformValue(IMAGELocation, GigRenderer::UniformType::INT, &elem->GetIsImage());
+			RENDERER.SetUniformValue(COLORLocation, GigRenderer::UniformType::VEC3, &elem->GetColor());
+			elem->Draw();
+		}
+	}
+
 	shaderProgram.UnUse();
 }
 
-int UIManager::GetSize()
+int UIManager::GetUISize()
 {
 	return elements.size();
 }
 
-UIElement* UIManager::GetElement(unsigned int i)
+int UIManager::GetWorldSize()
 {
-	if (i < GetSize())
+	return worldElements.size();
+}
+
+UIElement* UIManager::GetUIElement(unsigned int i)
+{
+	if (i < GetUISize())
 	{
 		return elements.at(i);
+	}
+	return nullptr;
+}
+
+UIElement* UIManager::GetWorldElement(unsigned int i)
+{
+	if (i < GetWorldSize())
+	{
+		return worldElements.at(i);
 	}
 	return nullptr;
 }
@@ -105,25 +134,60 @@ UIElement* UIManager::GetFocusedElement()
 
 void UIManager::RemoveElement(UIElement* elem)
 {
-	const auto it = std::ranges::find(elements, elem);
+	auto it = std::ranges::find(elements, elem);
 
-	if (it == elements.end())
+	if (it != elements.end())
+	{
+		elements.erase(it);
+		elem->~UIElement();
 		return;
+	}
 
-	elements.erase(it);
+	it = std::ranges::find(worldElements, elem);
 
-	elem->~UIElement();
+	if (it != worldElements.end())
+	{
+		worldElements.erase(it);
+		elem->~UIElement();
+		return;
+	}
 }
 
 UIElement* UIManager::CreateUIElement(UIElement* elem)
 {
-	const auto newElem = new UIElement(*elem);
+	UIElement* newElem = new UIElement(*elem);
 
-	return AddUIElement(newElem);
+	return AddToUIElements(newElem);
 }
 
-UIElement* UIManager::AddUIElement(UIElement* elem)
+UIElement* UIManager::AddToWorldElements(UIElement* elem)
 {
-	elements.push_back(elem);
+	auto it = std::ranges::find(worldElements, elem);
+
+	if (it == worldElements.end())
+	{
+		auto it2 = std::ranges::find(elements, elem);
+		if (it2 != elements.end())
+			elements.erase(it2);
+
+		worldElements.push_back(elem);
+	}
+
+	return elem;
+}
+
+UIElement* UIManager::AddToUIElements(UIElement* elem)
+{
+	auto it = std::ranges::find(elements, elem);
+
+	if (it == elements.end())
+	{
+		auto it2 = std::ranges::find(worldElements, elem);
+		if (it2 != worldElements.end())
+			worldElements.erase(it2);
+
+		elements.push_back(elem);
+	}
+
 	return elem;
 }

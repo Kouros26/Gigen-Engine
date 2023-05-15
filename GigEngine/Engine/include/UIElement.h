@@ -18,14 +18,14 @@ public:
 	int& GetIsImage();
 	void SetIsImage(int n);
 
-	int& GetIsWorld();
+	bool& GetIsWorld();
 	void SetIsWorld(bool b);
 
 	lm::FVec3& GetColor();
 	RectTransform& GetRectTransform();
 	Transform& GetTransform();
 private:
-	int isWorld = 0;
+	bool isWorld = false;
 	int isImage = 0;
 	lm::FVec3 color = lm::FVec3(1);
 	RectTransform rectTransform;
