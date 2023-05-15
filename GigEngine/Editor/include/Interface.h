@@ -10,23 +10,39 @@
 
 struct GLFWwindow;
 
+enum class Theme
+{
+    Dark,
+    Light,
+    Black,
+    Classic,
+    Dracula,
+    Cherry,
+    Grey,
+    Blue,
+    ClassicDark,
+    ClassicLight,
+    Cinder
+};
+
 class Interface
 {
 public:
 
-	Interface(GLFWwindow* pWindow, const char* pGlslVersion);
-	~Interface();
+    Interface(GLFWwindow* pWindow, const char* pGlslVersion);
+    ~Interface();
 
-	void BeginFrame();
-	static void Draw();
+    void BeginFrame();
+    static void Draw();
+
+    static void SetTheme(Theme pTheme);
 
 private:
 
-	void SetColorDark();
-	void SetFont();
+    void SetFont();
 
-	GameObjectInspector gameObjInspector;
-	HierarchyDisplay hierarchy;
-	ToolsDisplay fileDisplay;
-	MenuBarDisplay menuBar;
+    GameObjectInspector gameObjInspector;
+    HierarchyDisplay hierarchy;
+    ToolsDisplay fileDisplay;
+    MenuBarDisplay menuBar;
 };

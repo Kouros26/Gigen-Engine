@@ -16,10 +16,10 @@ class GameObjectInspector : public Displayable
 {
 public:
 
-	GameObjectInspector();
-	~GameObjectInspector() override;
+    GameObjectInspector();
+    ~GameObjectInspector() override;
 
-	void Draw() override;
+    void Draw() override;
 
 private:
 	void DrawObject();
@@ -37,15 +37,16 @@ private:
 	void DrawRigidShape(RigidBody* body) const;
 	void DrawRigidTransform(RigidBody* body) const;
 
-	void DrawSpecials(GameObject* pObject) const;
-	void DrawComponents(GameObject* pObject) const;
+    void DrawSpecials(GameObject* pObject) const;
+    void DrawComponents(GameObject* pObject) const;
 
-	void DrawLight(GameObject* pObject) const;
-	void DrawCamera(Camera* pObject) const;
+    void DrawLight(GameObject* pObject) const;
+    void DrawCamera(Camera* pObject) const;
 
-	void DrawAddComponent(GameObject* pObject) const;
+    void DrawAddComponent(GameObject* pObject) const;
 
-	void DrawDropTarget(GameObject* pObject) const;
+    void DrawDropTarget(GameObject* pObject) const;
 
 	void LockCalculation(float* fvec3, const lm::FVec3& original) const;
+    [[nodiscard]] std::string ReadScript(const std::string& pPath) const;
 };

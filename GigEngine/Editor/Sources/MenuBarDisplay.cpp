@@ -4,10 +4,11 @@
 #include "imgui_internal.h"
 #include "Application.h"
 #include "SceneSaver.h"
+#include "Interface.h"
 
 MenuBarDisplay::MenuBarDisplay()
 {
-	InterfaceManager::AddEditorElement(this);
+    InterfaceManager::AddEditorElement(this);
 }
 
 MenuBarDisplay::~MenuBarDisplay()
@@ -15,28 +16,77 @@ MenuBarDisplay::~MenuBarDisplay()
 
 void MenuBarDisplay::Draw()
 {
-	ImGui::BeginMainMenuBar();
+    ImGui::BeginMainMenuBar();
 
-	if (ImGui::BeginMenu("File"))
-	{
-		if (ImGui::MenuItem("test", "shortcut", false, true)) {}
-		if (ImGui::MenuItem("test2", "truc", false, false)) {}
+    if (ImGui::BeginMenu("File"))
+    {
+        if (ImGui::MenuItem("test", "shortcut", false, true)) {}
+        if (ImGui::MenuItem("test2", "truc", false, false)) {}
 
-		ImGui::EndMenu();
-	}
-	if (ImGui::BeginMenu("Edit"))
-	{
-		if (ImGui::MenuItem("test", "CTRL+Z")) {}
-		if (ImGui::MenuItem("test2", "CTRL+X")) {}
+        ImGui::EndMenu();
+    }
+    if (ImGui::BeginMenu("Edit"))
+    {
+        if (ImGui::MenuItem("test", "CTRL+Z")) {}
+        if (ImGui::MenuItem("test2", "CTRL+X")) {}
 
-		ImGui::EndMenu();
-	}
-	if (ImGui::Button(ICON_SAVE))
-	{
-		Scene::SaveScene(Scene::GetCurrentSceneName());
-	}
+        ImGui::EndMenu();
+    }
+    if (ImGui::Button(ICON_SAVE))
+    {
+        Scene::SaveScene(Scene::GetCurrentSceneName());
+    }
+    if (ImGui::BeginMenu("Themes"))
+    {
+        if (ImGui::MenuItem("Dark", "", false, true))
+        {
+            Interface::SetTheme(Theme::Dark);
+        }
+        if (ImGui::MenuItem("Light", "", false, true))
+        {
+            Interface::SetTheme(Theme::Light);
+        }
+        if (ImGui::MenuItem("Black", "", false, true))
+        {
+            Interface::SetTheme(Theme::Black);
+        }
+        if (ImGui::MenuItem("Classic", "", false, true))
+        {
+            Interface::SetTheme(Theme::Classic);
+        }
+        if (ImGui::MenuItem("Dracula", "", false, true))
+        {
+            Interface::SetTheme(Theme::Dracula);
+        }
+        if (ImGui::MenuItem("Cherry", "", false, true))
+        {
+            Interface::SetTheme(Theme::Cherry);
+        }
+        if (ImGui::MenuItem("Grey", "", false, true))
+        {
+            Interface::SetTheme(Theme::Grey);
+        }
+        if (ImGui::MenuItem("Blue", "", false, true))
+        {
+            Interface::SetTheme(Theme::Blue);
+        }
+        if (ImGui::MenuItem("ClassicDark", "", false, true))
+        {
+            Interface::SetTheme(Theme::ClassicDark);
+        }
+        if (ImGui::MenuItem("ClassicLight", "", false, true))
+        {
+            Interface::SetTheme(Theme::ClassicLight);
+        }
+        if (ImGui::MenuItem("Cinder", "", false, true))
+        {
+            Interface::SetTheme(Theme::Cinder);
+        }
 
-	DrawPlayPause();
+        ImGui::EndMenu();
+    }
+
+    DrawPlayPause();
 
 	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 12);
 	ImGui::PushStyleColor(ImGuiCol_Button, { 1,0,0,0.8f });
@@ -48,7 +98,7 @@ void MenuBarDisplay::Draw()
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
 
-	ImGui::EndMainMenuBar();
+    ImGui::EndMainMenuBar();
 }
 
 void MenuBarDisplay::DrawPlayPause() const
@@ -60,50 +110,50 @@ void MenuBarDisplay::DrawPlayPause() const
 	const bool isPlaying = !Application::IsInEditor();
 	const bool isUsingEditorCam = Application::IsUsingEditorCam();
 
-	if (isPlaying)
-	{
-		ImGui::PushStyleColor(ImGuiCol_Button, { 0,1,0,0.5f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0,1,0,0.6f });
-	}
+    if (isPlaying)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button, { 0,1,0,0.5f });
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0,1,0,0.6f });
+    }
 
-	if (ImGui::Button(ICON_PLAY, { 50, 0 }))
-	{
-		Application::Play();
-	}
+    if (ImGui::Button(ICON_PLAY, { 50, 0 }))
+    {
+        Application::Play();
+    }
 
-	if (isPlaying)
-	{
-		ImGui::PopStyleColor();
-		ImGui::PopStyleColor();
-	}
+    if (isPlaying)
+    {
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
+    }
 
-	if (isPause)
-	{
-		ImGui::PushStyleColor(ImGuiCol_Button, { 0,1,0,0.5f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0,1,0,0.6f });
-	}
+    if (isPause)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button, { 0,1,0,0.5f });
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0,1,0,0.6f });
+    }
 
-	if (ImGui::Button(ICON_PAUSE, { 50, 0 }))
-	{
-		Application::Pause();
-	}
+    if (ImGui::Button(ICON_PAUSE, { 50, 0 }))
+    {
+        Application::Pause();
+    }
 
-	if (isPause)
-	{
-		ImGui::PopStyleColor();
-		ImGui::PopStyleColor();
-	}
+    if (isPause)
+    {
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
+    }
 
-	if (isUsingEditorCam)
-	{
-		ImGui::PushStyleColor(ImGuiCol_Button, { 0,1,0,0.5f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0,1,0,0.6f });
-	}
+    if (isUsingEditorCam)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button, { 0,1,0,0.5f });
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0,1,0,0.6f });
+    }
 
-	if (ImGui::Button(ICON_CAMERA, { 50, 0 }))
-	{
-		Application::UseEditorCam();
-	}
+    if (ImGui::Button(ICON_CAMERA, { 50, 0 }))
+    {
+        Application::UseEditorCam();
+    }
 
 	if (isUsingEditorCam)
 	{

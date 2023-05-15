@@ -9,7 +9,7 @@ public:
 
 	virtual ~Object();
 
-	std::string GetName() const;
+	[[nodiscard]] std::string GetName() const;
 	void SetName(const std::string& pName);
 
 	virtual std::string GetType();
@@ -19,7 +19,7 @@ public:
 	[[nodiscard]] bool IsActive() const;
 	virtual void SetActive(bool b);
 
-private:
+protected:
 
 	bool isActive;
 	std::string name{};

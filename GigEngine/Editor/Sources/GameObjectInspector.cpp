@@ -1,4 +1,5 @@
 #include "GameObjectInspector.h"
+#include <fstream>
 #include "UIManager.h"
 #include "UIImage.h"
 #include "UIText.h"
@@ -18,7 +19,7 @@
 
 GameObjectInspector::GameObjectInspector()
 {
-	InterfaceManager::AddEditorElement(this);
+    InterfaceManager::AddEditorElement(this);
 }
 
 GameObjectInspector::~GameObjectInspector()
@@ -26,19 +27,19 @@ GameObjectInspector::~GameObjectInspector()
 
 void GameObjectInspector::Draw()
 {
-	height = InterfaceManager::GetHeight() - InterfaceManager::GetClassHeight<ToolsDisplay>() - g_menuBarSize;
-	ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width, g_menuBarSize });
-	ImGui::SetNextWindowSize({ width, height });
+    height = InterfaceManager::GetHeight() - InterfaceManager::GetClassHeight<ToolsDisplay>() - g_menuBarSize;
+    ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width, g_menuBarSize });
+    ImGui::SetNextWindowSize({ width, height });
 
-	// noMove et NoCollapse
-	ImGui::Begin("Inspector", NULL, 4 | 32);
+    // noMove et NoCollapse
+    ImGui::Begin("Inspector", NULL, 4 | 32);
 
-	LimitWidthResize();
-	ImGui::SetWindowSize("Inspector", { width, height });
+    LimitWidthResize();
+    ImGui::SetWindowSize("Inspector", { width, height });
 
 	DrawObject();
 
-	ImGui::End();
+    ImGui::End();
 }
 
 void GameObjectInspector::DrawObject()
@@ -50,29 +51,28 @@ void GameObjectInspector::DrawObject()
 	{
 		object = UIManager::GetFocusedElement();
 		isGameObject = false;
+        return;
 	}
 
-	if (!object) return;
+    static char name[128];
+    strcpy_s(name, object->GetName().c_str());
 
-	static char name[128];
-	strcpy_s(name, object->GetName().c_str());
+    ImGui::Text(ICON_GAMEOBJECT " Name"); ImGui::SameLine();
 
-	ImGui::Text(ICON_GAMEOBJECT " Name"); ImGui::SameLine();
+    if (ImGui::InputText("##1", name, 128))
+    {
+        object->SetName(name);
+    }
 
-	if (ImGui::InputText("##1", name, 128))
-	{
-		object->SetName(name);
-	}
+    bool isActive = object->IsActive();
+    ImGui::SameLine();
+    ImGui::Checkbox("##2", &isActive);
+    if (isActive != object->IsActive())
+    {
+        object->SetActive(isActive);
+    }
 
-	bool isActive = object->IsActive();
-	ImGui::SameLine();
-	ImGui::Checkbox("##2", &isActive);
-	if (isActive != object->IsActive())
-	{
-		object->SetActive(isActive);
-	}
-
-	ImGui::Separator();
+    ImGui::Separator();
 
 	if (isGameObject)
 	{
@@ -222,9 +222,9 @@ void GameObjectInspector::DrawTransform(Transform * transform) const
 		const lm::FVec3 pos = transform->GetWorldPosition();
 		const lm::FVec3 scl = transform->GetWorldScale();
 
-		float translation[] = { pos.x, pos.y, pos.z };
-		float scale[] = { scl.x, scl.y, scl.z };
-		float rotation[] = { rot.x, rot.y, rot.z };
+        float translation[] = { pos.x, pos.y, pos.z };
+        float scale[] = { scl.x, scl.y, scl.z };
+        float rotation[] = { rot.x, rot.y, rot.z };
 
 		static bool lockPos = false;
 		static bool lockRot = false;
@@ -285,31 +285,31 @@ void GameObjectInspector::DrawTransform(Transform * transform) const
 
 void GameObjectInspector::DrawModel(GameObject * pObject) const
 {
-	if (ImGui::CollapsingHeader(ICON_MODEL " Model"))
-	{
-		if (ImGui::IsItemClicked(1))
-		{
-			ImGui::OpenPopup("ModelPopUp");
-		}
+    if (ImGui::CollapsingHeader(ICON_MODEL " Model"))
+    {
+        if (ImGui::IsItemClicked(1))
+        {
+            ImGui::OpenPopup("ModelPopUp");
+        }
 
-		if (ImGui::BeginPopup("ModelPopUp"))
-		{
-			ImGui::SeparatorText("Model");
-			if (ImGui::MenuItem("Remove"))
-			{
-				pObject->SetModel(nullptr);
-			}
-			ImGui::EndPopup();
-			if (!pObject->GetModel())
-			{
-				return;
-			}
-		}
+        if (ImGui::BeginPopup("ModelPopUp"))
+        {
+            ImGui::SeparatorText("Model");
+            if (ImGui::MenuItem("Remove"))
+            {
+                pObject->SetModel(nullptr);
+            }
+            ImGui::EndPopup();
+            if (!pObject->GetModel())
+            {
+                return;
+            }
+        }
 
-		std::string path = pObject->GetModel()->GetFilePath();
+        std::string path = pObject->GetModel()->GetFilePath();
 
-		ImGui::Text("Path :"); ImGui::SameLine();
-		ImGui::Text(path.c_str());
+        ImGui::Text("Path :"); ImGui::SameLine();
+        ImGui::Text(path.c_str());
 
 		if (pObject->GetModel())
 		{
@@ -320,15 +320,15 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 
 void GameObjectInspector::DrawTexture(GameObject * pObject) const
 {
-	ImGui::SetCursorPosX(30);
-	ImGui::BeginGroup();
-	if (ImGui::CollapsingHeader(ICON_TEXTURE " Texture"))
-	{
-		std::string path;
-		if (pObject->GetTexture())
-		{
-			path = pObject->GetTexture()->GetFilePath();
-		}
+    ImGui::SetCursorPosX(30);
+    ImGui::BeginGroup();
+    if (ImGui::CollapsingHeader(ICON_TEXTURE " Texture"))
+    {
+        std::string path;
+        if (pObject->GetTexture())
+        {
+            path = pObject->GetTexture()->GetFilePath();
+        }
 
 		ImGui::Text("Path :"); ImGui::SameLine();
 		ImGui::Text(path.c_str());
@@ -345,45 +345,45 @@ void GameObjectInspector::DrawRigidBody(GameObject * pObject) const
 			ImGui::OpenPopup("RigidPopUp");
 		}
 
-		if (ImGui::BeginPopup("RigidPopUp"))
-		{
-			ImGui::SeparatorText("RigidBody");
-			if (ImGui::MenuItem("Remove"))
-			{
-				pObject->RemoveRigidBody();
-			}
-			ImGui::EndPopup();
-			if (!pObject->GetRigidBody())
-			{
-				return;
-			}
-		}
+        if (ImGui::BeginPopup("RigidPopUp"))
+        {
+            ImGui::SeparatorText("RigidBody");
+            if (ImGui::MenuItem("Remove"))
+            {
+                pObject->RemoveRigidBody();
+            }
+            ImGui::EndPopup();
+            if (!pObject->GetRigidBody())
+            {
+                return;
+            }
+        }
 
-		RigidBody* rigid = pObject->GetRigidBody();
+        RigidBody* rigid = pObject->GetRigidBody();
 
-		ImGui::Text("Mass"); ImGui::SameLine();
-		btScalar mass = rigid->GetMass();
-		if (ImGui::DragFloat("##18", &mass, g_maxStep, 0, g_floatMax, g_floatFormat))
-		{
-			rigid->SetMass(mass);
-		}
+        ImGui::Text("Mass"); ImGui::SameLine();
+        btScalar mass = rigid->GetMass();
+        if (ImGui::DragFloat("##18", &mass, g_maxStep, 0, g_floatMax, g_floatFormat))
+        {
+            rigid->SetMass(mass);
+        }
 
-		ImGui::Text("Gravity"); ImGui::SameLine();
-		bool grav = rigid->IsGravityEnabled();
-		ImGui::Checkbox("##19", &grav);
-		if (grav != rigid->IsGravityEnabled())
-		{
-			rigid->SetGravityEnabled(grav);
-		}
+        ImGui::Text("Gravity"); ImGui::SameLine();
+        bool grav = rigid->IsGravityEnabled();
+        ImGui::Checkbox("##19", &grav);
+        if (grav != rigid->IsGravityEnabled())
+        {
+            rigid->SetGravityEnabled(grav);
+        }
 
-		ImGui::Text("Collision type"); ImGui::SameLine();
-		const char* items[] = { "Dynamic", "Kinetic", "Static" };
-		int item_current = rigid->GetCollisionFlag();
-		ImGui::Combo("##20", &item_current, items, IM_ARRAYSIZE(items));
-		if (item_current != rigid->GetCollisionFlag())
-		{
-			rigid->SetRBState(static_cast<RBState>(item_current));
-		}
+        ImGui::Text("Collision type"); ImGui::SameLine();
+        const char* items[] = { "Dynamic", "Kinetic", "Static" };
+        int item_current = rigid->GetCollisionFlag();
+        ImGui::Combo("##20", &item_current, items, IM_ARRAYSIZE(items));
+        if (item_current != rigid->GetCollisionFlag())
+        {
+            rigid->SetRBState(static_cast<RBState>(item_current));
+        }
 
 		ImGui::SetCursorPosX(30);
 		ImGui::BeginGroup();
@@ -393,7 +393,7 @@ void GameObjectInspector::DrawRigidBody(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawRigidShape(RigidBody * body) const
+void GameObjectInspector::DrawRigidShape(RigidBody* body) const
 {
 	if (body->GetShapeType() != RigidBodyType::BOX)
 	{
@@ -509,249 +509,250 @@ void GameObjectInspector::DrawRigidTransform(RigidBody * body) const
 	}
 }
 
-void GameObjectInspector::DrawSpecials(GameObject * pObject) const
+void GameObjectInspector::DrawSpecials(GameObject* pObject) const
 {
-	if (auto light = dynamic_cast<DirLight*>(pObject))
-	{
-		DrawLight(pObject);
-		return;
-	}
+    if (auto light = dynamic_cast<DirLight*>(pObject))
+    {
+        DrawLight(pObject);
+        return;
+    }
 
-	if (const auto cam = dynamic_cast<Camera*>(pObject))
-		DrawCamera(cam);
+    if (const auto cam = dynamic_cast<Camera*>(pObject))
+        DrawCamera(cam);
 }
 
 void GameObjectInspector::DrawComponents(GameObject * pObject) const
 {
-	std::vector<GigScripting::Behaviour*> scripts;
-	pObject->GetComponents<GigScripting::Behaviour>(scripts);
-	if (scripts.size() == 0)
-	{
-		return;
-	}
-	using namespace GigScripting;
-	if (ImGui::CollapsingHeader(ICON_COMPONENT " Scripts"))
-	{
-		for (auto& script : scripts)
-		{
-			if (!script)
-			{
-				return;
-			}
-			const std::string& name = script->GetScriptName();
-			if (ImGui::TreeNode(name.c_str()))
-			{
-				if (ImGui::IsItemClicked(1))
-				{
-					ImGui::OpenPopup("ScriptPopUp");
-				}
+    std::vector<GigScripting::Behaviour*> scripts;
+    pObject->GetComponents<GigScripting::Behaviour>(scripts);
+    if (scripts.size() == 0)
+    {
+        return;
+    }
+    using namespace GigScripting;
+    if (ImGui::CollapsingHeader(ICON_COMPONENT " Scripts"))
+    {
+        for (auto& script : scripts)
+        {
+            if (!script)
+            {
+                return;
+            }
+            const std::string& name = script->GetScriptName();
+            if (ImGui::TreeNode(name.c_str()))
+            {
+                ImGui::Text(ReadScript("../../../Resources/Editor/Scripts/" + name).c_str());
+                if (ImGui::IsItemClicked(1))
+                {
+                    ImGui::OpenPopup("ScriptPopUp");
+                }
 
-				if (ImGui::BeginPopup("ScriptPopUp"))
-				{
-					ImGui::SeparatorText("Script");
-					if (ImGui::MenuItem("Remove"))
-					{
-						pObject->RemoveScript(script);
-					}
-					ImGui::EndPopup();
-				}
+                if (ImGui::BeginPopup("ScriptPopUp"))
+                {
+                    ImGui::SeparatorText("Script");
+                    if (ImGui::MenuItem("Remove"))
+                    {
+                        pObject->RemoveScript(script);
+                    }
+                    ImGui::EndPopup();
+                }
 
-				ImGui::TreePop();
-			}
-		}
-	}
+                ImGui::TreePop();
+            }
+        }
+    }
 
-	scripts.clear();
+    scripts.clear();
 }
 
-void GameObjectInspector::DrawLight(GameObject * pObject) const
+void GameObjectInspector::DrawLight(GameObject* pObject) const
 {
-	const auto dirlight = dynamic_cast<DirLight*>(pObject);
-	if (ImGui::CollapsingHeader(ICON_LIGHT " Light"))
-	{
-		float* color = dirlight->GetColor();
-		float ambient = dirlight->GetAmbient();
-		float diffuse = dirlight->GetDiffuse();
-		float specular = dirlight->GetSpecular();
+    const auto dirlight = dynamic_cast<DirLight*>(pObject);
+    if (ImGui::CollapsingHeader(ICON_LIGHT " Light"))
+    {
+        float* color = dirlight->GetColor();
+        float ambient = dirlight->GetAmbient();
+        float diffuse = dirlight->GetDiffuse();
+        float specular = dirlight->GetSpecular();
 
-		ImGui::Text("Color"); ImGui::SameLine();
-		ImGui::ColorEdit3("##6", color);
+        ImGui::Text("Color"); ImGui::SameLine();
+        ImGui::ColorEdit3("##6", color);
 
-		ImGui::Text("Ambient"); ImGui::SameLine();
-		if (ImGui::DragFloat("##7", &ambient, g_maxStep, 0, g_floatMax, g_floatFormat))
-		{
-			dirlight->SetAmbient(ambient);
-		}
+        ImGui::Text("Ambient"); ImGui::SameLine();
+        if (ImGui::DragFloat("##7", &ambient, g_maxStep, 0, g_floatMax, g_floatFormat))
+        {
+            dirlight->SetAmbient(ambient);
+        }
 
-		ImGui::Text("Diffuse"); ImGui::SameLine();
-		if (ImGui::DragFloat("##8", &diffuse, g_maxStep, 0, g_floatMax, g_floatFormat))
-		{
-			dirlight->SetDiffuse(diffuse);
-		}
+        ImGui::Text("Diffuse"); ImGui::SameLine();
+        if (ImGui::DragFloat("##8", &diffuse, g_maxStep, 0, g_floatMax, g_floatFormat))
+        {
+            dirlight->SetDiffuse(diffuse);
+        }
 
-		ImGui::Text("Specular"); ImGui::SameLine();
-		if (ImGui::DragFloat("##9", &specular, g_maxStep, 0, g_floatMax, g_floatFormat))
-		{
-			dirlight->SetSpecular(specular);
-		}
+        ImGui::Text("Specular"); ImGui::SameLine();
+        if (ImGui::DragFloat("##9", &specular, g_maxStep, 0, g_floatMax, g_floatFormat))
+        {
+            dirlight->SetSpecular(specular);
+        }
 
-		if (const auto pointLight = dynamic_cast<PointLight*>(pObject))
-		{
-			float constant = pointLight->GetConstant();
-			float linear = pointLight->GetLinear();
-			float quadratic = pointLight->GetQuadratic();
+        if (const auto pointLight = dynamic_cast<PointLight*>(pObject))
+        {
+            float constant = pointLight->GetConstant();
+            float linear = pointLight->GetLinear();
+            float quadratic = pointLight->GetQuadratic();
 
-			ImGui::Text("Constant"); ImGui::SameLine();
-			if (ImGui::DragFloat("##10", &constant, g_maxStep, 0, g_floatMax, g_floatFormat))
-			{
-				pointLight->SetConstant(constant);
-			}
+            ImGui::Text("Constant"); ImGui::SameLine();
+            if (ImGui::DragFloat("##10", &constant, g_maxStep, 0, g_floatMax, g_floatFormat))
+            {
+                pointLight->SetConstant(constant);
+            }
 
-			ImGui::Text("Linear"); ImGui::SameLine();
-			if (ImGui::DragFloat("##11", &linear, g_maxStep, 0, g_floatMax, g_floatFormat))
-			{
-				pointLight->SetLinear(linear);
-			}
+            ImGui::Text("Linear"); ImGui::SameLine();
+            if (ImGui::DragFloat("##11", &linear, g_maxStep, 0, g_floatMax, g_floatFormat))
+            {
+                pointLight->SetLinear(linear);
+            }
 
-			ImGui::Text("Quadratic"); ImGui::SameLine();
-			if (ImGui::DragFloat("##12", &quadratic, g_maxStep, 0, g_floatMax, g_floatFormat))
-			{
-				pointLight->SetQuadratic(quadratic);
-			}
-		}
+            ImGui::Text("Quadratic"); ImGui::SameLine();
+            if (ImGui::DragFloat("##12", &quadratic, g_maxStep, 0, g_floatMax, g_floatFormat))
+            {
+                pointLight->SetQuadratic(quadratic);
+            }
+        }
 
-		if (const auto spotLight = dynamic_cast<SpotLight*>(pObject))
-		{
-			float cutOff = spotLight->GetCutOff();
-			float outerCutOff = spotLight->GetOuterCutOff();
+        if (const auto spotLight = dynamic_cast<SpotLight*>(pObject))
+        {
+            float cutOff = spotLight->GetCutOff();
+            float outerCutOff = spotLight->GetOuterCutOff();
 
-			ImGui::Text("CutOff"); ImGui::SameLine();
-			if (ImGui::DragFloat("##13", &cutOff, g_maxStep, 0, g_floatMax, g_floatFormat))
-			{
-				spotLight->SetCutOff(cutOff);
-			}
+            ImGui::Text("CutOff"); ImGui::SameLine();
+            if (ImGui::DragFloat("##13", &cutOff, g_maxStep, 0, g_floatMax, g_floatFormat))
+            {
+                spotLight->SetCutOff(cutOff);
+            }
 
-			ImGui::Text("OuterCutOff"); ImGui::SameLine();
-			if (ImGui::DragFloat("##14", &outerCutOff, g_maxStep, 0, g_floatMax, g_floatFormat))
-			{
-				spotLight->SetOuterCutOff(outerCutOff);
-			}
-		}
-	}
+            ImGui::Text("OuterCutOff"); ImGui::SameLine();
+            if (ImGui::DragFloat("##14", &outerCutOff, g_maxStep, 0, g_floatMax, g_floatFormat))
+            {
+                spotLight->SetOuterCutOff(outerCutOff);
+            }
+        }
+    }
 }
 
 void GameObjectInspector::DrawCamera(Camera * pObject) const
 {
-	float fov = pObject->GetFov();
-	float tNear = pObject->GetNear();
-	float tFar = pObject->GetFar();
+    float fov = pObject->GetFov();
+    float tNear = pObject->GetNear();
+    float tFar = pObject->GetFar();
 
-	if (ImGui::CollapsingHeader(ICON_CAMERA " Camera"))
-	{
-		ImGui::Text("Fov"); ImGui::SameLine();
-		if (ImGui::DragFloat("##15", &fov, g_maxStep, 0, g_floatMax, g_floatFormat))
-		{
-			pObject->SetFov(fov);
-		}
+    if (ImGui::CollapsingHeader(ICON_CAMERA " Camera"))
+    {
+        ImGui::Text("Fov"); ImGui::SameLine();
+        if (ImGui::DragFloat("##15", &fov, g_maxStep, 0, g_floatMax, g_floatFormat))
+        {
+            pObject->SetFov(fov);
+        }
 
-		ImGui::Text("Near"); ImGui::SameLine();
-		if (ImGui::DragFloat("##16", &tNear, g_maxStep, 0, g_floatMax, g_floatFormat))
-		{
-			pObject->SetNear(tNear);
-		}
+        ImGui::Text("Near"); ImGui::SameLine();
+        if (ImGui::DragFloat("##16", &tNear, g_maxStep, 0, g_floatMax, g_floatFormat))
+        {
+            pObject->SetNear(tNear);
+        }
 
-		ImGui::Text("Far"); ImGui::SameLine();
-		if (ImGui::DragFloat("##17", &tFar, g_maxStep, 0, g_floatMax, g_floatFormat))
-		{
-			pObject->SetFar(tFar);
-		}
-	}
+        ImGui::Text("Far"); ImGui::SameLine();
+        if (ImGui::DragFloat("##17", &tFar, g_maxStep, 0, g_floatMax, g_floatFormat))
+        {
+            pObject->SetFar(tFar);
+        }
+    }
 }
 
 void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 {
-	const ImGuiStyle& style = ImGui::GetStyle();
+    const ImGuiStyle& style = ImGui::GetStyle();
 
-	const float size = ImGui::CalcTextSize("Add component " ICON_PLUS).x + style.FramePadding.x * 2.0f;
-	const float avail = ImGui::GetContentRegionAvail().x;
+    const float size = ImGui::CalcTextSize("Add component " ICON_PLUS).x + style.FramePadding.x * 2.0f;
+    const float avail = ImGui::GetContentRegionAvail().x;
 
-	const float off = (avail - size) * 0.5f;
-	if (off > 0.0f)
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+    const float off = (avail - size) * 0.5f;
+    if (off > 0.0f)
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
 
-	if (ImGui::Button("Add component " ICON_PLUS))
-	{
-		ImGui::OpenPopup("addComponentPopUp");
-	}
+    if (ImGui::Button("Add component " ICON_PLUS))
+    {
+        ImGui::OpenPopup("addComponentPopUp");
+    }
 
-	if (ImGui::BeginPopup("addComponentPopUp"))
-	{
-		ImGui::SeparatorText("Components");
-		if (!pObject->GetModel())
-		{
-			if (ImGui::MenuItem(ICON_MODEL " Model"))
-			{
-				pObject->SetModel(g_defaultModelPath);
-			}
-		}
+    if (ImGui::BeginPopup("addComponentPopUp"))
+    {
+        ImGui::SeparatorText("Components");
+        if (!pObject->GetModel())
+        {
+            if (ImGui::MenuItem(ICON_MODEL " Model"))
+            {
+                pObject->SetModel(g_defaultModelPath);
+            }
+        }
 
-		if (!pObject->GetRigidBody())
-		{
-			if (ImGui::MenuItem("RigidBody Capsule"))
-			{
-				pObject->CreateCapsuleRigidBody(1, 2, { 1 }, 1);
-			}
-			if (ImGui::MenuItem("RigidBody Cube"))
-			{
-				pObject->CreateBoxRigidBody({ 1 }, { 1 }, 1);
-			}
-			if (ImGui::MenuItem("RigidBody Sphere"))
-			{
-				pObject->CreateSphereRigidBody(1, { 1 }, 1);
-			}
-		}
+        if (!pObject->GetRigidBody())
+        {
+            if (ImGui::MenuItem("RigidBody Capsule"))
+            {
+                pObject->CreateCapsuleRigidBody(1, 2, { 1 }, 1);
+            }
+            if (ImGui::MenuItem("RigidBody Cube"))
+            {
+                pObject->CreateBoxRigidBody({ 1 }, { 1 }, 1);
+            }
+            if (ImGui::MenuItem("RigidBody Sphere"))
+            {
+                pObject->CreateSphereRigidBody(1, { 1 }, 1);
+            }
+        }
 
-		if (ImGui::MenuItem(ICON_COMPONENT " Scripts"))
-		{
-			pObject->AddScript();
-		}
+        if (ImGui::MenuItem(ICON_COMPONENT " Scripts"))
+        {
+            pObject->AddScript();
+        }
 
-		ImGui::EndPopup();
-	}
+        ImGui::EndPopup();
+    }
 }
 
 void GameObjectInspector::DrawDropTarget(GameObject * pObject) const
 {
-	ImGui::BeginChild("##");
-	ImGui::EndChild();
+    ImGui::BeginChild("##");
+    ImGui::EndChild();
 
-	if (ImGui::BeginDragDropTarget())
-	{
-		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
-		{
-			const char* path = static_cast<const char*>(payload->Data);
-			const std::string str(path);
-			if (str.find(".obj") != std::string::npos
-				|| str.find(".OBJ") != std::string::npos
-				|| str.find(".fbx") != std::string::npos
-				|| str.find(".FBX") != std::string::npos)
-			{
-				pObject->SetModel(path);
-			}
-			else if (str.find(".png") != std::string::npos ||
-				str.find(".jpg") != std::string::npos ||
-				str.find(".jpeg") != std::string::npos)
-			{
-				pObject->SetTexture(path);
-			}
-			else if (str.find(".lua") != std::string::npos)
-			{
-				pObject->AddScript(path);
-			}
-		}
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+        {
+            const char* path = static_cast<const char*>(payload->Data);
+            const std::string str(path);
+            if (str.find(".obj") != std::string::npos
+                || str.find(".OBJ") != std::string::npos
+                || str.find(".fbx") != std::string::npos
+                || str.find(".FBX") != std::string::npos)
+            {
+                pObject->SetModel(path);
+            }
+            else if (str.find(".png") != std::string::npos ||
+                str.find(".jpg") != std::string::npos ||
+                str.find(".jpeg") != std::string::npos)
+            {
+                pObject->SetTexture(path);
+            }
+            else if (str.find(".lua") != std::string::npos)
+            {
+                pObject->AddScript(path);
+            }
+        }
 
-		ImGui::EndDragDropTarget();
-	}
+        ImGui::EndDragDropTarget();
+    }
 }
 
 void GameObjectInspector::LockCalculation(float* fvec3, const lm::FVec3 & original) const
@@ -784,4 +785,16 @@ void GameObjectInspector::LockCalculation(float* fvec3, const lm::FVec3 & origin
 			fvec3[i] = original[i] * val;
 		}
 	}
+}
+
+std::string GameObjectInspector::ReadScript(const std::string& pPath) const
+{
+	std::ifstream file(pPath + ".lua");
+	if (!file.is_open()) {
+		return "Failed to open file: " + pPath;
+	}
+
+	std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	file.close();
+	return content;
 }
