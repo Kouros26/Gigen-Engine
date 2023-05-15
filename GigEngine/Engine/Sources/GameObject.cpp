@@ -119,7 +119,14 @@ void GameObject::SetModel(std::string const& filePath)
 	model = ResourceManager::Get<Model>(filePath);
 	if (!texture)
 	{
-		texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
+		if (filePath.find(".fbx") != std::string::npos || filePath.find(".FBX") != std::string::npos)
+		{
+			texture = ResourceManager::Get<Texture>(g_defaultTexturePath2);
+		}
+		else
+		{
+			texture = ResourceManager::Get<Texture>(g_defaultTexturePath);
+		}
 	}
 }
 

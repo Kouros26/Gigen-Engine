@@ -89,6 +89,8 @@ void GameObjectInspector::DrawObject()
 
 void GameObjectInspector::DrawGameObject(GameObject * pObject) const
 {
+	if (!pObject) return;
+
 	DrawTransform(&pObject->GetTransform());
 	DrawSpecials(pObject);
 
