@@ -1,7 +1,6 @@
 #include "FileExplorer.h"
 #include "imgui.h"
 
-#include <stdio.h>
 #include <filesystem>
 #include <iostream>
 
@@ -36,7 +35,18 @@ void FileExplorer::Draw()
 		ImGui::NextColumn();
 	}
 
-	for (auto& directoryEntry : std::filesystem::directory_iterator(currentDirPath))
+	std::filesystem::directory_iterator iter;
+
+	try {
+		iter = std::filesystem::directory_iterator{ currentDirPath };
+	}
+	catch (...)
+	{
+		std::cout << "error path not found : " << currentDirPath << std::endl;
+		return;
+	}
+
+	for (auto& directoryEntry : iter)
 	{
 		const auto fullPath = directoryEntry.path();
 		auto relativePath = std::filesystem::relative(fullPath, currentDirPath);
@@ -56,18 +66,21 @@ void FileExplorer::Draw()
 		ImGui::Button(icon, { cellSize, cellSize });
 		ImGui::SetWindowFontScale(1);
 
-		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0) && directoryEntry.is_directory())
+		if (ImGui::IsItemHovered())
 		{
-			currentDirPath += "/" + filename;
-		}
-
-		if (!directoryEntry.is_directory())
-		{
-			if (ImGui::BeginDragDropSource())
+			if (ImGui::IsMouseDoubleClicked(0) && directoryEntry.is_directory())
 			{
-				std::string itemPath = fullPath.string();
-				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath.c_str(), sizeof(wchar_t) * (itemPath.length() + 1));
-				ImGui::EndDragDropSource();
+				currentDirPath += "/" + filename;
+			}
+
+			if (!directoryEntry.is_directory())
+			{
+				if (ImGui::BeginDragDropSource())
+				{
+					std::string itemPath = fullPath.string();
+					ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath.c_str(), sizeof(wchar_t) * (itemPath.length() + 1));
+					ImGui::EndDragDropSource();
+				}
 			}
 		}
 

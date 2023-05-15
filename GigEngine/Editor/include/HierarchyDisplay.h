@@ -2,6 +2,7 @@
 #include "Displayable.h"
 
 class GameObject;
+class UIElement;
 
 class HierarchyDisplay : public Displayable
 {
@@ -15,6 +16,9 @@ public:
 private:
 
 	void DisplayHierarchy();
+
+	void DisplayUI();
+	void DisplayUIElement(UIElement& element);
 
 	void CreatePopUp() const;
 

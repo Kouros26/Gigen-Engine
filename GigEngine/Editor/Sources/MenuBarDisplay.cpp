@@ -31,7 +31,7 @@ void MenuBarDisplay::Draw()
 
 		ImGui::EndMenu();
 	}
-	if (ImGui::Button(ICON_SAVE)) 
+	if (ImGui::Button(ICON_SAVE))
 	{
 		Scene::SaveScene(Scene::GetCurrentSceneName());
 	}
@@ -39,7 +39,7 @@ void MenuBarDisplay::Draw()
 	DrawPlayPause();
 
 	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 12);
-	ImGui::PushStyleColor(ImGuiCol_Button, {1,0,0,0.8f});
+	ImGui::PushStyleColor(ImGuiCol_Button, { 1,0,0,0.8f });
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 1,0,0,1 });
 	if (ImGui::Button(ICON_CLOSE))
 	{
@@ -53,9 +53,10 @@ void MenuBarDisplay::Draw()
 
 void MenuBarDisplay::DrawPlayPause() const
 {
-	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() / 2 - 75);
+	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() / 2 - 100);
 
 	const bool isPause = Application::IsInPause();
+	const bool isShowUI = Application::IsShowUI();
 	const bool isPlaying = !Application::IsInEditor();
 	const bool isUsingEditorCam = Application::IsUsingEditorCam();
 
@@ -105,6 +106,23 @@ void MenuBarDisplay::DrawPlayPause() const
 	}
 
 	if (isUsingEditorCam)
+	{
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+	}
+
+	if (isShowUI)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Button, { 0,1,0,0.5f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0,1,0,0.6f });
+	}
+
+	if (ImGui::Button(ICON_TEXTURE " UI", { 50, 0 }))
+	{
+		Application::ShowUI();
+	}
+
+	if (isShowUI)
 	{
 		ImGui::PopStyleColor();
 		ImGui::PopStyleColor();

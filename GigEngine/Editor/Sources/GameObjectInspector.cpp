@@ -1,5 +1,7 @@
-#include <Windows.h>
 #include "GameObjectInspector.h"
+#include "UIManager.h"
+#include "UIImage.h"
+#include "UIText.h"
 #include "InterfaceManager.h"
 #include "ToolsDisplay.h"
 #include "imgui.h"
@@ -12,8 +14,6 @@
 #include "SphereRigidBody.h"
 #include "ResourceManager.h"
 #include "GameObjectManager.h"
-#include <Windows.h>
-#include <filesystem>
 #include "Behaviour.h"
 
 GameObjectInspector::GameObjectInspector()
@@ -36,14 +36,22 @@ void GameObjectInspector::Draw()
 	LimitWidthResize();
 	ImGui::SetWindowSize("Inspector", { width, height });
 
-	DrawGameObject();
+	DrawObject();
 
 	ImGui::End();
 }
 
-void GameObjectInspector::DrawGameObject()
+void GameObjectInspector::DrawObject()
 {
-	GameObject* object = GameObjectManager::GetFocusedGameObject();
+	bool isGameObject = true;
+	Object* object = GameObjectManager::GetFocusedGameObject();
+
+	if (!object)
+	{
+		object = UIManager::GetFocusedElement();
+		isGameObject = false;
+	}
+
 	if (!object) return;
 
 	static char name[128];
@@ -66,29 +74,151 @@ void GameObjectInspector::DrawGameObject()
 
 	ImGui::Separator();
 
-	DrawTransform(object);
-	DrawSpecials(object);
-
-	if (object->GetRigidBody())
-		DrawRigidBody(object);
-
-	if (object->GetModel())
-		DrawModel(object);
-
-	DrawComponents(object);
-	ImGui::Separator();
-	DrawAddComponent(object);
-
-	DrawDropTarget(object);
+	if (isGameObject)
+	{
+		DrawGameObject(dynamic_cast<GameObject*>(object));
+		DrawDropTarget(dynamic_cast<GameObject*>(object));
+	}
+	else
+	{
+		DrawUIElement(dynamic_cast<UIElement*>(object));
+		DrawUIText(dynamic_cast<UIText*>(object));
+		DrawDropTargetImage(dynamic_cast<UIImage*>(object));
+	}
 }
 
-void GameObjectInspector::DrawTransform(GameObject * pObject) const
+void GameObjectInspector::DrawGameObject(GameObject * pObject) const
 {
+	DrawTransform(&pObject->GetTransform());
+	DrawSpecials(pObject);
+
+	if (pObject->GetRigidBody())
+		DrawRigidBody(pObject);
+
+	if (pObject->GetModel())
+		DrawModel(pObject);
+
+	DrawComponents(pObject);
+	ImGui::Separator();
+	DrawAddComponent(pObject);
+}
+
+void GameObjectInspector::DrawUIElement(UIElement * pUI) const
+{
+	DrawRectTransform(&pUI->GetRectTransform());
+
+	bool isWorld = pUI->GetIsWorld();
+	if (isWorld)
+		DrawTransform(&pUI->GetTransform());
+
+	lm::FVec3 col = pUI->GetColor();
+	float color[3] = { col.x, col.y, col.z };
+
+	ImGui::Text("World"); ImGui::SameLine();
+	if (ImGui::Checkbox("##11", &isWorld))
+	{
+		pUI->SetIsWorld(isWorld);
+	}
+
+	ImGui::Text("Color"); ImGui::SameLine();
+	if (ImGui::ColorEdit3("##10", color))
+	{
+		pUI->SetColor({ color[0],  color[1], color[2] });
+	}
+}
+
+void GameObjectInspector::DrawRectTransform(RectTransform * rectTransform) const
+{
+	if (!rectTransform) return;
+
+	if (ImGui::CollapsingHeader(ICON_TRANSFORM " RectTransform"))
+	{
+		const lm::FVec2 pos = rectTransform->GetPosition();
+		const lm::FVec2 scl = rectTransform->GetSize();
+
+		float translation[] = { pos.x, pos.y };
+		float scale[] = { scl.x, scl.y };
+
+		ImGui::Text("Position"); ImGui::SameLine();
+		if (ImGui::DragFloat2("##30", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+		{
+			rectTransform->SetPosition(lm::FVec2(translation[0], translation[1]));
+		}
+
+		ImGui::Text("Size"); ImGui::SameLine();
+		if (ImGui::DragFloat2("##31", scale, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+		{
+			rectTransform->SetSize(lm::FVec2(scale[0], scale[1]));
+		}
+	}
+}
+
+void GameObjectInspector::DrawDropTargetImage(UIImage * pImage) const
+{
+	if (!pImage) return;
+
+	ImGui::BeginChild("##");
+	ImGui::EndChild();
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+		{
+			const char* path = static_cast<const char*>(payload->Data);
+			const std::string str(path);
+			if (str.find(".png") != std::string::npos ||
+				str.find(".jpg") != std::string::npos ||
+				str.find(".jpeg") != std::string::npos)
+			{
+				pImage->SetTexture(path);
+			}
+		}
+
+		ImGui::EndDragDropTarget();
+	}
+}
+
+void GameObjectInspector::DrawUIText(UIText * pText) const
+{
+	if (!pText) return;
+
+	ImGui::Text("Text"); ImGui::SameLine();
+	static char text[250];
+	strcpy_s(text, pText->GetText().c_str());
+
+	if (ImGui::InputText("##6", text, 250))
+	{
+		pText->SetText(text);
+	}
+
+	ImGui::BeginChild("##");
+	ImGui::EndChild();
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+		{
+			const char* path = static_cast<const char*>(payload->Data);
+			const std::string str(path);
+			if (str.find(".ttf") != std::string::npos)
+			{
+				pText->SetFont(path);
+			}
+		}
+
+		ImGui::EndDragDropTarget();
+	}
+}
+
+void GameObjectInspector::DrawTransform(Transform * transform) const
+{
+	if (!transform) return;
+
 	if (ImGui::CollapsingHeader(ICON_TRANSFORM " Transform"))
 	{
-		const lm::FVec3 rot = pObject->GetTransform().GetWorldRotation();
-		const lm::FVec3 pos = pObject->GetTransform().GetWorldPosition();
-		const lm::FVec3 scl = pObject->GetTransform().GetWorldScale();
+		const lm::FVec3 rot = transform->GetWorldRotation();
+		const lm::FVec3 pos = transform->GetWorldPosition();
+		const lm::FVec3 scl = transform->GetWorldScale();
 
 		float translation[] = { pos.x, pos.y, pos.z };
 		float scale[] = { scl.x, scl.y, scl.z };
@@ -112,7 +242,7 @@ void GameObjectInspector::DrawTransform(GameObject * pObject) const
 			{
 				LockCalculation(translation, pos);
 			}
-			pObject->GetTransform().SetWorldPosition(lm::FVec3(translation[0], translation[1], translation[2]));
+			transform->SetWorldPosition(lm::FVec3(translation[0], translation[1], translation[2]));
 		}
 
 		ImGui::Text("Scale"); ImGui::SameLine();
@@ -129,7 +259,7 @@ void GameObjectInspector::DrawTransform(GameObject * pObject) const
 			{
 				LockCalculation(scale, scl);
 			}
-			pObject->GetTransform().SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
+			transform->SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
 		}
 
 		ImGui::Text("Rotation"); ImGui::SameLine();
@@ -146,7 +276,7 @@ void GameObjectInspector::DrawTransform(GameObject * pObject) const
 			{
 				LockCalculation(rotation, rot);
 			}
-			pObject->GetTransform().SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
+			transform->SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
 		}
 	}
 }
@@ -179,14 +309,6 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 		ImGui::Text("Path :"); ImGui::SameLine();
 		ImGui::Text(path.c_str());
 
-		if (ImGui::Button("Locate##1"))
-		{
-			const std::string& filePath = GetFilePathFromExplorer("3D object \0 *.obj; *.OBJ; *.fbx; *.FBX\0");
-
-			if (filePath.length() > 0)
-				pObject->SetModel(filePath);
-		}
-
 		if (pObject->GetModel())
 		{
 			DrawTexture(pObject);
@@ -208,14 +330,6 @@ void GameObjectInspector::DrawTexture(GameObject * pObject) const
 
 		ImGui::Text("Path :"); ImGui::SameLine();
 		ImGui::Text(path.c_str());
-
-		if (ImGui::Button("Locate##2"))
-		{
-			const std::string& filePath = GetFilePathFromExplorer("image \0 *.png; *.jpeg; *.jpg\0");
-
-			if (filePath.length() > 0)
-				pObject->SetTexture(filePath);
-		}
 	}
 	ImGui::EndGroup();
 }
@@ -668,24 +782,4 @@ void GameObjectInspector::LockCalculation(float* fvec3, const lm::FVec3 & origin
 			fvec3[i] = original[i] * val;
 		}
 	}
-}
-
-std::string GameObjectInspector::GetFilePathFromExplorer(const char* filter)
-{
-	OPENFILENAME ofn;
-	char fileName[1000] = "";
-	ZeroMemory(&ofn, sizeof(ofn));
-
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = NULL;
-	ofn.lpstrFilter = filter;
-	ofn.nMaxFile = 1000;
-	ofn.lpstrFile = fileName;
-	ofn.Flags = OFN_FILEMUSTEXIST;
-	ofn.lpstrDefExt = "";
-
-	if (GetOpenFileName(&ofn))
-		return { fileName };
-
-	return {};
 }

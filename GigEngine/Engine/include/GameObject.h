@@ -1,4 +1,5 @@
 #pragma once
+#include "Object.h"
 #include <list>
 #include "Transform.h"
 #include <vector>
@@ -13,7 +14,7 @@ class Component;
 class Model;
 class Texture;
 
-class GameObject
+class GameObject : public Object
 {
 public:
 	GameObject();
@@ -26,7 +27,9 @@ public:
 	GameObject& operator=(const GameObject& other);
 	GameObject& operator=(GameObject&& other) noexcept = delete;
 
-	virtual ~GameObject();
+	virtual ~GameObject() override;
+
+	std::string GetType() override;
 
 	void CreateBoxRigidBody(const lm::FVec3& halfExtents, const lm::FVec3& scale, float mass);
 	void CreateCapsuleRigidBody(float radius, float height, const lm::FVec3& scale, float mass);
@@ -44,17 +47,11 @@ public:
 
 	[[nodiscard]] Model* GetModel() const;
 	[[nodiscard]] Texture* GetTexture() const;
-	virtual std::string GetType();
 
 	void LateUpdate() const;
 
-	std::string GetName();
-	void SetName(const std::string& pName);
-
-	[[nodiscard]] unsigned int GetId() const;
-
-    void AddChild(GameObject& child);
-    void RemoveChild(GameObject& child);
+	void AddChild(GameObject& child);
+	void RemoveChild(GameObject& child);
 
 	virtual void OnCollisionEnter(const Collision& collision);
 	virtual void OnCollisionExit(const Collision& collision);
@@ -88,29 +85,24 @@ public:
 	[[nodiscard]] RigidBody* GetRigidBody() const;
 	void RemoveRigidBody();
 
-    GameObject*& GetParent();
-    void SetParent(GameObject& newParent);
-    GameObject* GetChild(unsigned int index);
-    [[nodiscard]] unsigned int GetChildrenCount() const;
-    std::list<GameObject*>& GetChildren();
+	GameObject*& GetParent();
+	void SetParent(GameObject& newParent);
+	GameObject* GetChild(unsigned int index);
+	[[nodiscard]] unsigned int GetChildrenCount() const;
+	std::list<GameObject*>& GetChildren();
 
-    bool IsAParent(GameObject* obj) const;
-	[[nodiscard]] bool IsActive() const;
-	void SetActive(bool b);
+	bool IsAParent(GameObject* obj) const;
+	virtual void SetActive(bool b) override;
 
 	void CheckForScript(Component* pComponent);
 
-    [[nodiscard]] GigScripting::Behaviour* GetBehaviour(const std::string& pName) const;
+	[[nodiscard]] GigScripting::Behaviour* GetBehaviour(const std::string& pName) const;
 	void RemoveScript(GigScripting::Behaviour* pScript);
 
 	void AddScript(const std::string& path);
 	void AddScript();
 
 private:
-
-	bool isActive;
-	std::string name{};
-	unsigned int id{};
 
 	Transform transform{};
 	RigidBody* rigidBody = nullptr;
@@ -122,9 +114,6 @@ private:
 
 	Model* model = nullptr;
 	Texture* texture = nullptr;
-
-	//use so every gameObject has a different id
-	static unsigned int gameObjectIndex;
 };
 
 template<class T>

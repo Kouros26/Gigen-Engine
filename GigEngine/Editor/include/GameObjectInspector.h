@@ -4,8 +4,13 @@
 #include <string>
 
 class GameObject;
+class UIElement;
+class UIImage;
+class UIText;
 class Camera;
 class RigidBody;
+class RectTransform;
+class Transform;
 
 class GameObjectInspector : public Displayable
 {
@@ -17,9 +22,15 @@ public:
 	void Draw() override;
 
 private:
-	void DrawGameObject();
+	void DrawObject();
+	void DrawGameObject(GameObject* pObject) const;
 
-	void DrawTransform(GameObject* pObject) const;
+	void DrawUIElement(UIElement* pUI) const;
+	void DrawRectTransform(RectTransform* rectTransform) const;
+	void DrawDropTargetImage(UIImage* pImage) const;
+	void DrawUIText(UIText* pText) const;
+
+	void DrawTransform(Transform* transform) const;
 	void DrawModel(GameObject* pObject) const;
 	void DrawTexture(GameObject* pObject) const;
 	void DrawRigidBody(GameObject* pObject) const;
@@ -37,6 +48,4 @@ private:
 	void DrawDropTarget(GameObject* pObject) const;
 
 	void LockCalculation(float* fvec3, const lm::FVec3& original) const;
-
-	static std::string GetFilePathFromExplorer(const char* filter);
 };

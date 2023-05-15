@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "RigidBody.h"
+#include "UIManager.h"
 #include <algorithm>
 
 GameObjectManager::GameObjectManager()
@@ -114,7 +115,7 @@ GameObject* GameObjectManager::CreatePointLight(float ambient, float diffuse, fl
 }
 
 GameObject* GameObjectManager::CreateDirLight(float ambient, float diffuse, float specular,
-                                              const lm::FVec3& color)
+	const lm::FVec3& color)
 {
 	if (dirLights.size() >= g_nbMaxLight)
 		return nullptr;
@@ -285,6 +286,8 @@ int GameObjectManager::GetSpotLightSize()
 void GameObjectManager::SetFocusedGameObject(GameObject* obj)
 {
 	focusedObject = obj;
+	if(obj)
+		UIManager::SetFocusedElement(nullptr);
 }
 
 GameObject* GameObjectManager::GetFocusedGameObject()

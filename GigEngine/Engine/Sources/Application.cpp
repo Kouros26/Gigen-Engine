@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Model.h"
 #include "GameObjectManager.h"
+#include "UIManager.h"
 #include "ResourceManager.h"
 #include "DrawLine.h"
 #include "Light.h"
@@ -15,6 +16,8 @@
 #include "SceneSaver.h"
 #include "WorldPhysics.h"
 #include "ScriptInterpreter.h"
+
+#include "UIImage.h"
 
 using namespace GigRenderer;
 
@@ -85,6 +88,11 @@ void Application::Stop()
 	isEditor = true;
 }
 
+void Application::ShowUI()
+{
+	showUI = !showUI;
+}
+
 void Application::UseEditorCam()
 {
 	useEditorCam = !useEditorCam;
@@ -101,6 +109,10 @@ bool Application::IsInPause()
 bool Application::IsUsingEditorCam()
 {
 	return useEditorCam;
+}
+bool Application::IsShowUI()
+{
+	return showUI;
 }
 void Application::StartGame()
 {
@@ -139,7 +151,12 @@ void Application::Init()
 	editorCamera.SetRatio(window.GetViewPortRatio());
 	RENDERER.Init();
 	Lines::Init();
+	UIManager::Init();
 	InitMainShader();
+
+	//to remove
+	UIManager::AddTextElement();
+	UIManager::AddImageElement();
 }
 
 void Application::InitMainShader()
@@ -189,6 +206,9 @@ void Application::Draw()
 	mainShader.UnUse(); //stop using the main shader
 
 	Lines::DrawLines(); //render debug lines or guizmos
+
+	if (showUI)
+		UIManager::DrawUI(); // render UI
 }
 
 void Application::ClearWindow()
