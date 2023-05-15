@@ -223,7 +223,7 @@ void GameObjectManager::CreateSkyBox()
 	skybox = new Skybox();
 }
 
-Skybox*& GameObjectManager::GetSkyBox()
+Skybox* GameObjectManager::GetSkyBox()
 {
 	return skybox;
 }
@@ -286,7 +286,7 @@ int GameObjectManager::GetSpotLightSize()
 void GameObjectManager::SetFocusedGameObject(GameObject* obj)
 {
 	focusedObject = obj;
-	if(obj)
+	if (obj)
 		UIManager::SetFocusedElement(nullptr);
 }
 
