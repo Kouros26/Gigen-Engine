@@ -100,7 +100,6 @@ void GigScripting::LuaBindComponent::DelegatePhysics(sol::state& pLuaState, std:
     if (DelegateFromString(pLuaState, DelegateString))
     {
         getFunctionFromString(DelegateString) = pLuaState[DelegateString];
-
     }
 }
 
@@ -125,4 +124,6 @@ std::function<void(GameObject*)>& GigScripting::LuaBindComponent::getFunctionFro
 
     if (pInput.compare("OnCollisionExit") == 0)
         return delegateFunctions.OnCollisionExit;
+
+    return delegateFunctions.defaultReturn;
 }

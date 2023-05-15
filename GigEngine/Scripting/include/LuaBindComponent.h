@@ -7,6 +7,7 @@ namespace GigScripting
     {
         std::function<void(GameObject*)> OnCollisionEnter;
         std::function<void(GameObject*)> OnCollisionExit;
+        std::function<void(GameObject*)> defaultReturn;
     };
 
     class LuaBindComponent
