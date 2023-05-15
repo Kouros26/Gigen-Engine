@@ -4,6 +4,11 @@
 #include "Console.h"
 #include "imgui.h"
 
+#include <stdio.h>
+#include <filesystem>
+#include <iostream>
+#include <stdlib.h>
+
 ToolsDisplay::ToolsDisplay()
 {
 	InterfaceManager::AddEditorElement(this);

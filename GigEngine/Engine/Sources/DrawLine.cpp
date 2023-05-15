@@ -64,7 +64,7 @@ void Lines::DrawLines()
 {
 	shaderProgram.Use();
 
-	RENDERER.SetUniformValue(MVPLocation, UniformType::MAT4, lm::FMat4::ToArray(Application::GetViewProj()));
+	RENDERER.SetUniformValue(MVPLocation, UniformType::MAT4, &Application::GetViewProj());
 
 	DrawDebugLines();
 	RENDERER.Disable(RD_DEPTH_TEST);

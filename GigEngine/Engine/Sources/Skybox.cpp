@@ -39,8 +39,8 @@ void Skybox::Draw()
 		GetTransform().SetWorldPosition(cam->GetTransform().GetWorldPosition());
 	}
 
-	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(Application::GetViewProj()));
-	RENDERER.SetUniformValue(ModelLocation, UniformType::MAT4, lm::FMat4::ToArray(GetTransform().GetMatrix()));
+	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, &Application::GetViewProj());
+	RENDERER.SetUniformValue(ModelLocation, UniformType::MAT4, &GetTransform().MatrixGetter());
 
 	UpdateRender();
 

@@ -62,14 +62,13 @@ void Application::Play()
 {
 	if (isEditor)
 	{
+		SCRIPT_INTERPRETER.RefreshBehaviours();
 		StartGame();
 		isEditor = false;
-		SCRIPT_INTERPRETER.RefreshBehaviours();
 	}
 	else
 	{
 		Stop();
-		isPause = false;
 	}
 }
 
@@ -80,6 +79,7 @@ void Application::Pause()
 
 void Application::Stop()
 {
+	isPause = false;
 	GameObjectManager::SetCurrentCamera(nullptr);
 	Scene::ReloadScene(Scene::GetCurrentSceneName());
 	isEditor = true;
@@ -220,7 +220,7 @@ void Application::UpdateGameObjectRender() const
 
 		object->UpdateHierarchy();
 
-		RENDERER.SetUniformValue(ModelLocation, UniformType::MAT4, lm::FMat4::ToArray(object->GetTransform().GetMatrix()));
+		RENDERER.SetUniformValue(ModelLocation, UniformType::MAT4, &object->GetTransform().MatrixGetter());
 		object->UpdateRender();
 	}
 }
@@ -267,6 +267,6 @@ void Application::UpdateUniforms() const
 		viewPos = lm::FVec3(0);
 	}
 
-	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, lm::FMat4::ToArray(viewProj));
+	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, &viewProj);
 	RENDERER.SetUniformValue(viewPosLocation, UniformType::VEC3, &viewPos);
 }

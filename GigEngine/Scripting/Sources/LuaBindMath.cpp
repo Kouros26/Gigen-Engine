@@ -288,4 +288,7 @@ void GigScripting::LuaBindMath::BindMath(sol::state& pLua)
     luaState.create_named_table("MathsTools");
     luaState["MathsTools"]["ToRadians"] = [](const float pAngle) { return lm::degreesToRadians(pAngle); };
     luaState["MathsTools"]["ToDegrees"] = [](const float pAngle) { return lm::radiansToDegrees(pAngle); };
+    luaState["MathsTools"]["Clamp"] = [](const float pValue, const float pMin, const float pMax) { return lm::clamp(pValue, pMin, pMax); };
+    luaState["MathsTools"]["RandomInt"] = [](const int pMin, const int pMax) { return lm::randomInt(pMin, pMax); };
+    luaState["MathsTools"]["RandomFloat"] = [](const float pMin, const float pMax) { return lm::randomFloat(pMin, pMax); };
 }

@@ -50,6 +50,9 @@ void Window::Init()
 	version += '0';
 
 	SetIcon("Engine/Textures/Icon.png");
+
+	mouseIcons[0].pixels = stbi_load("Engine/Textures/view.png", &mouseIcons[0].width, &mouseIcons[0].height, 0, 4);
+	mouseIcons[1].pixels = stbi_load("Engine/Textures/grab.png", &mouseIcons[1].width, &mouseIcons[1].height, 0, 4);
 }
 
 void Window::ProcessInput() const
@@ -57,13 +60,17 @@ void Window::ProcessInput() const
 	glfwPollEvents();
 	GigInput::Inputs::UpdateMousePosition();
 
-	//if (GigInput::Inputs::GetKey(GigInput::Keys::ESCAPE))
-		//here stop running in editor
+	if (GigInput::Inputs::GetKey(GigInput::Keys::ESCAPE) && !Application::IsInEditor())
+	{
+		Application::Stop();
+	}
 }
 
 void Window::Close() const
 {
 	glfwSetWindowShouldClose(window, true);
+	stbi_image_free(mouseIcons[0].pixels);
+	stbi_image_free(mouseIcons[1].pixels);
 }
 
 void Window::SetIcon(const std::string& pPath) const
@@ -126,14 +133,11 @@ void Window::SetMouseIcon(CursorShape shape) const
 	GLFWcursor* cursor;
 	switch (shape)
 	{
-	case CursorShape::BEAM:
-		cursor = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+	case CursorShape::EYE:
+		cursor = glfwCreateCursor(&mouseIcons[0], 0, 0);
 		break;
-	case CursorShape::CROSSHAIR:
-		cursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
-		break;
-	case CursorShape::HAND:
-		cursor = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+	case CursorShape::GRAB:
+		cursor = glfwCreateCursor(&mouseIcons[1], 0, 0);
 		break;
 	default:
 		cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);

@@ -3,7 +3,6 @@ B
 Nchest
 W-0.200000 13.100000 10.000000 0.000000 0.000000 0.000000 1.000000 1.000000 1.000000
 Pcar
-C1 test 
 MEngine/Models/chest.obj
 TEngine/Textures/test.png
 *GameObject

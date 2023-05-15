@@ -14,6 +14,7 @@
 #include "GameObjectManager.h"
 #include <Windows.h>
 #include <filesystem>
+#include "Behaviour.h"
 
 GameObjectInspector::GameObjectInspector()
 {
@@ -67,7 +68,6 @@ void GameObjectInspector::DrawGameObject()
 
 	DrawTransform(object);
 	DrawSpecials(object);
-	DrawComponents(object);
 
 	if (object->GetRigidBody())
 		DrawRigidBody(object);
@@ -75,13 +75,14 @@ void GameObjectInspector::DrawGameObject()
 	if (object->GetModel())
 		DrawModel(object);
 
+	DrawComponents(object);
 	ImGui::Separator();
 	DrawAddComponent(object);
 
 	DrawDropTarget(object);
 }
 
-void GameObjectInspector::DrawTransform(GameObject* pObject) const
+void GameObjectInspector::DrawTransform(GameObject * pObject) const
 {
 	if (ImGui::CollapsingHeader(ICON_TRANSFORM " Transform"))
 	{
@@ -93,28 +94,64 @@ void GameObjectInspector::DrawTransform(GameObject* pObject) const
 		float scale[] = { scl.x, scl.y, scl.z };
 		float rotation[] = { rot.x, rot.y, rot.z };
 
+		static bool lockPos = false;
+		static bool lockRot = false;
+		static bool lockScl = false;
+
 		ImGui::Text("Position"); ImGui::SameLine();
+
+		if (ImGui::Button(lockPos ? ICON_MD_LOCK "##1" : ICON_MD_LOCK_OPEN "##1"))
+		{
+			lockPos = !lockPos;
+		}
+		ImGui::SameLine();
 
 		if (ImGui::DragFloat3("##3", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
 		{
+			if (lockPos)
+			{
+				LockCalculation(translation, pos);
+			}
 			pObject->GetTransform().SetWorldPosition(lm::FVec3(translation[0], translation[1], translation[2]));
 		}
 
 		ImGui::Text("Scale"); ImGui::SameLine();
+
+		if (ImGui::Button(lockScl ? ICON_MD_LOCK "##2" : ICON_MD_LOCK_OPEN "##2"))
+		{
+			lockScl = !lockScl;
+		}
+		ImGui::SameLine();
+
 		if (ImGui::DragFloat3("##4", scale, g_maxStep, 0.000000001f, g_floatMax, g_floatFormat))
 		{
+			if (lockScl)
+			{
+				LockCalculation(scale, scl);
+			}
 			pObject->GetTransform().SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
 		}
 
 		ImGui::Text("Rotation"); ImGui::SameLine();
+
+		if (ImGui::Button(lockRot ? ICON_MD_LOCK "##3" : ICON_MD_LOCK_OPEN "##3"))
+		{
+			lockRot = !lockRot;
+		}
+		ImGui::SameLine();
+
 		if (ImGui::DragFloat3("##5", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
 		{
+			if (lockRot)
+			{
+				LockCalculation(rotation, rot);
+			}
 			pObject->GetTransform().SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
 		}
 	}
 }
 
-void GameObjectInspector::DrawModel(GameObject* pObject) const
+void GameObjectInspector::DrawModel(GameObject * pObject) const
 {
 	if (ImGui::CollapsingHeader(ICON_MODEL " Model"))
 	{
@@ -157,7 +194,7 @@ void GameObjectInspector::DrawModel(GameObject* pObject) const
 	}
 }
 
-void GameObjectInspector::DrawTexture(GameObject* pObject) const
+void GameObjectInspector::DrawTexture(GameObject * pObject) const
 {
 	ImGui::SetCursorPosX(30);
 	ImGui::BeginGroup();
@@ -183,9 +220,9 @@ void GameObjectInspector::DrawTexture(GameObject* pObject) const
 	ImGui::EndGroup();
 }
 
-void GameObjectInspector::DrawRigidBody(GameObject* pObject) const
+void GameObjectInspector::DrawRigidBody(GameObject * pObject) const
 {
-	if (ImGui::CollapsingHeader("RigidBody"))
+	if (ImGui::CollapsingHeader(ICON_RIGIDBODY " RigidBody"))
 	{
 		if (ImGui::IsItemClicked(1))
 		{
@@ -232,75 +269,128 @@ void GameObjectInspector::DrawRigidBody(GameObject* pObject) const
 			rigid->SetRBState(static_cast<RBState>(item_current));
 		}
 
+		ImGui::SetCursorPosX(30);
+		ImGui::BeginGroup();
 		DrawRigidShape(rigid);
+		//DrawRigidTransform(rigid);
+		ImGui::EndGroup();
 	}
 }
 
 void GameObjectInspector::DrawRigidShape(RigidBody * body) const
 {
-	ImGui::SetCursorPosX(30);
-	ImGui::BeginGroup();
-	if (ImGui::CollapsingHeader("Shape"))
+	if (body->GetShapeType() != RigidBodyType::BOX)
 	{
-		if (body->GetShapeType() == RigidBodyType::CAPSULE)
+		if (ImGui::CollapsingHeader(ICON_MD_SHAPE_LINE "Shape"))
 		{
-			const auto caps = static_cast<CapsuleRigidBody*>(body);
-			float radius = caps->GetRadius();
-			float height = caps->GetHeight();
+			if (body->GetShapeType() == RigidBodyType::CAPSULE)
+			{
+				const auto caps = static_cast<CapsuleRigidBody*>(body);
+				float radius = caps->GetRadius();
+				float height = caps->GetHeight();
 
-			ImGui::Text("Radius"); ImGui::SameLine();
-			if (ImGui::DragFloat("##21", &radius, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
-			{
-				caps->SetRadius(radius);
+				ImGui::Text("Radius"); ImGui::SameLine();
+				if (ImGui::DragFloat("##21", &radius, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
+				{
+					caps->SetRadius(radius);
+				}
+				ImGui::Text("Height"); ImGui::SameLine();
+				if (ImGui::DragFloat("##22", &height, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
+				{
+					caps->SetHeight(height);
+				}
 			}
-			ImGui::Text("Height"); ImGui::SameLine();
-			if (ImGui::DragFloat("##22", &height, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
+			else if (body->GetShapeType() == RigidBodyType::SPHERE)
 			{
-				caps->SetHeight(height);
-			}
-		}
-		else if (body->GetShapeType() == RigidBodyType::SPHERE)
-		{
-			const auto sphere = static_cast<SphereRigidBody*>(body);
-			float radius = sphere->GetRadius();
+				const auto sphere = static_cast<SphereRigidBody*>(body);
+				float radius = sphere->GetRadius();
 
-			ImGui::Text("Radius"); ImGui::SameLine();
-			if (ImGui::DragFloat("##23", &radius, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
-			{
-				sphere->SetRadius(radius);
+				ImGui::Text("Radius"); ImGui::SameLine();
+				if (ImGui::DragFloat("##23", &radius, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
+				{
+					sphere->SetRadius(radius);
+				}
 			}
 		}
 	}
+}
 
-	if (ImGui::CollapsingHeader("Transform##2"))
+void GameObjectInspector::DrawRigidTransform(RigidBody * body) const
+{
+	if (ImGui::CollapsingHeader(ICON_TRANSFORM "Transform##2"))
 	{
-		//float rotation[3];
-		//body->GetTransfrom().getRotation().getEulerZYX((btScalar&)rotation[2], (btScalar&)rotation[1], (btScalar&)rotation[0]);
+		//lock bool
+		static bool lockRigidPos = false;
+		static bool lockRigidScl = false;
+		static bool lockRigidRot = false;
 
-		//btVector3 btPos = body->GetTransfrom().getOrigin();
-		//float translation[3] = { btPos.getX(), btPos.getY(), btPos.getZ() };
+		//position var
+		btVector3 btPos = body->GetTransfrom().getOrigin();
+		float translation[3] = { btPos.getX(), btPos.getY(), btPos.getZ() }; //need for DragFloat3
+		lm::FVec3 pos = { btPos.getX(), btPos.getY(), btPos.getZ() }; //need for lock
 
-		float scale[3] = { body->GetScale().x, body->GetScale().y, body->GetScale().z };
+		//scale var
+		float scale[3] = { body->GetScale().x, body->GetScale().y, body->GetScale().z }; //need for DragFloat3
+		lm::FVec3 scl = { body->GetScale().x, body->GetScale().y, body->GetScale().z }; //need for lock
 
-		//ImGui::Text("Position"); ImGui::SameLine();
-		//if (ImGui::DragFloat3("##21", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
-		//{
-		//	body->SetRigidBodyPosition(lm::FVec3(translation[0], translation[1], translation[2]));
-		//}
+		//rotation var
+		float rotation[3];
+		body->GetTransfrom().getRotation().getEulerZYX((btScalar&)rotation[2], (btScalar&)rotation[1], (btScalar&)rotation[0]); //need for DragFloat3
+		lm::FVec3 rot(rotation[0], rotation[1], rotation[2]); //need for lock
 
+		//position widget
+		ImGui::Text("Position"); ImGui::SameLine();
+		if (ImGui::Button(lockRigidPos ? ICON_MD_LOCK "##4" : ICON_MD_LOCK_OPEN "##4"))
+		{
+			lockRigidPos = !lockRigidPos;
+		}
+		ImGui::SameLine();
+
+		if (ImGui::DragFloat3("##21", translation, g_maxStep, g_floatMin, g_floatMax, g_floatFormat))
+		{
+			if (lockRigidPos)
+			{
+				LockCalculation(translation, pos);
+			}
+			body->SetRigidBodyPosition(lm::FVec3(translation[0], translation[1], translation[2]));
+		}
+
+		//scale widget
 		ImGui::Text("Scale"); ImGui::SameLine();
+
+		if (ImGui::Button(lockRigidScl ? ICON_MD_LOCK "##5" : ICON_MD_LOCK_OPEN "##5"))
+		{
+			lockRigidScl = !lockRigidScl;
+		}
+		ImGui::SameLine();
+
 		if (ImGui::DragFloat3("##22", scale, g_maxStep, 0.001f, g_floatMax, g_floatFormat))
 		{
+			if (lockRigidScl)
+			{
+				LockCalculation(scale, scl);
+			}
 			body->SetRigidBodyScale(lm::FVec3(scale[0], scale[1], scale[2]));
 		}
 
-		//ImGui::Text("Rotation"); ImGui::SameLine();
-		//if (ImGui::DragFloat3("##23", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
-		//{
-		//	body->SetRigidBodyRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
-		//}
+		//rotation widget
+		ImGui::Text("Rotation"); ImGui::SameLine();
+
+		if (ImGui::Button(lockRigidRot ? ICON_MD_LOCK "##6" : ICON_MD_LOCK_OPEN "##6"))
+		{
+			lockRigidRot = !lockRigidRot;
+		}
+		ImGui::SameLine();
+
+		if (ImGui::DragFloat3("##23", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
+		{
+			if (lockRigidRot)
+			{
+				LockCalculation(rotation, rot);
+			}
+			body->SetRigidBodyRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
+		}
 	}
-	ImGui::EndGroup();
 }
 
 void GameObjectInspector::DrawSpecials(GameObject * pObject) const
@@ -315,9 +405,47 @@ void GameObjectInspector::DrawSpecials(GameObject * pObject) const
 		DrawCamera(cam);
 }
 
-void GameObjectInspector::DrawComponents(GameObject* pObject) const
+void GameObjectInspector::DrawComponents(GameObject * pObject) const
 {
-	//TODO: do it
+	std::vector<GigScripting::Behaviour*> scripts;
+	pObject->GetComponents<GigScripting::Behaviour>(scripts);
+	if (scripts.size() == 0)
+	{
+		return;
+	}
+	using namespace GigScripting;
+	if (ImGui::CollapsingHeader(ICON_COMPONENT " Scripts"))
+	{
+		for (auto& script : scripts)
+		{
+			if (!script)
+			{
+				return;
+			}
+			const std::string& name = script->GetScriptName();
+			if (ImGui::TreeNode(name.c_str()))
+			{
+				if (ImGui::IsItemClicked(1))
+				{
+					ImGui::OpenPopup("ScriptPopUp");
+				}
+
+				if (ImGui::BeginPopup("ScriptPopUp"))
+				{
+					ImGui::SeparatorText("Script");
+					if (ImGui::MenuItem("Remove"))
+					{
+						pObject->RemoveScript(script);
+					}
+					ImGui::EndPopup();
+				}
+
+				ImGui::TreePop();
+			}
+		}
+	}
+
+	scripts.clear();
 }
 
 void GameObjectInspector::DrawLight(GameObject * pObject) const
@@ -396,7 +524,7 @@ void GameObjectInspector::DrawLight(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawCamera(Camera* pObject) const
+void GameObjectInspector::DrawCamera(Camera * pObject) const
 {
 	float fov = pObject->GetFov();
 	float tNear = pObject->GetNear();
@@ -424,7 +552,7 @@ void GameObjectInspector::DrawCamera(Camera* pObject) const
 	}
 }
 
-void GameObjectInspector::DrawAddComponent(GameObject* pObject) const
+void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 {
 	const ImGuiStyle& style = ImGui::GetStyle();
 
@@ -466,11 +594,17 @@ void GameObjectInspector::DrawAddComponent(GameObject* pObject) const
 				pObject->CreateSphereRigidBody(1, { 1 }, 1);
 			}
 		}
+
+		if (ImGui::MenuItem(ICON_COMPONENT " Scripts"))
+		{
+			pObject->AddScript();
+		}
+
 		ImGui::EndPopup();
 	}
 }
 
-void GameObjectInspector::DrawDropTarget(GameObject* pObject) const
+void GameObjectInspector::DrawDropTarget(GameObject * pObject) const
 {
 	ImGui::BeginChild("##");
 	ImGui::EndChild();
@@ -496,11 +630,43 @@ void GameObjectInspector::DrawDropTarget(GameObject* pObject) const
 			}
 			else if (str.find(".lua") != std::string::npos)
 			{
-				std::cout << "its a component" << std::endl;
+				pObject->AddScript(path);
 			}
 		}
 
 		ImGui::EndDragDropTarget();
+	}
+}
+
+void GameObjectInspector::LockCalculation(float* fvec3, const lm::FVec3 & original) const
+{
+	bool isZero = false;
+	float val = 1;
+	for (int i = 0; i < 3; i++)
+	{
+		if (fvec3[i] != original[i])
+		{
+			if (original[i] == 0)
+			{
+				isZero = true;
+				val = fvec3[i];
+			}
+			else
+			{
+				val = fvec3[i] / original[i];
+			}
+		}
+	}
+	for (int i = 0; i < 3; i++)
+	{
+		if (isZero)
+		{
+			fvec3[i] = val;
+		}
+		else
+		{
+			fvec3[i] = original[i] * val;
+		}
 	}
 }
 

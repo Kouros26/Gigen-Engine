@@ -97,7 +97,7 @@ void EditorCamera::Translate()
 {
 	if (GigInput::Inputs::GetMouse().wheelClick)
 	{
-		Application::GetWindow().SetMouseIcon(CursorShape::CROSSHAIR);
+		Application::GetWindow().SetMouseIcon(CursorShape::GRAB);
 		GetTransform().AddPosition(GetRight() * GigInput::Inputs::GetMouse().mouseOffsetX * static_cast<float>(Time::GetDeltaTime()));
 		GetTransform().AddPosition(GetUp() * -GigInput::Inputs::GetMouse().mouseOffsetY * static_cast<float>(Time::GetDeltaTime()));
 	}
@@ -116,7 +116,7 @@ void EditorCamera::Look()
 {
 	if (GigInput::Inputs::GetMouse().rightClick == 1)
 	{
-		Application::GetWindow().SetMouseIcon(CursorShape::HAND);
+		Application::GetWindow().SetMouseIcon(CursorShape::EYE);
 		const float Ry = static_cast<float>(GigInput::Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity));
 		const float Rx = static_cast<float>(GigInput::Inputs::GetMouse().mouseOffsetY * static_cast<double>(sensitivity));
 

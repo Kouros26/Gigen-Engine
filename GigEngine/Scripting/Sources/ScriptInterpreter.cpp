@@ -40,6 +40,7 @@ void GigScripting::ScriptInterpreter::DestroyLuaContext()
 		{
 			behaviour->UnregisterFromLuaContext();
 		}
+		luaState->collect_garbage();
 		luaState.reset();
 		isOk = false;
 	}
