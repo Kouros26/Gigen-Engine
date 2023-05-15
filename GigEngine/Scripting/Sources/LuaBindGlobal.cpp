@@ -4,7 +4,7 @@
 #include "Vec2/FVec2.hpp"
 #include "GameObjectManager.h"
 #include "WorldPhysics.h"
-
+#include "LuaBindComponent.h"
 void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
 {
     using namespace GigInput;
@@ -36,6 +36,7 @@ void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
     );
 
     luaState.create_named_table("Physics");
+
     luaState["Physics"]["RayCast"] = sol::overload
     (
         sol::resolve<bool(const lm::FVec3&, const lm::FVec3&, HitResult&,

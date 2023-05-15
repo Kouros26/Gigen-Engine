@@ -70,7 +70,6 @@ bool GigScripting::Behaviour::RegisterToLuaContext(const std::string& pScriptFol
         {
             scriptTable = result[0];
             scriptTable["owner"] = gameObject;
-            // Update(0.016f);
             return true;
         }
         else
@@ -84,9 +83,4 @@ bool GigScripting::Behaviour::RegisterToLuaContext(const std::string& pScriptFol
 void GigScripting::Behaviour::UnregisterFromLuaContext()
 {
     scriptTable = sol::nil;
-}
-
-std::string GigScripting::Behaviour::GetName() const
-{
-    return scriptName;
 }

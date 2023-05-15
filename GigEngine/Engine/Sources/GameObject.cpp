@@ -66,8 +66,8 @@ GameObject::GameObject(const GameObject& other)
     for (const auto& component : other.components)
         components.push_back(component->Clone(this));
 
-	for (const auto& child : other.children)
-		AddChild(*GameObjectManager::CreateGameObject(*child));
+    for (const auto& child : other.children)
+        AddChild(*GameObjectManager::CreateGameObject(*child));
 
     if (other.model != nullptr)
         model = ResourceManager::Get<Model>(other.model->GetFilePath());
@@ -85,8 +85,8 @@ GameObject& GameObject::operator=(const GameObject& other)
     for (const auto& component : other.components)
         components.push_back(component->Clone(this));
 
-	for (const auto& child : other.children)
-		AddChild(*GameObjectManager::CreateGameObject(*child));
+    for (const auto& child : other.children)
+        AddChild(*GameObjectManager::CreateGameObject(*child));
 
     if (other.model != nullptr)
         model = ResourceManager::Get<Model>(other.model->GetFilePath());
@@ -101,35 +101,35 @@ GameObject::~GameObject()
 
     delete rigidBody;
 
-	if (parent)
-		parent->RemoveChild(*this);
+    if (parent)
+        parent->RemoveChild(*this);
 }
 
 void GameObject::CreateBoxRigidBody(const lm::FVec3& halfExtents = { 1.0f }, const lm::FVec3& scale = { 1.0f }, float mass = 1.0f)
 {
     delete rigidBody;
 
-	rigidBody = new BoxRigidBody(halfExtents, scale, transform.GetWorldPosition(), mass, this);
-	rigidBody->GetShapeType() = RigidBodyType::BOX;
-	transform.SetOwnerRigidBody(rigidBody);
+    rigidBody = new BoxRigidBody(halfExtents, scale, transform.GetWorldPosition(), mass, this);
+    rigidBody->GetShapeType() = RigidBodyType::BOX;
+    transform.SetOwnerRigidBody(rigidBody);
 }
 
 void GameObject::CreateCapsuleRigidBody(float radius, float height, const lm::FVec3& scale, float mass)
 {
     delete rigidBody;
 
-	rigidBody = new CapsuleRigidBody(radius, height, scale, transform.GetWorldPosition(), mass, this);
-	rigidBody->GetShapeType() = RigidBodyType::CAPSULE;
-	transform.SetOwnerRigidBody(rigidBody);
+    rigidBody = new CapsuleRigidBody(radius, height, scale, transform.GetWorldPosition(), mass, this);
+    rigidBody->GetShapeType() = RigidBodyType::CAPSULE;
+    transform.SetOwnerRigidBody(rigidBody);
 }
 
 void GameObject::CreateSphereRigidBody(float radius, const lm::FVec3& scale, float mass)
 {
     delete rigidBody;
 
-	rigidBody = new SphereRigidBody(radius, scale, transform.GetWorldPosition(), mass, this);
-	rigidBody->GetShapeType() = RigidBodyType::SPHERE;
-	transform.SetOwnerRigidBody(rigidBody);
+    rigidBody = new SphereRigidBody(radius, scale, transform.GetWorldPosition(), mass, this);
+    rigidBody->GetShapeType() = RigidBodyType::SPHERE;
+    transform.SetOwnerRigidBody(rigidBody);
 }
 
 std::string GameObject::GetName()
@@ -207,40 +207,46 @@ std::string GameObject::GetType()
 
 void GameObject::AddChild(GameObject& child)
 {
-	if (child.parent == this)
-		return;
+    if (child.parent == this)
+        return;
 
-	if (child.parent != nullptr)
-		child.parent->RemoveChild(child);
+    if (child.parent != nullptr)
+        child.parent->RemoveChild(child);
 
-	child.parent = this;
+    child.parent = this;
 
-	child.GetTransform().AssignLocalPosition(child.GetTransform().GetWorldPosition() - GetTransform().GetWorldPosition());
-	child.GetTransform().AssignLocalScale(child.GetTransform().GetWorldScale() / GetTransform().GetWorldScale());
+    child.GetTransform().AssignLocalPosition(child.GetTransform().GetWorldPosition() - GetTransform().GetWorldPosition());
+    child.GetTransform().AssignLocalScale(child.GetTransform().GetWorldScale() / GetTransform().GetWorldScale());
 
-	children.push_back(&child);
+    children.push_back(&child);
 }
 
 void GameObject::RemoveChild(GameObject& child)
 {
-	if (child.parent != this)
-		return;
+    if (child.parent != this)
+        return;
 
-	child.GetTransform().AssignLocalPosition(child.GetTransform().GetWorldPosition());
-	child.GetTransform().AssignLocalRotation(child.GetTransform().GetWorldRotation());
+    child.GetTransform().AssignLocalPosition(child.GetTransform().GetWorldPosition());
+    child.GetTransform().AssignLocalRotation(child.GetTransform().GetWorldRotation());
 
-	child.parent = nullptr;
-	children.remove(&child);
+    child.parent = nullptr;
+    children.remove(&child);
 }
-
+#include "LuaBindComponent.h"
 void GameObject::OnCollisionEnter(const Collision& collision)
 {
-    std::cout << this->GetName() << GetTransform().GetWorldPosition() << std::endl;
-    std::cout << this->GetName() << " collided with " << collision.other->GetName() << " at point " << collision.contactPoint << " with force of " << collision.collisionStrength << std::endl;
+    if (GigScripting::LuaBindComponent::delegateFunctions.OnCollisionEnter)
+    {
+        GigScripting::LuaBindComponent::delegateFunctions.OnCollisionEnter(const_cast<Collision*>(&collision)->other);
+    }
 }
 
 void GameObject::OnCollisionExit(const Collision& collision)
 {
+    if (GigScripting::LuaBindComponent::delegateFunctions.OnCollisionExit)
+    {
+        GigScripting::LuaBindComponent::delegateFunctions.OnCollisionExit(const_cast<Collision*>(&collision)->other);
+    }
 }
 
 void GameObject::UpdateRender() const
@@ -282,7 +288,7 @@ GigScripting::Behaviour* GameObject::GetBehaviour(const std::string& pName) cons
     {
         if (const auto script = dynamic_cast<GigScripting::Behaviour*>(component))
         {
-            if (script->GetName() == pName)
+            if (script->GetScriptName() == pName)
                 return script;
         }
     }
@@ -432,8 +438,8 @@ RigidBody* GameObject::GetRigidBody() const
 
 void GameObject::RemoveRigidBody()
 {
-	delete rigidBody;
-	rigidBody = nullptr;
+    delete rigidBody;
+    rigidBody = nullptr;
 }
 
 bool GameObject::IsActive() const
