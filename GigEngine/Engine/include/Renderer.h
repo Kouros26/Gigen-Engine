@@ -6,6 +6,7 @@
 #define RD_ARRAY_BUFFER 0x8892
 #define RD_STATIC_DRAW 0x88E4
 #define RD_ELEMENT_ARRAY_BUFFER 0x8893
+#define RD_INT 0x1404
 #define RD_FLOAT 0x1406
 #define RD_FALSE 0
 #define RD_TRUE 1
@@ -113,7 +114,7 @@ namespace GigRenderer
         void BindTexture(unsigned int pTarget, unsigned int pTexture);
         void DeleteTexture(unsigned int pTexture);
         void DepthFunction(unsigned int pFunc);
-        void SetupBuffer(Buffer& pVBO, Buffer& pEBO, BufferVAO& pVAO);
+        void SetupBuffer(const Buffer& pVBO, const Buffer& pEBO, const BufferVAO& pVAO);
         void SetupBuffer(Buffer& pVBO, BufferVAO& pVAO);
         [[nodiscard]] bool LinkShader(unsigned int& pProgram, unsigned int& pVertexShader, unsigned int& pFragmentShader);
     };

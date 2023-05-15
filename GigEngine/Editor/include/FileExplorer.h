@@ -13,7 +13,7 @@ public:
 private:
 	const char* GetIconOfFile(const std::string& str) const;
 
-	const std::string rootDirPath = "Resources";
+	const std::string rootDirPath = "Engine";
 	std::string currentDirPath;
 	const float padding = 16.0f;
 	const float cellSize = 100.0f;

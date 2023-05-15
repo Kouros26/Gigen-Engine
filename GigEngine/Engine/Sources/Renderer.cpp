@@ -278,7 +278,7 @@ void Renderer::DepthFunction(unsigned int pFunc)
     glDepthFunc(pFunc);
 }
 
-void Renderer::SetupBuffer(Buffer& pVBO, Buffer& pEBO, BufferVAO& pVAO)
+void Renderer::SetupBuffer(const Buffer& pVBO, const Buffer& pEBO, const BufferVAO& pVAO)
 {
     if (pVAO.id == 0)
     {
@@ -303,13 +303,19 @@ void Renderer::SetupBuffer(Buffer& pVBO, Buffer& pEBO, BufferVAO& pVAO)
     BufferData(BufferType::ELEMENT, pEBO.size * sizeof(unsigned int), pEBO.data, RD_STATIC_DRAW);
 
     EnableVertexAttribArray(0);       // position
-    VertexAttribPointer(0, 3, RD_FLOAT, RD_FALSE, 8 * sizeof(float), (void*)0);
+    VertexAttribPointer(0, 3, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)0);
 
     EnableVertexAttribArray(1);       // normal
-    VertexAttribPointer(1, 3, RD_FLOAT, RD_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    VertexAttribPointer(1, 3, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(3 * sizeof(float)));
 
     EnableVertexAttribArray(2);       // texture
-    VertexAttribPointer(2, 2, RD_FLOAT, RD_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    VertexAttribPointer(2, 2, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(6 * sizeof(float)));
+
+    EnableVertexAttribArray(3);       // id
+    VertexAttribPointer(3, 4, RD_INT, RD_FALSE, 16 * sizeof(float), (void*)(8 * sizeof(float)));
+
+    EnableVertexAttribArray(4);       // weight
+    VertexAttribPointer(4, 4, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(12 * sizeof(float)));
 
     BindBuffer(BufferType::ARRAY, RD_FALSE);
     BindBuffer(BufferType::VERTEX, RD_FALSE);
