@@ -40,11 +40,11 @@ void UIImage::Draw()
 	// iterate through all characters
 	std::string::const_iterator c;
 
-	float xpos = GetRectTransform().GetPosition().x;
-	float ypos = GetRectTransform().GetPosition().y;
+	const float xpos = GetRectTransform().GetPosition().x;
+	const float ypos = GetRectTransform().GetPosition().y;
 
-	float w = size.x;
-	float h = size.y;
+	const float w = size.x;
+	const float h = size.y;
 	// update VBO for each character
 	float vertices[6][4] = {
 		{ xpos,     ypos + h,   0.0f, 0.0f },

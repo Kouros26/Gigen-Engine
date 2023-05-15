@@ -48,13 +48,10 @@ void UIElement::SetIsWorld(bool b)
 {
 	isWorld = b;
 	if (isWorld)
-	{
 		UIManager::AddToWorldElements(this);
-	}
+
 	else
-	{
 		UIManager::AddToUIElements(this);
-	}
 }
 
 lm::FVec3& UIElement::GetColor()

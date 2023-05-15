@@ -16,14 +16,11 @@ UIManager::UIManager()
 
 UIManager::~UIManager()
 {
-	for (UIElement* elem : elements)
-	{
+	for (const UIElement* elem : elements)
 		delete elem;
-	}
-	for (UIElement* elem : worldElements)
-	{
+
+	for (const UIElement* elem : worldElements)
 		delete elem;
-	}
 }
 
 void UIManager::Init()
@@ -155,18 +152,18 @@ void UIManager::RemoveElement(UIElement* elem)
 
 UIElement* UIManager::CreateUIElement(UIElement* elem)
 {
-	UIElement* newElem = new UIElement(*elem);
+	const auto newElem = new UIElement(*elem);
 
 	return AddToUIElements(newElem);
 }
 
 UIElement* UIManager::AddToWorldElements(UIElement* elem)
 {
-	auto it = std::ranges::find(worldElements, elem);
+	const auto it = std::ranges::find(worldElements, elem);
 
 	if (it == worldElements.end())
 	{
-		auto it2 = std::ranges::find(elements, elem);
+		const auto it2 = std::ranges::find(elements, elem);
 		if (it2 != elements.end())
 			elements.erase(it2);
 
@@ -178,11 +175,11 @@ UIElement* UIManager::AddToWorldElements(UIElement* elem)
 
 UIElement* UIManager::AddToUIElements(UIElement* elem)
 {
-	auto it = std::ranges::find(elements, elem);
+	const auto it = std::ranges::find(elements, elem);
 
 	if (it == elements.end())
 	{
-		auto it2 = std::ranges::find(worldElements, elem);
+		const auto it2 = std::ranges::find(worldElements, elem);
 		if (it2 != worldElements.end())
 			worldElements.erase(it2);
 

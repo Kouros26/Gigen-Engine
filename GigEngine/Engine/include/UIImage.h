@@ -18,6 +18,6 @@ public:
 
 private:
 
-	unsigned int VAO, VBO;
+	unsigned int VAO{}, VBO{};
 	Texture* texture = nullptr;
 };

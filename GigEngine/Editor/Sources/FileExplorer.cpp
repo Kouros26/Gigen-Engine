@@ -1,7 +1,6 @@
 #include "FileExplorer.h"
 #include "imgui.h"
 
-#include <stdio.h>
 #include <filesystem>
 #include <iostream>
 
