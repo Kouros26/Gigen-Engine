@@ -28,6 +28,10 @@ bool GigInput::Inputs::GetKey(const GigInput::Keys& pKey)
 	{
 		key -= ('a' - 'A');
 	}
+	if (key < 0 || key >= inputs.size())
+	{
+		return false;
+	}
 	return inputs[key];
 }
 
@@ -37,6 +41,10 @@ bool GigInput::Inputs::GetKeyDown(const Keys& pKey)
 	if ('a' <= key && key <= 'z')
 	{
 		key -= ('a' - 'A');
+	}
+	if (key < 0 || key >= inputs.size())
+	{
+		return false;
 	}
 	return inputs[key] == static_cast<int>(KeyState::PRESS);
 }
@@ -48,6 +56,10 @@ bool GigInput::Inputs::GetKeyUp(const Keys& pKey)
 	{
 		key -= ('a' - 'A');
 	}
+	if (key < 0 || key >= inputs.size())
+	{
+		return false;
+	}
 	return inputs[key] == static_cast<int>(KeyState::RELEASE);
 }
 
@@ -58,6 +70,10 @@ GigInput::Mouse GigInput::Inputs::GetMouse()
 
 void GigInput::Inputs::UpdateKey(int key, int action)
 {
+	if (key < 0 || key >= inputs.size())
+	{
+		return;
+	}
 	inputs[key] = action == static_cast<int>(MouseState::RELEASE) ? false : true;
 }
 
