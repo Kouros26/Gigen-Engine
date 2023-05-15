@@ -3,7 +3,7 @@
 
 CapsuleRigidBody::CapsuleRigidBody(float pRadius, float pHeight, const lm::FVec3& pScale, const lm::FVec3& pPos, float pMass,
 	GameObject* pOwner)
-		: RigidBody(pOwner), radius(pRadius), height(pHeight)
+	: RigidBody(pOwner), radius(pRadius), height(pHeight)
 {
 	scale = pScale;
 	mass = pMass;
@@ -26,7 +26,6 @@ CapsuleRigidBody::CapsuleRigidBody(float pRadius, float pHeight, const lm::FVec3
 	std::function<void(Collision collision)> enter =
 		[pOwner](const Collision& collision)
 	{
-
 		pOwner->OnCollisionEnter(collision);
 	};
 
@@ -63,10 +62,18 @@ float CapsuleRigidBody::GetHeight() const
 
 void CapsuleRigidBody::SetRadius(float pRadius)
 {
-	//do somethimg
+	btCapsuleShape* shape = (btCapsuleShape*)rbShape;
+	btVector3 localScale(shape->getLocalScaling());
+	localScale.setX(pRadius);
+	shape->setLocalScaling(localScale);
+	radius = pRadius;
 }
 
 void CapsuleRigidBody::SetHeight(float pHeight)
 {
-	//do somethimg
+	btCapsuleShape* shape = (btCapsuleShape*)rbShape;
+	btVector3 localScale(shape->getLocalScaling());
+	localScale.setY(pHeight);
+	shape->setLocalScaling(localScale);
+	height = pHeight;
 }
