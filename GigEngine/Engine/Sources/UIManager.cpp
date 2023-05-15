@@ -32,6 +32,7 @@ void UIManager::Init()
 
 	ISWORLDLocation = GigRenderer::RENDERER.GetUniformLocation(shaderProgram.GetId(), "isWorld");
 	PROJECTIONLocation = GigRenderer::RENDERER.GetUniformLocation(shaderProgram.GetId(), "projection");
+	ORTHOLocation = GigRenderer::RENDERER.GetUniformLocation(shaderProgram.GetId(), "ortho");
 	MODELLocation = GigRenderer::RENDERER.GetUniformLocation(shaderProgram.GetId(), "model");
 	COLORLocation = GigRenderer::RENDERER.GetUniformLocation(shaderProgram.GetId(), "textColor");
 	IMAGELocation = GigRenderer::RENDERER.GetUniformLocation(shaderProgram.GetId(), "isImage");
@@ -50,23 +51,24 @@ void UIManager::AddTextElement()
 void UIManager::DrawUI()
 {
 	shaderProgram.Use();
-	RENDERER.Disable(RD_DEPTH_TEST);
+
+	RENDERER.SetUniformValue(ORTHOLocation, GigRenderer::UniformType::MAT4, &Application::GetWindow().GetOrthoMatrix());
+	RENDERER.SetUniformValue(PROJECTIONLocation, GigRenderer::UniformType::MAT4, &Application::GetViewProj());
 
 	for (UIElement* elem : elements)
 	{
 		if (elem->IsActive())
 		{
-			RENDERER.SetUniformValue(PROJECTIONLocation, GigRenderer::UniformType::MAT4, &elem->GetIsWorld());
-			if (elem->GetIsWorld() == 0)
+			if (elem->GetIsWorld() > 0)
 			{
-				RENDERER.SetUniformValue(PROJECTIONLocation, GigRenderer::UniformType::MAT4, &Application::GetWindow().GetOrthoMatrix());
+				RENDERER.Enable(RD_DEPTH_TEST);
 			}
 			else
 			{
-				RENDERER.SetUniformValue(PROJECTIONLocation, GigRenderer::UniformType::MAT4, &Application::GetViewProj());
-				RENDERER.SetUniformValue(MODELLocation, GigRenderer::UniformType::MAT4, &elem->GetTransform().MatrixGetter());
+				RENDERER.Disable(RD_DEPTH_TEST);
 			}
-
+			RENDERER.SetUniformValue(ISWORLDLocation, GigRenderer::UniformType::INT, &elem->GetIsWorld());
+			RENDERER.SetUniformValue(MODELLocation, GigRenderer::UniformType::MAT4, &elem->GetTransform().MatrixGetter());
 			RENDERER.SetUniformValue(IMAGELocation, GigRenderer::UniformType::INT, &elem->GetIsImage());
 			RENDERER.SetUniformValue(COLORLocation, GigRenderer::UniformType::VEC3, &elem->GetColor());
 			elem->Draw();
