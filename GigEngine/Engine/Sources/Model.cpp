@@ -7,7 +7,7 @@
 Model::Model(std::string const& pFilePath)
     :IResource(pFilePath)
 {
-    LoadModel(meshes, materials, pFilePath);
+    LoadModel(meshes, materials,boneMap,boneCounter, pFilePath);
 }
 
 Model::Model(const Model& other)
@@ -89,4 +89,14 @@ void Model::Init()
 {
     for (const auto& mesh : meshes)
         mesh->SetupBuffers();
+}
+
+auto& Model::GetBoneInfoMap()
+{
+    return boneMap;
+}
+
+int& Model::GetBoneCount()
+{
+    return boneCounter;
 }

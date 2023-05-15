@@ -2,6 +2,7 @@
 #include "IResource.h"
 #include "ModelLoader.h"
 #include <vector>
+#include <map>
 
 const char* const g_defaultModelPath = "Engine/Models/Basics/Cube.FBX";
 
@@ -23,8 +24,14 @@ public:
 
 	void Init() override;
 
+	auto& GetBoneInfoMap();
+	int& GetBoneCount();
+
 private:
 
 	std::vector<Mesh*> meshes;
 	std::vector<Material*> materials;
+
+	std::map<std::string, BoneInfo> boneMap;
+	int boneCounter = 0;
 };
