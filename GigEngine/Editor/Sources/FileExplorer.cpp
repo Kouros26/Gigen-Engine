@@ -36,7 +36,18 @@ void FileExplorer::Draw()
 		ImGui::NextColumn();
 	}
 
-	for (auto& directoryEntry : std::filesystem::directory_iterator(currentDirPath))
+	std::filesystem::directory_iterator iter;
+
+	try {
+		iter = std::filesystem::directory_iterator{ currentDirPath };
+	}
+	catch (...)
+	{
+		std::cout << "error path not found : " << currentDirPath << std::endl;
+		return;
+	}
+
+	for (auto& directoryEntry : iter)
 	{
 		const auto fullPath = directoryEntry.path();
 		auto relativePath = std::filesystem::relative(fullPath, currentDirPath);
