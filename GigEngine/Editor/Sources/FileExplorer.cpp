@@ -15,6 +15,7 @@ FileExplorer::~FileExplorer()
 
 void FileExplorer::Draw()
 {
+	isDragging = false;
 	width = ImGui::GetWindowContentRegionWidth();
 	int columnCount = static_cast<int>(width / (cellSize + padding));
 	if (columnCount < 1)
@@ -73,8 +74,9 @@ void FileExplorer::Draw()
 				currentDirPath += "/" + filename;
 			}
 
-			if (!directoryEntry.is_directory())
+			if (!directoryEntry.is_directory() && !isDragging)
 			{
+				isDragging = true;
 				if (ImGui::BeginDragDropSource())
 				{
 					std::string itemPath = fullPath.string();

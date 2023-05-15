@@ -13,6 +13,8 @@ public:
 private:
 	[[nodiscard]] const char* GetIconOfFile(const std::string& str) const;
 
+	bool isDragging = false;
+
 	const std::string rootDirPath = "Engine";
 	std::string currentDirPath;
 	const float padding = 16.0f;
