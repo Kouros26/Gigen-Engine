@@ -524,46 +524,8 @@ void GameObjectInspector::DrawSpecials(GameObject * pObject) const
 
 void GameObjectInspector::DrawComponents(GameObject * pObject) const
 {
-	std::vector<GigScripting::Behaviour*> scripts;
-	pObject->GetComponents<GigScripting::Behaviour>(scripts);
-	if (scripts.size() == 0)
-	{
-		return;
-	}
-	using namespace GigScripting;
-	if (ImGui::CollapsingHeader(ICON_COMPONENT " Scripts"))
-	{
-		for (auto& script : scripts)
-		{
-			if (!script)
-			{
-				return;
-			}
-			const std::string& name = script->GetScriptName();
-			if (ImGui::TreeNode(name.c_str()))
-			{
-				ImGui::Text(ReadScript("../../../Resources/Editor/Scripts/" + name).c_str());
-				if (ImGui::IsItemClicked(1))
-				{
-					ImGui::OpenPopup("ScriptPopUp");
-				}
-
-				if (ImGui::BeginPopup("ScriptPopUp"))
-				{
-					ImGui::SeparatorText("Script");
-					if (ImGui::MenuItem("Remove"))
-					{
-						pObject->RemoveScript(script);
-					}
-					ImGui::EndPopup();
-				}
-
-				ImGui::TreePop();
-			}
-		}
-	}
-
-	scripts.clear();
+	DrawScriptsComponent(pObject);
+	DrawAudiosComponent(pObject);
 }
 
 void GameObjectInspector::DrawLight(GameObject * pObject) const
@@ -728,6 +690,168 @@ void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 	}
 }
 
+void GameObjectInspector::DrawScriptsComponent(GameObject * pObject) const
+{
+	std::vector<GigScripting::Behaviour*> scripts;
+	pObject->GetComponents<GigScripting::Behaviour>(scripts);
+	if (scripts.size() == 0)
+	{
+		return;
+	}
+	using namespace GigScripting;
+	if (ImGui::CollapsingHeader(ICON_COMPONENT " Scripts"))
+	{
+		for (auto& script : scripts)
+		{
+			if (!script)
+			{
+				return;
+			}
+			const std::string& name = script->GetScriptName();
+			if (ImGui::TreeNode(name.c_str()))
+			{
+				ImGui::Text(ReadScript("../../../Resources/Editor/Scripts/" + name).c_str());
+				if (ImGui::IsItemClicked(1))
+				{
+					ImGui::OpenPopup("ScriptPopUp");
+				}
+
+				if (ImGui::BeginPopup("ScriptPopUp"))
+				{
+					ImGui::SeparatorText("Script");
+					if (ImGui::MenuItem("Remove"))
+					{
+						pObject->RemoveScript(script);
+					}
+					ImGui::EndPopup();
+				}
+
+				ImGui::TreePop();
+			}
+		}
+	}
+
+	scripts.clear();
+}
+
+void GameObjectInspector::DrawAudiosComponent(GameObject * pObject) const
+{
+	std::vector<AudioSource*> audios;
+	pObject->GetComponents<AudioSource>(audios);
+	if (audios.size() == 0)
+	{
+		return;
+	}
+
+	const char* temp = ICON_MD_AUDIO_FILE " Audio source##";
+
+	for (int i = 0; i < audios.size(); i++)
+	{
+		AudioSource* source = audios[i];
+		if (!source)
+		{
+			return;
+		}
+
+		char name[128];
+		std::string num = std::to_string(i);
+		strcpy(name, temp);
+		strcat(name, num.c_str());
+
+		char popUpName[128] = "AudioPopUp##";
+		strcat(popUpName, num.c_str());
+
+		if (ImGui::CollapsingHeader(name))
+		{
+			if (ImGui::IsItemClicked(1))
+			{
+				ImGui::OpenPopup(popUpName);
+			}
+
+			if (ImGui::BeginPopup(popUpName))
+			{
+				ImGui::SeparatorText("Audio Source");
+				if (ImGui::MenuItem("Remove"))
+				{
+					pObject->RemoveComponent<AudioSource>(source);
+					ImGui::EndPopup();
+					return;
+				}
+				ImGui::EndPopup();
+			}
+
+			std::string audioPath = source->GetAudio();
+			if (audioPath.length() == 0) audioPath = "Drop mp3 file here";
+
+			ImGui::Text(audioPath.c_str());
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					const char* path = static_cast<const char*>(payload->Data);
+					const std::string str(path);
+					if (str.find(".mp3") != std::string::npos)
+					{
+						source->SetAudio(path);
+					}
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+
+			bool is2D = source->GetIs2D();
+			bool playOnStart = source->GetPlayOnStart();
+			bool loop = source->GetIsLooping();
+			float volume = source->GetVolume();
+			float minDistance = source->GetMinDistance();
+
+			char soundName[128] = "##2DSOUND";
+			strcat(soundName, num.c_str());
+			ImGui::Text("2D sound"); ImGui::SameLine();
+			if (ImGui::Checkbox(soundName, &is2D))
+			{
+				source->SetIs2D(is2D);
+			}
+
+			char startName[128] = "##start";
+			strcat(startName, num.c_str());
+			ImGui::Text("Play on start"); ImGui::SameLine();
+			if (ImGui::Checkbox(startName, &playOnStart))
+			{
+				source->SetPlayOnStart(playOnStart);
+			}
+
+			char loopName[128] = "##loop";
+			strcat(loopName, num.c_str());
+			ImGui::Text("Loop"); ImGui::SameLine();
+			if (ImGui::Checkbox(loopName, &loop))
+			{
+				source->SetIsLooping(loop);
+			}
+
+			char volumeName[128] = "##vol";
+			strcat(volumeName, num.c_str());
+			ImGui::Text("Volume"); ImGui::SameLine();
+			if (ImGui::DragFloat(volumeName, &volume, g_maxStep, 0, 1, g_floatFormat))
+			{
+				source->SetVolume(volume);
+			}
+
+			if (!is2D)
+			{
+				char minName[128] = "##min";
+				strcat(minName, num.c_str());
+				ImGui::Text("Min distance"); ImGui::SameLine();
+				if (ImGui::DragFloat(minName, &minDistance, g_maxStep, 0, g_floatMax, g_floatFormat))
+				{
+					source->SetMinDistance(minDistance);
+				}
+			}
+		}
+	}
+}
+
 void GameObjectInspector::DrawDropTarget(GameObject * pObject) const
 {
 	ImGui::BeginChild("##");
@@ -755,6 +879,11 @@ void GameObjectInspector::DrawDropTarget(GameObject * pObject) const
 			else if (str.find(".lua") != std::string::npos)
 			{
 				pObject->AddScript(path);
+			}
+			else if (str.find(".mp3") != std::string::npos)
+			{
+				AudioSource* temp = pObject->AddComponent<AudioSource>();
+				temp->SetAudio(str);
 			}
 		}
 

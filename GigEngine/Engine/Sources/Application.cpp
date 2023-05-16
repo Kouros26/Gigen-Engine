@@ -10,6 +10,7 @@
 #include "Component.h"
 #include "Log.h"
 #include "Behaviour.h"
+#include "AudioSource.h"
 #include <iostream>
 
 #include "RigidBody.h"
@@ -31,6 +32,7 @@ Application::Application()
 
 Application::~Application()
 {
+	AudioSource::Clear();
 	Lines::Clear();
 	GameObjectManager::Cleanup();
 	WorldPhysics::GetInstance().DestroyPhysicWorld();
@@ -204,6 +206,10 @@ void Application::Draw()
 	UpdateGameObjectRender(); //render model if they have one
 
 	mainShader.UnUse(); //stop using the main shader
+
+	//update audio with camera position
+	Camera* currentCamera = useEditorCam ? &editorCamera : GameObjectManager::GetCurrentCamera();
+	AudioSource::UpdateAudioEngine(currentCamera);
 
 	Lines::DrawLines(); //render debug lines or guizmos
 

@@ -76,6 +76,11 @@ public:
     std::vector<T*>& GetComponents();
     template<class T>
     std::vector<T*>& GetComponents(std::vector<T*>& pVec);
+    
+    //remove this compoenent
+    template<class T>
+    void RemoveComponent(T* comp);
+
     //remove all components of type
     template<class T>
     void RemoveComponents();
@@ -178,14 +183,26 @@ std::vector<T*>
 }
 
 template<class T>
+void GameObject::RemoveComponent(T* comp)
+{
+    const auto it = std::find(components.begin(), components.end(), comp);
+
+    if(it != components.end())
+    {
+        components.erase(it);
+        delete comp;
+    }
+}
+
+template<class T>
 void GameObject::RemoveComponents()
 {
     for (int i = 0; i < components.size(); i++)
     {
         if (const T* comp = dynamic_cast<T*>(components[i]))
         {
-            delete comp;
             components.erase(components.begin() + i);
+            delete comp;
         }
     }
 }
