@@ -132,15 +132,17 @@ void main() {
 	vec3 viewDir = normalize(viewPos - fragPos);
 
 	vec3 result = vec3(0);
+	vec3 result1 = vec3(0);
+	vec3 result2 = vec3(0);
 
 	for(int i = 0; i < nbDirLight; i++)
 		result += CalcDirLight(dirLights[i], norm, viewDir);
 
 	for(int j = 0; j < nbPointLight; j++)
-		result += CalcPointLight(pointLights[j], norm, fragPos, viewDir);
+		result1 += CalcPointLight(pointLights[j], norm, fragPos, viewDir);
 
-	//for(int k = 0; k < nbSpotLight; k++)
-		//result += CalcSpotLight(spotLights[k], norm, fragPos, viewDir);
+	for(int k = 0; k < nbSpotLight; k++)
+		result2 += CalcSpotLight(spotLights[k], norm, fragPos, viewDir);
 
-	outColor =  vec4(result, 1.0) * texture(ourTexture, fragTexCoord);
+	outColor =  vec4(result + result1 + result2, 1.0) * texture(ourTexture, fragTexCoord);
 }
