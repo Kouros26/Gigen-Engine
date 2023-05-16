@@ -32,9 +32,9 @@ Application::Application()
 
 Application::~Application()
 {
-	AudioSource::Clear();
 	Lines::Clear();
 	GameObjectManager::Cleanup();
+	AudioSource::Clear();
 	WorldPhysics::GetInstance().DestroyPhysicWorld();
 }
 

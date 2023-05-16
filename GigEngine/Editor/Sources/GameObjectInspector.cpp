@@ -652,7 +652,7 @@ void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 	{
 		ImGui::SeparatorText("Components");
 
-		if (ImGui::MenuItem(ICON_COMPONENT " Audio source"))
+		if (ImGui::MenuItem(ICON_MD_AUDIO_FILE " Audio source"))
 		{
 			pObject->AddComponent<AudioSource>();
 		}
@@ -667,17 +667,21 @@ void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 
 		if (!pObject->GetRigidBody())
 		{
-			if (ImGui::MenuItem("RigidBody Capsule"))
+			if (ImGui::BeginMenu(ICON_RIGIDBODY "RigidBody"))
 			{
-				pObject->CreateCapsuleRigidBody(1, 2, { 1 }, 1);
-			}
-			if (ImGui::MenuItem("RigidBody Cube"))
-			{
-				pObject->CreateBoxRigidBody({ 1 }, { 1 }, 1);
-			}
-			if (ImGui::MenuItem("RigidBody Sphere"))
-			{
-				pObject->CreateSphereRigidBody(1, { 1 }, 1);
+				if (ImGui::MenuItem("Capsule"))
+				{
+					pObject->CreateCapsuleRigidBody(1, 2, { 1 }, 1);
+				}
+				if (ImGui::MenuItem("Cube"))
+				{
+					pObject->CreateBoxRigidBody({ 1 }, { 1 }, 1);
+				}
+				if (ImGui::MenuItem("Sphere"))
+				{
+					pObject->CreateSphereRigidBody(1, { 1 }, 1);
+				}
+				ImGui::EndMenu();
 			}
 		}
 
