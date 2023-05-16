@@ -94,15 +94,14 @@ void ModelLoader::ProcessBones(const aiMesh* pMesh, const aiScene* pScene, Mesh*
         else
             boneId = boneInfo[boneName].id;
 
-        auto weights = pMesh->mBones[boneIndex]->mWeights;
-        int numWeights = pMesh->mBones[boneIndex]->mNumWeights;
+        const auto weights = pMesh->mBones[boneIndex]->mWeights;
+        const int numWeights = pMesh->mBones[boneIndex]->mNumWeights;
 
         for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
         {
-            int vertexId = weights[weightIndex].mVertexId;
-            float weight = weights[weightIndex].mWeight;
-            //mesh->vertices[(vertexId * VERTEX_SIZE) + 8 + weightIndex - 1 ] = boneId;
-            //mesh->vertices[(vertexId * VERTEX_SIZE) + 9 + weightIndex - 1 ] = weight;
+	        const int vertexId = weights[weightIndex].mVertexId;
+            const float weight = weights[weightIndex].mWeight;
+            SetVertexBoneData(mesh, vertexId, boneId, weight);
         }
     }
 }
@@ -113,7 +112,7 @@ void ModelLoader::ProcessMaterial(const aiScene* pScene, std::vector<Material*>&
     {
         const aiMaterial* pMaterial = pScene->mMaterials[i];
 
-        Material* m = new Material();
+        auto m = new Material();
 
         //diffuse & ambient are inverted ??
         aiColor4D vec4;
@@ -137,6 +136,19 @@ void ModelLoader::ProcessMaterial(const aiScene* pScene, std::vector<Material*>&
         m->SetShininess(shininess);
 
         materials.push_back(m);
+    }
+}
+
+void ModelLoader::SetVertexBoneData(const Mesh* pMesh, int pVertexId, int pId, int pWeight)
+{
+    for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+    {
+	    if (pMesh->vertices[(pVertexId * VERTEX_SIZE) + 8 + i] < 0)
+        {
+            pMesh->vertices[(pVertexId * VERTEX_SIZE) + 8 + i] = pId;
+            pMesh->vertices[(pVertexId * VERTEX_SIZE) + 12 + i] = pWeight;
+            break;
+        }
     }
 }
 

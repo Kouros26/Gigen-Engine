@@ -21,6 +21,7 @@ public:
 	Model& operator=(const Model& other);
 	Model& operator=(Model&& other) noexcept;
 	void Draw(Texture* texture) const;
+	void DrawSkeleton() const;
 
 	void Init() override;
 

@@ -27,5 +27,7 @@ private:
     void ProcessBones(const aiMesh* pMesh, const aiScene* pScene, Mesh* mesh, std::map<std::string, BoneInfo>& boneInfo, int& boneCounter);
     void ProcessMaterial(const aiScene* pScene, std::vector<Material*>& materials);
 
+    void SetVertexBoneData(const Mesh* pMesh, int pVertexId, int pId, int pWeight); //Not sure if it works
+
     static lm::FMat4 AIMat4toFMat4(const aiMatrix4x4& pMatrix);
 };
