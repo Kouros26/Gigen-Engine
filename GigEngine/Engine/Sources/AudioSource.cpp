@@ -1,5 +1,5 @@
 #include "AudioSource.h"
-#include <irrklang/irrKlang.h>
+#include <irrKlang.h>
 using namespace irrklang;
 
 AudioSource::AudioSource(GameObject* gameObject) : Component(gameObject)
@@ -8,6 +8,7 @@ AudioSource::AudioSource(GameObject* gameObject) : Component(gameObject)
 	{
 		engine = createIrrKlangDevice();
 	}
+	engine->play2D("Audio/maybe.mp3", true);
 }
 
 AudioSource::~AudioSource()
@@ -16,6 +17,11 @@ AudioSource::~AudioSource()
 
 void AudioSource::Start()
 {
+}
+
+Component* AudioSource::Clone(GameObject* newGameObject)
+{
+	return nullptr;
 }
 
 void AudioSource::Play()

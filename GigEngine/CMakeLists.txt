@@ -11,7 +11,8 @@ set(THIRD_PARTY_DLL
 	${DEPENDS_DIR}/assimp/bin/assimp-vc143-mtd.dll
 	${DEPENDS_DIR}/Lua/bin/lua53.dll
 	${DEPENDS_DIR}/FREETYPE/freetype.dll
-
+	${DEPENDS_DIR}/IRRKLANG/irrklang.dll
+	${DEPENDS_DIR}/IRRKLANG/ikpMP3.dll
 )
 
 
@@ -62,6 +63,7 @@ IMGUI
 Lua
 BULLET
 FREETYPE
+IRRKLANG
 )
 
 include_directories(${MAIN_PROJECT_NAME} PRIVATE ${glfw_SOURCE_DIR}/include)

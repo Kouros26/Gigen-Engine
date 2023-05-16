@@ -1,15 +1,19 @@
 #pragma once
 #include "Component.h"
 
-class ISoundEngine;
+namespace irrklang
+{
+	class ISoundEngine;
+}
 
 class AudioSource : public Component
 {
 public:
 	AudioSource(GameObject* gameObject);
-	~AudioSource();
+	~AudioSource() override;
 
 	virtual void Start() override;
+	virtual Component* Clone(GameObject* newGameObject) override;
 
 	void Play();
 	void Pause();
@@ -21,5 +25,5 @@ private:
 	bool isPlaying = false;
 	float volume = 1;
 
-	static ISoundEngine* engine;
+	inline static irrklang::ISoundEngine* engine;
 };
