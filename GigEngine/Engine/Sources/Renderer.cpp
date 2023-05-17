@@ -120,6 +120,13 @@ void Renderer::ViewPort(int x, int y, int width, int height)
 {
 	glViewport(x, y, width, height);
 
+	if (PostProcess::GetFBO() == 0)
+	{
+		PostProcess::Init();
+		return;
+	}
+
+	PostProcess::SetVPSize();
 	glBindTexture(GL_TEXTURE_2D, PostProcess::GetTexture());
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -637,6 +644,7 @@ void GigRenderer::Renderer::ClearPostProcess()
 void GigRenderer::Renderer::BeginRenderPostProcess()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, PostProcess::GetMSFBO());
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, PostProcess::GetFBO());
 }
 
 void GigRenderer::Renderer::EndRenderPostProcess()

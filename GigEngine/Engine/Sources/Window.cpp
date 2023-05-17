@@ -210,12 +210,12 @@ void Window::SetViewPort(unsigned int pX, unsigned int pY, unsigned int pWidth, 
 {
 	if (pX == vpPosx && pY == vpPosy && pWidth == vpWidth && pHeight == vpHeight) return;
 
-	RENDERER.ViewPort(pX, pY, pWidth, pHeight);
-
 	vpPosx = pX;
 	vpPosy = pY;
 	vpWidth = pWidth;
 	vpHeight = pHeight;
+
+	RENDERER.ViewPort(pX, pY, pWidth, pHeight);
 
 	orthoMatrix = lm::FMat4::Orthographic(0, pWidth, 0, pHeight, 0, 1);
 

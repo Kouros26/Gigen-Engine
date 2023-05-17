@@ -15,8 +15,8 @@ PostProcess::~PostProcess()
 
 void PostProcess::Init()
 {
-	width = Application::GetWindow().GetWidth();
-	height = Application::GetWindow().GetHeight();
+	width = Application::GetWindow().GetVPWidth();
+	height = Application::GetWindow().GetVPHeight();
 	RENDERER.InitPostProcess();
 	InitShader();
 }
@@ -52,6 +52,12 @@ void PostProcess::Render(float time)
 	RENDERER.BindVertexArray(0);
 
 	shaderProgram.UnUse();
+}
+
+void PostProcess::SetVPSize()
+{
+	width = Application::GetWindow().GetVPWidth();
+	height = Application::GetWindow().GetVPHeight();
 }
 
 int& PostProcess::GetWidth()

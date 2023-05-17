@@ -13,6 +13,8 @@ public:
 	static void EndRender();
 	static void Render(float time);
 
+	static void SetVPSize();
+
 	static int& GetWidth();
 	static int& GetHeight();
 	static unsigned int& GetMSFBO();

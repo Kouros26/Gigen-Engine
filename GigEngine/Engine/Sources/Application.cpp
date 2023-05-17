@@ -156,7 +156,6 @@ void Application::Init()
 	RENDERER.Init();
 	Lines::Init();
 	UIManager::Init();
-	PostProcess::Init();
 	InitMainShader();
 
 	//to remove
