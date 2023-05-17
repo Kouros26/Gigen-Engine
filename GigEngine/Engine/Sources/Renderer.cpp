@@ -1,8 +1,9 @@
 #include <GLAD/glad.h>
 #include "Renderer.h"
 #include "Font.h"
+#include "PostProcess.h"
 #include "UIImage.h"
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -118,6 +119,14 @@ void Renderer::GetShaderInfoLog(unsigned int pShader, int pBufSize, int* pLength
 void Renderer::ViewPort(int x, int y, int width, int height)
 {
 	glViewport(x, y, width, height);
+
+	glBindTexture(GL_TEXTURE_2D, PostProcess::GetTexture());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width / 2, height / 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, PostProcess::GetRBO());
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width / 2, height / 2);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 void Renderer::DeleteShader(unsigned int pShader)
@@ -165,7 +174,7 @@ int Renderer::GetUniformLocation(unsigned int pProgram, const char* pName)
 	return glGetUniformLocation(pProgram, pName);
 }
 
-void Renderer::SetUniformValue(unsigned int pProgram, const char* pName, UniformType pType, void* pValue)
+void Renderer::SetUniformValue(unsigned int pProgram, const char* pName, UniformType pType, void* pValue, int size)
 {
 	int location = GetUniformLocation(pProgram, pName);
 	switch (pType)
@@ -184,6 +193,15 @@ void Renderer::SetUniformValue(unsigned int pProgram, const char* pName, Uniform
 		break;
 	case UniformType::MAT4:
 		glUniformMatrix4fv(location, 1, GL_FALSE, (float*)pValue);
+		break;
+	case UniformType::FLOAT2V:
+		glUniform2fv(location, size, (float*)pValue);
+		break;
+	case UniformType::FLOATV:
+		glUniform1fv(location, size, (float*)pValue);
+		break;
+	case UniformType::INTV:
+		glUniform1iv(location, size, (int*)pValue);
 		break;
 	default:
 		break;
@@ -278,6 +296,7 @@ void Renderer::LoadImguiTexture(unsigned int& pTexture, int pWidth, int pHeight,
 
 void Renderer::BindTexture(unsigned int pTarget, unsigned int pTexture)
 {
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(pTarget, pTexture);
 }
 
@@ -315,20 +334,20 @@ void Renderer::SetupBuffer(const Buffer& pVBO, const Buffer& pEBO, const BufferV
 	BindBuffer(BufferType::ELEMENT, pEBO.id);
 	BufferData(BufferType::ELEMENT, pEBO.size * sizeof(unsigned int), pEBO.data, RD_STATIC_DRAW);
 
-    EnableVertexAttribArray(0);       // position
-    VertexAttribPointer(0, 3, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)0);
+	EnableVertexAttribArray(0);       // position
+	VertexAttribPointer(0, 3, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)0);
 
-    EnableVertexAttribArray(1);       // normal
-    VertexAttribPointer(1, 3, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(3 * sizeof(float)));
+	EnableVertexAttribArray(1);       // normal
+	VertexAttribPointer(1, 3, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(3 * sizeof(float)));
 
-    EnableVertexAttribArray(2);       // texture
-    VertexAttribPointer(2, 2, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(6 * sizeof(float)));
+	EnableVertexAttribArray(2);       // texture
+	VertexAttribPointer(2, 2, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(6 * sizeof(float)));
 
-    EnableVertexAttribArray(3);       // id
-    VertexAttribPointer(3, 4, RD_INT, RD_FALSE, 16 * sizeof(float), (void*)(8 * sizeof(float)));
+	EnableVertexAttribArray(3);       // id
+	VertexAttribPointer(3, 4, RD_INT, RD_FALSE, 16 * sizeof(float), (void*)(8 * sizeof(float)));
 
-    EnableVertexAttribArray(4);       // weight
-    VertexAttribPointer(4, 4, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(12 * sizeof(float)));
+	EnableVertexAttribArray(4);       // weight
+	VertexAttribPointer(4, 4, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(12 * sizeof(float)));
 
 	BindBuffer(BufferType::ARRAY, RD_FALSE);
 	BindBuffer(BufferType::VERTEX, RD_FALSE);
@@ -518,4 +537,112 @@ void Renderer::LoadFont(Font* f) const
 
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
+}
+
+void GigRenderer::Renderer::InitPostProcess()
+{
+	// initialize renderbuffer/framebuffer object
+	glGenFramebuffers(1, &PostProcess::GetMSFBO());
+	glGenFramebuffers(1, &PostProcess::GetFBO());
+	glGenRenderbuffers(1, &PostProcess::GetRBO());
+	// initialize renderbuffer storage with a multisampled color buffer (don't need a depth/stencil buffer)
+	glBindFramebuffer(GL_FRAMEBUFFER, PostProcess::GetMSFBO());
+	glBindRenderbuffer(GL_RENDERBUFFER, PostProcess::GetRBO());
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGB, PostProcess::GetWidth(), PostProcess::GetHeight()); // allocate storage for render buffer object
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, PostProcess::GetRBO()); // attach MS render buffer object to framebuffer
+
+	switch (glCheckFramebufferStatus(GL_FRAMEBUFFER))
+	{
+	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+		std::cout << "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT" << std::endl;
+		break;
+	case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+		std::cout << "GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT" << std::endl;
+		break;
+	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+		std::cout << "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT" << std::endl;
+		break;
+	case GL_FRAMEBUFFER_UNSUPPORTED:
+		std::cout << "GL_FRAMEBUFFER_UNSUPPORTED" << std::endl;
+		break;
+	}
+
+	// also initialize the FBO/texture to blit multisampled color-buffer to; used for shader operations (for postprocessing effects)
+	glBindFramebuffer(GL_FRAMEBUFFER, PostProcess::GetFBO());
+
+	glActiveTexture(GL_TEXTURE0);
+	glGenTextures(1, &PostProcess::GetTexture());
+	glBindTexture(GL_TEXTURE_2D, PostProcess::GetTexture());
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, PostProcess::GetWidth(), PostProcess::GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	//LoadTexture(PostProcess::GetTexture(), PostProcess::GetWidth(), PostProcess::GetHeight(), nullptr);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, PostProcess::GetTexture(), 0); // attach texture to framebuffer as its color attachment
+
+	switch (glCheckFramebufferStatus(GL_FRAMEBUFFER))
+	{
+	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+		std::cout << "2 GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT" << std::endl;
+		break;
+	case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+		std::cout << "2 GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT" << std::endl;
+		break;
+	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+		std::cout << "2 GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT" << std::endl;
+		break;
+	case GL_FRAMEBUFFER_UNSUPPORTED:
+		std::cout << "2 GL_FRAMEBUFFER_UNSUPPORTED" << std::endl;
+		break;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// configure VAO/VBO
+	unsigned int VBO;
+	float vertices[] = {
+		// pos        // tex
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f, 1.0f, 1.0f,
+		-1.0f,  1.0f, 0.0f, 1.0f,
+
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		 1.0f, -1.0f, 1.0f, 0.0f,
+		 1.0f,  1.0f, 1.0f, 1.0f
+	};
+	glGenVertexArrays(1, &PostProcess::GetVAO());
+	glGenBuffers(1, &VBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindVertexArray(PostProcess::GetVAO());
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void GigRenderer::Renderer::ClearPostProcess()
+{
+	glDeleteRenderbuffers(1, &PostProcess::GetRBO());
+	glDeleteTextures(1, &PostProcess::GetTexture());
+	glDeleteFramebuffers(1, &PostProcess::GetFBO());
+	glDeleteFramebuffers(1, &PostProcess::GetMSFBO());
+}
+
+void GigRenderer::Renderer::BeginRenderPostProcess()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, PostProcess::GetMSFBO());
+}
+
+void GigRenderer::Renderer::EndRenderPostProcess()
+{
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, PostProcess::GetMSFBO());
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, PostProcess::GetFBO());
+	glBlitFramebuffer(0, 0, PostProcess::GetWidth(), PostProcess::GetHeight(), 0, 0, PostProcess::GetWidth(), PostProcess::GetHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); // binds both READ and WRITE framebuffer to default framebuffer
 }

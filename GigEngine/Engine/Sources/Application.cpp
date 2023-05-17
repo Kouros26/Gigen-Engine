@@ -11,6 +11,7 @@
 #include "Log.h"
 #include "Behaviour.h"
 #include "AudioSource.h"
+#include "PostProcess.h"
 #include <iostream>
 
 #include "RigidBody.h"
@@ -35,6 +36,7 @@ Application::~Application()
 	Lines::Clear();
 	GameObjectManager::Cleanup();
 	AudioSource::Clear();
+	PostProcess::Clear();
 	WorldPhysics::GetInstance().DestroyPhysicWorld();
 }
 
@@ -154,6 +156,7 @@ void Application::Init()
 	RENDERER.Init();
 	Lines::Init();
 	UIManager::Init();
+	PostProcess::Init();
 	InitMainShader();
 
 	//to remove
@@ -180,7 +183,8 @@ void Application::InitMainShader()
 
 void Application::Draw()
 {
-	ClearWindow();
+	PostProcess::BeginRender();
+	//ClearWindow();
 
 	RENDERER.Disable(RD_DEPTH_TEST);
 	if (GameObjectManager::GetSkyBox())
@@ -215,6 +219,9 @@ void Application::Draw()
 
 	if (showUI)
 		UIManager::DrawUI(); // render UI
+
+	PostProcess::EndRender();
+	PostProcess::Render(Time::GetDeltaTime());
 }
 
 void Application::ClearWindow()
