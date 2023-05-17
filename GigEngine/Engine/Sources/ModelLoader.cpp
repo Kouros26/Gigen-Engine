@@ -6,6 +6,8 @@
 #include <assimp/scene.h>
 #include <Vec3/FVec3.hpp>
 
+#include "Quaternion/FQuat.hpp"
+
 void ModelLoader::LoadModel(std::vector<Mesh*>& meshes, std::vector<Material*>& materials, std::map<std::string, BoneInfo>& boneInfo, int& boneCounter, std::string const& pFilePath)
 {
     Assimp::Importer importer;
@@ -154,8 +156,18 @@ void ModelLoader::SetVertexBoneData(const Mesh* pMesh, int pVertexId, int pId, i
 
 lm::FMat4 ModelLoader::AIMat4toFMat4(const aiMatrix4x4& pMatrix)
 {
-    return { pMatrix.a1, pMatrix.a2, pMatrix.a3, pMatrix.a4,
-            pMatrix.b1, pMatrix.b2, pMatrix.b3, pMatrix.b4,
-            pMatrix.c1, pMatrix.c2, pMatrix.c3, pMatrix.c4,
-            pMatrix.d1, pMatrix.d2, pMatrix.d3, pMatrix.d4};
+    return { pMatrix.a1, pMatrix.b1, pMatrix.c1, pMatrix.d1,
+            pMatrix.a2, pMatrix.b2, pMatrix.c2, pMatrix.d2,
+            pMatrix.a3, pMatrix.b3, pMatrix.c3, pMatrix.d3,
+            pMatrix.a4, pMatrix.b4, pMatrix.c4, pMatrix.d4 };
+}
+
+lm::FVec3 ModelLoader::AIVec3ToFVec3(const aiVector3D& pVector)
+{
+    return { pVector.x, pVector.y, pVector.z };
+}
+
+lm::FQuat ModelLoader::AIQuatToFQuat(const aiQuaternion& pQuaternion)
+{
+    return { pQuaternion.x, pQuaternion.y, pQuaternion.z, pQuaternion.w };
 }

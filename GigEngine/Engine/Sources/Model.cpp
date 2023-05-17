@@ -93,9 +93,9 @@ void Model::Draw(Texture* texture) const
 
 void Model::DrawSkeleton() const
 {
-    //lm::FVec3 start{ boneMap.find("root")->second.offset.m_matrix->x, boneMap.find("root")->second.offset.m_matrix->y, boneMap.find("root")->second.offset.m_matrix->z };
-    //lm::FVec3 end{ boneMap.find("pelvis")->second.offset.m_matrix->x, boneMap.find("pelvis")->second.offset.m_matrix->y + 20, boneMap.find("pelvis")->second.offset.m_matrix->z };
-    //Lines::DrawLine(start, end, { 0,1,0 }, 5);
+    lm::FVec3 start{ boneMap.find("root")->second.offset.m_matrix->x, boneMap.find("root")->second.offset.m_matrix->y, boneMap.find("root")->second.offset.m_matrix->z };
+    lm::FVec3 end{ boneMap.find("pelvis")->second.offset.m_matrix->x, boneMap.find("pelvis")->second.offset.m_matrix->y, boneMap.find("pelvis")->second.offset.m_matrix->z };
+    Lines::DrawLine(start, end, { 0,1,0 }, 5);
 }
 
 void Model::Init()
@@ -104,7 +104,7 @@ void Model::Init()
         mesh->SetupBuffers();
 }
 
-auto& Model::GetBoneInfoMap()
+std::map<std::string, BoneInfo>& Model::GetBoneInfoMap()
 {
     return boneMap;
 }

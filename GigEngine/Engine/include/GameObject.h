@@ -4,6 +4,8 @@
 #include "Transform.h"
 #include <vector>
 
+#include "Animator.h"
+
 namespace GigScripting
 {
     class Behaviour;
@@ -34,6 +36,9 @@ public:
     void CreateBoxRigidBody(const lm::FVec3& halfExtents, const lm::FVec3& scale, float mass);
     void CreateCapsuleRigidBody(float radius, float height, const lm::FVec3& scale, float mass);
     void CreateSphereRigidBody(float radius, const lm::FVec3& scale, float mass);
+
+    void CreateAnimator(); // TEMP
+    Animator* GetAnimator() const; //TEMP
 
     virtual void UpdateRender() const;
     void UpdateComponents() const;
@@ -109,6 +114,7 @@ public:
 
     std::vector<Component*> components{};
 
+    Animator* animator = nullptr;
 	Model* model = nullptr;
 	Texture* texture = nullptr;
 	//use so every gameObject has a different id

@@ -27,6 +27,7 @@ Application::Application()
 
 	WorldPhysics::GetInstance().InitPhysicWorld();
 	Scene::LoadScene(Scene::GetCurrentSceneName());
+	GameObject* sk = GameObjectManager::CreateGameObject("sk");
 }
 
 Application::~Application()

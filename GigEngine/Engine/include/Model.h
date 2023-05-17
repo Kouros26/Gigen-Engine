@@ -25,7 +25,7 @@ public:
 
 	void Init() override;
 
-	auto& GetBoneInfoMap();
+	std::map<std::string, BoneInfo>& GetBoneInfoMap();
 	int& GetBoneCount();
 
 private:

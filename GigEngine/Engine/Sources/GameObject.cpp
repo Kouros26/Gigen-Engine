@@ -115,6 +115,18 @@ void GameObject::CreateSphereRigidBody(float radius, const lm::FVec3& scale, flo
     transform.SetOwnerRigidBody(rigidBody);
 }
 
+void GameObject::CreateAnimator()
+{
+	delete animator;
+
+	animator = new Animator(nullptr);
+}
+
+Animator* GameObject::GetAnimator() const
+{
+	return animator;
+}
+
 void GameObject::SetModel(std::string const& filePath)
 {
 	model = ResourceManager::Get<Model>(filePath);
