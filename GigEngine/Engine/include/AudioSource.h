@@ -19,6 +19,8 @@ public:
 	virtual void Update(float pDeltaTime) override;
 	virtual Component* Clone(GameObject* newGameObject) override;
 
+	virtual std::string GetType() override;
+
 	static void UpdateAudioEngine(Camera* cam);
 	static void Clear();
 
@@ -30,21 +32,21 @@ public:
 	void SetAudio(const std::string& path);
 	std::string GetAudio();
 
-	bool GetPlayOnStart();
+	[[nodiscard]] bool GetPlayOnStart() const;
 	void SetPlayOnStart(bool b);
 
-	bool GetIsLooping();
+	[[nodiscard]] bool GetIsLooping() const;
 	void SetIsLooping(bool b);
 
-	bool GetIsPlaying();
+	[[nodiscard]] bool GetIsPlaying() const;
 
-	float GetVolume();
+	[[nodiscard]] float GetVolume() const;
 	void SetVolume(float f);
 
-	float GetMinDistance();
+	[[nodiscard]] float GetMinDistance() const;
 	void SetMinDistance(float f);
 
-	bool GetIs2D();
+	[[nodiscard]] bool GetIs2D() const;
 	void SetIs2D(bool b);
 
 private:

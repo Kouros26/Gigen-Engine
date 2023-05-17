@@ -21,6 +21,8 @@ public:
 
     [[nodiscard]] GameObject* GetGameObject() const;
 
+    virtual std::string GetType();
+
 protected:
     GameObject* gameObject;
 };

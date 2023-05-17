@@ -34,7 +34,7 @@ void MenuBarDisplay::Draw()
     }
     if (ImGui::Button(ICON_SAVE))
     {
-        Scene::SaveScene(Scene::GetCurrentSceneName());
+        Scene::GetInstance().SaveScene(Scene::GetInstance().GetCurrentSceneName());
     }
     if (ImGui::BeginMenu("Themes"))
     {

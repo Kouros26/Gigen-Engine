@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+
+#include "AudioSource.h"
 #include "Camera.h"
 #include "Light.h"
 
@@ -39,32 +41,35 @@ class Scene
 {
 public:
 
-	static void SaveScene(const std::string& pSceneName);
-	static void LoadScene(const std::string& pSceneName);
-	static void ReloadScene(const std::string& pSceneName);
+	void SaveScene(const std::string& pSceneName);
+	void LoadScene(const std::string& pSceneName);
+	void ReloadScene(const std::string& pSceneName);
 
-	static std::string& GetCurrentSceneName();
+	std::string& GetCurrentSceneName();
+	static Scene& GetInstance();
 
 private:
 
-	static void GetValues(GameObject* pGameObject);
-	static void GetLightValues(DirLight* pGameObject);
-	static void GetCameraValues(const Camera* pGameObject);
-	static bool IsLight(const std::string& pType);
+	void GetValues(GameObject* pGameObject);
+	void GetAudioValues(AudioSource* pAudioSource) const;
+	void GetLightValues(DirLight* pGameObject) const;
+	void GetCameraValues(const Camera* pGameObject) const;
+	bool IsLight(const std::string& pType);
 
-	static GameObject* ProcessTypeOfGameObject(const std::string& pLine);
-	static void ProcessLightData(const std::string& pLine, GameObject* pOutGameObject);
-	static void ProcessCameraData(const std::string& pLine, Camera* pOutGameObject);
-	static void ProcessTransform(const std::string& pLine, GameObject* pOutGameObject);
-	static void ProcessRigidBody(const std::string& pLine, GameObject* pOutGameObject);
-	static void ProcessComponents(const std::string& pLine, GameObject* pOutGameObject);
+	GameObject* ProcessTypeOfGameObject(const std::string& pLine);
+	void ProcessLightData(const std::string& pLine, GameObject* pOutGameObject);
+	void ProcessCameraData(const std::string& pLine, Camera* pOutGameObject);
+	void ProcessTransform(const std::string& pLine, GameObject* pOutGameObject);
+	void ProcessRigidBody(const std::string& pLine, GameObject* pOutGameObject);
+	void ProcessComponents(const std::string& pLine, GameObject* pOutGameObject);
+	void LoadSound(const std::vector<std::string>& pStrings, GameObject* pOutGameObject, int i) const;
 
-	static std::string VecToString(const float pFirst, const float pSecond, const float pThird);
-	static std::string VecToString(const lm::FVec3& pVec);
-	static std::vector<std::string> SplitString(const std::string& pString, char delimiter = ' ');
+	std::string VecToString(const float pFirst, const float pSecond, const float pThird) const;
+	std::string VecToString(const lm::FVec3& pVec) const;
+	std::vector<std::string> SplitString(const std::string& pString, char delimiter = ' ');
 
-	inline static std::string sceneFolder = "Scenes/";
-	inline static std::string currentScene = "default.chad";
+	std::string sceneFolder = "Scenes/";
+	std::string currentScene = "default.chad";
 
-	inline static std::vector<std::pair<std::string, std::string>> parentChildMemory;
+	std::vector<std::pair<std::string, std::string>> parentChildMemory;
 };

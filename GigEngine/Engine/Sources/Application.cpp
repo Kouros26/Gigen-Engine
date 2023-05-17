@@ -27,7 +27,7 @@ Application::Application()
 	Init();
 
 	WorldPhysics::GetInstance().InitPhysicWorld();
-	Scene::LoadScene(Scene::GetCurrentSceneName());
+	Scene::GetInstance().LoadScene(Scene::GetInstance().GetCurrentSceneName());
 }
 
 Application::~Application()
@@ -86,7 +86,7 @@ void Application::Stop()
 {
 	isPause = false;
 	GameObjectManager::SetCurrentCamera(nullptr);
-	Scene::ReloadScene(Scene::GetCurrentSceneName());
+	Scene::GetInstance().ReloadScene(Scene::GetInstance().GetCurrentSceneName());
 	isEditor = true;
 }
 

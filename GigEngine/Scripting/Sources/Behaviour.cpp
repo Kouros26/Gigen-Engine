@@ -43,6 +43,12 @@ Component* GigScripting::Behaviour::Clone(GameObject* newGameObject)
     return new Behaviour(newGameObject);
 }
 
+std::string GigScripting::Behaviour::GetType()
+{
+    const std::string type(typeid(this).name());
+    return type.substr(6, type.size() - 16);
+}
+
 const std::string& GigScripting::Behaviour::GetScriptName() const
 {
     return scriptName;

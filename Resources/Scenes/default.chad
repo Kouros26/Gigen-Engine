@@ -21,7 +21,6 @@ TEngine/Textures/default.png
 NThierry-Henri
 W-6.700000 15.000000 10.100000 0.000000 0.000000 0.000000 20.000000 20.000000 20.000000
 Rsphere 2.000000 0.577350 0.577350 0.577350 10.000000 true
-C2 NewScript0 NewScript2 
 MEngine/Models/Thierry-Henri.obj
 TEngine/Textures/default.png
 *DirLight
@@ -32,3 +31,4 @@ W0.000000 0.000000 0.000000 45.000000 20.000000 0.000000 1.000000 1.000000 1.000
 -50.000000 0.100000 1000.000000 1.245283
 NCamera
 W-3.600000 10.800000 -5.200000 0.000000 0.000000 0.000000 1.000000 1.000000 1.000000
+C1 AudioSource ../../../Resources/Engine/Audio\StarWars-JohnWilliams-DuelOfTheFates.mp3 true true true 1.000000 5.000000  

@@ -1,8 +1,8 @@
 #include "AudioSource.h"
 #include <irrKlang.h>
-using namespace irrklang;
-
 #include "Camera.h"
+
+using namespace irrklang;
 
 AudioSource::AudioSource(GameObject* gameObject) : Component(gameObject)
 {
@@ -46,7 +46,7 @@ void AudioSource::Update(float pDeltaTime)
 
 Component* AudioSource::Clone(GameObject* newGameObject)
 {
-	AudioSource* newAudio = new AudioSource(newGameObject);
+	const auto newAudio = new AudioSource(newGameObject);
 	newAudio->SetAudio(audioPath);
 	newAudio->SetIs2D(is2D);
 	newAudio->SetIsLooping(loop);
@@ -54,6 +54,12 @@ Component* AudioSource::Clone(GameObject* newGameObject)
 	newAudio->SetPlayOnStart(playOnStart);
 	newAudio->SetVolume(volume);
 	return newAudio;
+}
+
+std::string AudioSource::GetType()
+{
+	const std::string type(typeid(this).name());
+	return type.substr(6, type.size() - 16);
 }
 
 void AudioSource::UpdateAudioEngine(Camera* cam)
@@ -127,7 +133,7 @@ std::string AudioSource::GetAudio()
 	return audioPath;
 }
 
-bool AudioSource::GetPlayOnStart()
+bool AudioSource::GetPlayOnStart() const
 {
 	return playOnStart;
 }
@@ -137,7 +143,7 @@ void AudioSource::SetPlayOnStart(bool b)
 	playOnStart = b;
 }
 
-bool AudioSource::GetIsLooping()
+bool AudioSource::GetIsLooping() const
 {
 	return loop;
 }
@@ -149,12 +155,12 @@ void AudioSource::SetIsLooping(bool b)
 		sound->setIsLooped(loop);
 }
 
-bool AudioSource::GetIsPlaying()
+bool AudioSource::GetIsPlaying() const
 {
 	return isPlaying;
 }
 
-float AudioSource::GetVolume()
+float AudioSource::GetVolume() const
 {
 	return volume;
 }
@@ -166,7 +172,7 @@ void AudioSource::SetVolume(float f)
 		sound->setVolume(volume);
 }
 
-float AudioSource::GetMinDistance()
+float AudioSource::GetMinDistance() const
 {
 	return minDistance;
 }
@@ -178,7 +184,7 @@ void AudioSource::SetMinDistance(float f)
 		sound->setMinDistance(minDistance);
 }
 
-bool AudioSource::GetIs2D()
+bool AudioSource::GetIs2D() const
 {
 	return is2D;
 }

@@ -22,6 +22,8 @@ namespace GigScripting
 
         virtual Component* Clone(GameObject* newGameObject) override;
 
+        virtual std::string GetType() override;
+
         [[nodiscard]] const std::string& GetScriptName() const;
 
         sol::table& GetScriptTable();
