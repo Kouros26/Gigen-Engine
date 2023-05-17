@@ -43,7 +43,7 @@ void GameObjectInspector::Draw()
 	ImGui::End();
 }
 
-void GameObjectInspector::DrawObject()
+void GameObjectInspector::DrawObject() const
 {
 	bool isGameObject = true;
 	Object* object = GameObjectManager::GetFocusedGameObject();
@@ -52,7 +52,9 @@ void GameObjectInspector::DrawObject()
 	{
 		object = UIManager::GetFocusedElement();
 		isGameObject = false;
-		return;
+
+		if (!object)
+			return;
 	}
 
 	static char name[128];
@@ -114,7 +116,7 @@ void GameObjectInspector::DrawUIElement(UIElement * pUI) const
 	if (isWorld)
 		DrawTransform(&pUI->GetTransform());
 
-	lm::FVec3 col = pUI->GetColor();
+	const lm::FVec3 col = pUI->GetColor();
 	float color[3] = { col.x, col.y, col.z };
 
 	ImGui::Text("World"); ImGui::SameLine();
@@ -307,7 +309,7 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 			}
 		}
 
-		std::string path = pObject->GetModel()->GetFilePath();
+		const std::string path = pObject->GetModel()->GetFilePath();
 
 		ImGui::Text("Path :"); ImGui::SameLine();
 		ImGui::Text(path.c_str());
@@ -319,7 +321,7 @@ void GameObjectInspector::DrawModel(GameObject * pObject) const
 	}
 }
 
-void GameObjectInspector::DrawTexture(GameObject * pObject) const
+void GameObjectInspector::DrawTexture(const GameObject * pObject) const
 {
 	ImGui::SetCursorPosX(30);
 	ImGui::BeginGroup();
@@ -442,18 +444,18 @@ void GameObjectInspector::DrawRigidTransform(RigidBody * body) const
 		static bool lockRigidRot = false;
 
 		//position var
-		btVector3 btPos = body->GetTransfrom().getOrigin();
+		const btVector3 btPos = body->GetTransfrom().getOrigin();
 		float translation[3] = { btPos.getX(), btPos.getY(), btPos.getZ() }; //need for DragFloat3
-		lm::FVec3 pos = { btPos.getX(), btPos.getY(), btPos.getZ() }; //need for lock
+		const lm::FVec3 pos = { btPos.getX(), btPos.getY(), btPos.getZ() }; //need for lock
 
 		//scale var
 		float scale[3] = { body->GetScale().x, body->GetScale().y, body->GetScale().z }; //need for DragFloat3
-		lm::FVec3 scl = { body->GetScale().x, body->GetScale().y, body->GetScale().z }; //need for lock
+		const lm::FVec3 scl = { body->GetScale().x, body->GetScale().y, body->GetScale().z }; //need for lock
 
 		//rotation var
 		float rotation[3];
 		body->GetTransfrom().getRotation().getEulerZYX((btScalar&)rotation[2], (btScalar&)rotation[1], (btScalar&)rotation[0]); //need for DragFloat3
-		lm::FVec3 rot(rotation[0], rotation[1], rotation[2]); //need for lock
+		const lm::FVec3 rot(rotation[0], rotation[1], rotation[2]); //need for lock
 
 		//position widget
 		ImGui::Text("Position"); ImGui::SameLine();
@@ -698,14 +700,13 @@ void GameObjectInspector::DrawScriptsComponent(GameObject * pObject) const
 {
 	std::vector<GigScripting::Behaviour*> scripts;
 	pObject->GetComponents<GigScripting::Behaviour>(scripts);
-	if (scripts.size() == 0)
-	{
+	if (scripts.empty())
 		return;
-	}
+
 	using namespace GigScripting;
 	if (ImGui::CollapsingHeader(ICON_COMPONENT " Scripts"))
 	{
-		for (auto& script : scripts)
+		for (const auto& script : scripts)
 		{
 			if (!script)
 			{
@@ -742,7 +743,7 @@ void GameObjectInspector::DrawAudiosComponent(GameObject * pObject) const
 {
 	std::vector<AudioSource*> audios;
 	pObject->GetComponents<AudioSource>(audios);
-	if (audios.size() == 0)
+	if (audios.empty())
 	{
 		return;
 	}
@@ -886,7 +887,7 @@ void GameObjectInspector::DrawDropTarget(GameObject * pObject) const
 			}
 			else if (str.find(".mp3") != std::string::npos)
 			{
-				AudioSource* temp = pObject->AddComponent<AudioSource>();
+				auto* temp = pObject->AddComponent<AudioSource>();
 				temp->SetAudio(str);
 			}
 		}

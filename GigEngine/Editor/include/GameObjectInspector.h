@@ -22,7 +22,7 @@ public:
 	void Draw() override;
 
 private:
-	void DrawObject();
+	void DrawObject() const;
 	void DrawGameObject(GameObject* pObject) const;
 
 	void DrawUIElement(UIElement* pUI) const;
@@ -32,7 +32,7 @@ private:
 
 	void DrawTransform(Transform* transform) const;
 	void DrawModel(GameObject* pObject) const;
-	void DrawTexture(GameObject* pObject) const;
+	void DrawTexture(const GameObject* pObject) const;
 	void DrawRigidBody(GameObject* pObject) const;
 	void DrawRigidShape(RigidBody* body) const;
 	void DrawRigidTransform(RigidBody* body) const;
