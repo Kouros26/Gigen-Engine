@@ -228,21 +228,25 @@ Skybox* GameObjectManager::GetSkyBox()
 	return skybox;
 }
 
+//ok
+
 void GameObjectManager::SendLightsToShader()
 {
 	for (int i = 0; i < dirLights.size(); i++)
 	{
-		dirLights[i]->SendToShader(i, g_dirLightShaderName);
+		dirLights[i]->SendToShader(i, 0);
 	}
 	for (int i = 0; i < pointLights.size(); i++)
 	{
-		pointLights[i]->SendToShader(i, g_pointLightShaderName);
+		pointLights[i]->SendToShader(i + dirLights.size(), 1);
 	}
 	for (int i = 0; i < spotLights.size(); i++)
 	{
-		spotLights[i]->SendToShader(i, g_spotLightShaderName);
+		spotLights[i]->SendToShader(i + dirLights.size() + pointLights.size(), 2);
 	}
 }
+
+//
 
 int GameObjectManager::GetDirLightSize()
 {

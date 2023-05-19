@@ -48,9 +48,7 @@ private:
 	int viewProjLocation;
 	int ModelLocation;
 	int viewPosLocation;
-	int nbDirLightLocation;
-	int nbPointLightLocation;
-	int nbSpotLightLocation;
+	int nbLightLocation;
 
 	void Init();
 	void InitMainShader();
