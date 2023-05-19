@@ -89,28 +89,23 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
-	float ambient = light.ambient;
-
-	vec3 norm = normalize(normal);
+	//cal point
 	vec3 lightDir = normalize(light.position - fragPos);
-	float diff = max(dot(norm, lightDir), 0.0);
-	float diffuse = light.diffuse * diff;
-
+	float dist = length(light.position - fragPos);
+	float attenuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
+	float diffuse = max(dot(lightDir, normal), 0.0) * light.diffuse * attenuation;
 	vec3 haflwaydir = normalize(lightDir + viewDir);
 	float spec = pow(max(dot(viewDir, haflwaydir), 0.0), material.shininess);
-	float specular = light.specular * spec;
+	float specular = spec * light.specular * attenuation;
 
+	//spot part
 	float theta = dot(lightDir, normalize(-light.direction));
 	float epsilon = (light.cutOff - light.outerCutOff);
 	float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
-	diffuse  *= intensity;
+	float ambient = light.ambient * intensity;
+	diffuse *= intensity;
 	specular *= intensity;
 
-	float dist = length(light.position - fragPos);
-	float attenuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
-	ambient *= attenuation;
-	diffuse *= attenuation;
-	specular *= attenuation;
 	return ((ambient * material.ambient) + (diffuse * material.diffuse) + (specular * material.specular)) * light.color;
 }
 
@@ -135,11 +130,9 @@ void main() {
 
 	for(int i = 0; i < nbDirLight; i++)
 		result += CalcDirLight(dirLights[i], norm, viewDir);
-
 	for(int j = 0; j < nbPointLight; j++)
 		result += CalcPointLight(pointLights[j], norm, fragPos, viewDir);
-
-	//for(int k = 0; k < nbSpotLight; k++)
+	for(int k = 0; k < nbSpotLight; k++)
 		//result += CalcSpotLight(spotLights[k], norm, fragPos, viewDir);
 
 	outColor =  vec4(result, 1.0) * texture(ourTexture, fragTexCoord);

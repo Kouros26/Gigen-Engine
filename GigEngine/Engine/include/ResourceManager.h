@@ -12,6 +12,7 @@ public:
 
     static void DeleteResource(const std::string& filePath);
 
+    static void Cleanup();
 private:
     template <typename T>
     static T* Create(const std::string& filePath);

@@ -6,6 +6,7 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
+
 }
 
 inline void ResourceManager::DeleteResource(const std::string& filePath)
@@ -14,6 +15,14 @@ inline void ResourceManager::DeleteResource(const std::string& filePath)
     if (it != resources.end())
     {
         resources.erase(it);
+    }
+}
+
+void ResourceManager::Cleanup()
+{
+    if (!resources.empty())
+    {
+        resources.clear();
     }
 }
 

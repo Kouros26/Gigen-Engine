@@ -2,7 +2,7 @@ template<typename T>
 inline T* ResourceManager::Get(const std::string& filePath)
 {
     auto it = resources.end();
-    if (resources.size() > 0) 
+    if (resources.size() > 0)
     {
         it = resources.find(filePath);
     }
@@ -23,16 +23,19 @@ inline T* ResourceManager::Create(const std::string& filePath)
         return nullptr;
     }
 
-    std::future<T*> futureResource = threadPool.Enqueue([filePath]()
-        {
-            return new T(filePath);
+    std::promise<std::unique_ptr<T>> resourcePromise;
+    std::future<std::unique_ptr<T>> futureResource = resourcePromise.get_future();
+
+    threadPool.Enqueue([filePath, &resourcePromise]() {
+        std::unique_ptr<T> resource = std::make_unique<T>(filePath);
+        resourcePromise.set_value(std::move(resource));
         });
 
     futureResource.wait();
 
-    T* resource = futureResource.get();
+    std::unique_ptr<T> resource = futureResource.get();
 
-    resources[filePath] = std::unique_ptr<IResource>(resource);
-    resource->Init();
-    return resource;
+    resources[filePath] = std::move(resource);
+    resources[filePath]->Init();
+    return static_cast<T*>(resources[filePath].get());
 }
