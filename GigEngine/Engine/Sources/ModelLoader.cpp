@@ -6,7 +6,7 @@
 #include <assimp/scene.h>
 #include <Vec3/FVec3.hpp>
 
-void ModelLoader::LoadModel(std::vector<Mesh*>& meshes, std::vector<Material*>& materials, std::string const& pFilePath)
+void ModelLoader::LoadModel(std::vector<Mesh*>& meshes, std::vector<Material*>& materials, std::map<std::string, BoneInfo>& boneInfo, int& boneCounter, std::string const& pFilePath)
 {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(pFilePath, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals);
@@ -17,24 +17,24 @@ void ModelLoader::LoadModel(std::vector<Mesh*>& meshes, std::vector<Material*>& 
         return;
     }
 
-    ProcessNode(scene->mRootNode, scene, meshes, materials);
+    ProcessNode(scene->mRootNode, scene, meshes, materials, boneInfo, boneCounter);
 }
 
-void ModelLoader::ProcessNode(const aiNode* pNode, const aiScene* pScene, std::vector<Mesh*>& meshes, std::vector<Material*>& materials)
+void ModelLoader::ProcessNode(const aiNode* pNode, const aiScene* pScene, std::vector<Mesh*>& meshes, std::vector<Material*>& materials, std::map<std::string, BoneInfo>& boneInfo, int& boneCounter)
 {
     for (unsigned int i = 0; i < pNode->mNumMeshes; i++)
     {
         const aiMesh* mesh = pScene->mMeshes[pNode->mMeshes[i]];
-        ProcessMesh(mesh, pScene, meshes);
+        ProcessMesh(mesh, pScene, meshes, boneInfo, boneCounter);
     }
 
     ProcessMaterial(pScene, materials);
 
     for (unsigned int i = 0; i < pNode->mNumChildren; i++)
-        ProcessNode(pNode->mChildren[i], pScene, meshes, materials);
+        ProcessNode(pNode->mChildren[i], pScene, meshes, materials, boneInfo, boneCounter);
 }
 
-void ModelLoader::ProcessMesh(const aiMesh* pMesh, const aiScene* pScene, std::vector<Mesh*>& meshes)
+void ModelLoader::ProcessMesh(const aiMesh* pMesh, const aiScene* pScene, std::vector<Mesh*>& meshes, std::map<std::string, BoneInfo>& boneInfo, int& boneCounter)
 {
     Mesh* mesh = new Mesh(pMesh->mNumVertices * VERTEX_SIZE, pMesh->mNumFaces * FACE_SIZE);
     mesh->vertices = new float[pMesh->mNumVertices * VERTEX_SIZE];
@@ -69,7 +69,42 @@ void ModelLoader::ProcessMesh(const aiMesh* pMesh, const aiScene* pScene, std::v
         mesh->indices[(i * FACE_SIZE) + 2] = pMesh->mFaces[i].mIndices[2];
     }
 
+    ProcessBones(pMesh, pScene, mesh,boneInfo, boneCounter);
+
     meshes.emplace_back(mesh);
+}
+
+void ModelLoader::ProcessBones(const aiMesh* pMesh, const aiScene* pScene, Mesh* mesh, std::map<std::string, BoneInfo>& boneInfo, int& boneCounter)
+{
+    for (int boneIndex = 0; boneIndex < pMesh->mNumBones; ++boneIndex)
+    {
+        int boneId = -1;
+        std::string boneName = pMesh->mBones[boneIndex]->mName.C_Str();
+
+        if (!boneInfo.contains(boneName))
+        {
+            BoneInfo newBoneInfo;
+            newBoneInfo.id = boneCounter;
+            newBoneInfo.offset = AIMat4toFMat4(pMesh->mBones[boneIndex]->mOffsetMatrix);
+            boneInfo[boneName] = newBoneInfo;
+            boneId = boneCounter;
+            boneCounter++;
+        }
+
+        else
+            boneId = boneInfo[boneName].id;
+
+        auto weights = pMesh->mBones[boneIndex]->mWeights;
+        int numWeights = pMesh->mBones[boneIndex]->mNumWeights;
+
+        for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
+        {
+            int vertexId = weights[weightIndex].mVertexId;
+            float weight = weights[weightIndex].mWeight;
+            //mesh->vertices[(vertexId * VERTEX_SIZE) + 8 + weightIndex - 1 ] = boneId;
+            //mesh->vertices[(vertexId * VERTEX_SIZE) + 9 + weightIndex - 1 ] = weight;
+        }
+    }
 }
 
 void ModelLoader::ProcessMaterial(const aiScene* pScene, std::vector<Material*>& materials)
@@ -103,4 +138,12 @@ void ModelLoader::ProcessMaterial(const aiScene* pScene, std::vector<Material*>&
 
         materials.push_back(m);
     }
+}
+
+lm::FMat4 ModelLoader::AIMat4toFMat4(const aiMatrix4x4& pMatrix)
+{
+    return { pMatrix.a1, pMatrix.a2, pMatrix.a3, pMatrix.a4,
+            pMatrix.b1, pMatrix.b2, pMatrix.b3, pMatrix.b4,
+            pMatrix.c1, pMatrix.c2, pMatrix.c3, pMatrix.c4,
+            pMatrix.d1, pMatrix.d2, pMatrix.d3, pMatrix.d4};
 }

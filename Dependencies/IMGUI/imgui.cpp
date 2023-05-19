@@ -12080,6 +12080,7 @@ bool ImGui::SetDragDropPayload(const char* type, const void* data, size_t data_s
             memset(&g.DragDropPayloadBufLocal, 0, sizeof(g.DragDropPayloadBufLocal));
             payload.Data = g.DragDropPayloadBufLocal;
             memcpy(payload.Data, data, data_size);
+            payload.Data = (void*)data;
         }
         else
         {

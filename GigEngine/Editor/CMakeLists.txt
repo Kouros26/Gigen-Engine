@@ -1,8 +1,7 @@
 # set the project name
 get_filename_component(CURRENT_FOLDER_NAME ${CMAKE_CURRENT_LIST_DIR} NAME)
 set(PROJECT_NAME ${CURRENT_FOLDER_NAME})
-set(SOURCE_FOLDER "Sources")
-set(INCLUDE_FOLDER "Headers")
+
 
 ###############################
 #                             #
@@ -37,10 +36,7 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${HEADER_FILES} ${SOURCE_FIL
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_FOLDER})
 target_include_directories(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR})
-target_include_directories(${PROJECT_NAME} PUBLIC
-	${DEPENDS_DIR}/GLAD/include)
-target_sources(${PROJECT_NAME} PUBLIC ${DEPENDS_DIR}/GLAD/src/glad.cpp)
-source_group(Sources ${DEPENDS_DIR}/GLAD/src/glad.cpp)
+
 
 foreach(project_i ${THIRD_PARTY_PROJECT})
 	include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE}/${project_i}/${INCLUDE_FOLDER})

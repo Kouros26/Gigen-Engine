@@ -8,19 +8,19 @@ Displayable::Displayable()
 	height = g_basicSize;
 }
 
-float Displayable::GetWidth()
+float Displayable::GetWidth() const
 {
 	return width;
 }
 
-float Displayable::GetHeight()
+float Displayable::GetHeight() const
 {
 	return height;
 }
 
 void Displayable::LimitWidthResize()
 {
-	ImVec2 size = ImGui::GetWindowSize();
+	const ImVec2 size = ImGui::GetWindowSize();
 	if (width != size.x)
 	{
 		width = size.x;
@@ -33,7 +33,7 @@ void Displayable::LimitWidthResize()
 
 void Displayable::LimitHeightResize()
 {
-	ImVec2 size = ImGui::GetWindowSize();
+	const ImVec2 size = ImGui::GetWindowSize();
 	if (height != size.y)
 	{
 		height = size.y;

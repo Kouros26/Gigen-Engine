@@ -2,7 +2,7 @@
 #include "Application.h"
 #include <string>
 
-DirLight::DirLight(float ambient, float diffuse, float specular, lm::FVec3 color)
+DirLight::DirLight(float ambient, float diffuse, float specular, const lm::FVec3& color)
 	:ambient(ambient), diffuse(diffuse), specular(specular)
 {
 	this->color[0] = color.x;
@@ -12,10 +12,13 @@ DirLight::DirLight(float ambient, float diffuse, float specular, lm::FVec3 color
 
 void DirLight::SendToShader(const int& pos, const std::string& shaderName)
 {
-	std::string str = shaderName + "[" + std::to_string(pos) + "].";
-	std::string temp = str;
+	if (!IsActive())
+		return;
 
-	lm::FVec3 dir = GetTransform().GetFront();
+	std::string str = shaderName + "[" + std::to_string(pos) + "].";
+	const std::string temp = str;
+
+	const lm::FVec3 dir = GetTransform().GetFront();
 	direction[0] = dir.x;
 	direction[1] = dir.y;
 	direction[2] = dir.z;
@@ -32,19 +35,70 @@ void DirLight::SendToShader(const int& pos, const std::string& shaderName)
 	shader.SetFloat(specular, (str.append(g_specularShaderName)).c_str());
 }
 
-PointLight::PointLight(float ambient, float diffuse, float specular, float constant, float linear, float quadratic, lm::FVec3 color)
+float* DirLight::GetColor()
+{
+	return color;
+}
+
+float DirLight::GetAmbient() const
+{
+	return ambient;
+}
+
+float DirLight::GetDiffuse() const
+{
+	return diffuse;
+}
+
+float DirLight::GetSpecular() const
+{
+	return specular;
+}
+
+void DirLight::SetColor(const lm::FVec3& pColor)
+{
+	for (int i = 0; i < 3; i++)
+		color[i] = pColor[i];
+}
+
+void DirLight::SetAmbient(float pAmbient)
+{
+	ambient = pAmbient;
+}
+
+void DirLight::SetDiffuse(float pDiffuse)
+{
+	diffuse = pDiffuse;
+}
+
+void DirLight::SetSpecular(float pSpecular)
+{
+	specular = pSpecular;
+}
+
+std::string DirLight::GetType()
+{
+	const std::string type(typeid(this).name());
+	return type.substr(6, type.size() - 16);
+}
+
+PointLight::PointLight(float ambient, float diffuse, float specular, float constant, float linear, float quadratic,
+                       const lm::FVec3& color)
 	:DirLight(ambient, diffuse, specular, color), constant(constant), linear(linear), quadratic(quadratic)
 {
 }
 
 void PointLight::SendToShader(const int& pos, const std::string& shaderName)
 {
+	if (!IsActive())
+		return;
+
 	DirLight::SendToShader(pos, shaderName);
 
 	std::string str = shaderName + "[" + std::to_string(pos) + "].";
-	std::string temp = str;
+	const std::string temp = str;
 
-	lm::FVec3 posi = GetTransform().GetWorldPosition();
+	const lm::FVec3 posi = GetTransform().GetWorldPosition();
 	position[0] = posi.x;
 	position[1] = posi.y;
 	position[2] = posi.z;
@@ -59,20 +113,86 @@ void PointLight::SendToShader(const int& pos, const std::string& shaderName)
 	shader.SetFloat(quadratic, (str.append(g_quadraticShaderName)).c_str());
 }
 
-SpotLight::SpotLight(float ambient, float diffuse, float specular, float constant, float linear, float quadratic, float cutOff, float outerCutOff, lm::FVec3 color)
+float PointLight::GetConstant() const
+{
+	return constant;
+}
+
+float PointLight::GetLinear() const
+{
+	return linear;
+}
+
+float PointLight::GetQuadratic() const
+{
+	return quadratic;
+}
+
+std::string PointLight::GetType()
+{
+	const std::string type(typeid(this).name());
+	return type.substr(6, type.size() - 16);
+}
+
+void PointLight::SetConstant(float pConstant)
+{
+	constant = pConstant;
+}
+
+void PointLight::SetLinear(float pLinear)
+{
+	linear = pLinear;
+}
+
+void PointLight::SetQuadratic(float pQuadratic)
+{
+	quadratic = pQuadratic;
+}
+
+SpotLight::SpotLight(float ambient, float diffuse, float specular, float constant, float linear, float quadratic, float cutOff, float outerCutOff,
+                     const lm::FVec3& color)
 	:PointLight(ambient, diffuse, specular, constant, linear, quadratic, color), cutOff(cutOff), outerCutOff(outerCutOff)
 {
 }
 
 void SpotLight::SendToShader(const int& pos, const std::string& shaderName)
 {
+	if (!IsActive())
+		return;
+
 	PointLight::SendToShader(pos, shaderName);
 
 	std::string str = shaderName + "[" + std::to_string(pos) + "].";
-	std::string temp = str;
+	const std::string temp = str;
 
 	ShaderProgram& shader = Application::GetMainShader();
 	shader.SetFloat(cutOff, (str.append(g_cutOffShaderName)).c_str());
 	str = temp;
 	shader.SetFloat(outerCutOff, (str.append(g_outerCutOffShaderName)).c_str());
+}
+
+float SpotLight::GetCutOff() const
+{
+	return cutOff;
+}
+
+float SpotLight::GetOuterCutOff() const
+{
+	return outerCutOff;
+}
+
+std::string SpotLight::GetType()
+{
+	const std::string type(typeid(this).name());
+	return type.substr(6, type.size() - 16);
+}
+
+void SpotLight::SetCutOff(float pCutOff)
+{
+	cutOff = pCutOff;
+}
+
+void SpotLight::SetOuterCutOff(float pOuterCutOff)
+{
+	outerCutOff = pOuterCutOff;
 }
