@@ -15,14 +15,14 @@ public:
 
 private:
 
-	void DisplayHierarchy();
-
-	void DisplayUI();
-	void DisplayUIElement(UIElement& element);
+	void DisplayHierarchy() const;
+	void DisplaySkybox() const;
+	void DisplayUI() const;
+	void DisplayUIElement(UIElement& element) const;
 
 	void CreatePopUp() const;
 
-	void DisplayGameObject(GameObject& obj, bool isChild);
+	void DisplayGameObject(GameObject& obj, bool isChild) const;
 	void GameObjectClicked(GameObject& obj) const;
 	void GameObjectPopUp(GameObject& obj) const;
 };

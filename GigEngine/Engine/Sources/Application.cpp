@@ -147,6 +147,8 @@ void Application::SwapFrames()
 	window.swapBuffers();
 }
 
+//ok
+
 void Application::Init()
 {
 	window.Init();
@@ -173,9 +175,7 @@ void Application::InitMainShader()
 	viewProjLocation = mainShader.GetUniform("viewProj");
 	viewPosLocation = mainShader.GetUniform("viewPos");
 
-	nbDirLightLocation = mainShader.GetUniform("nbDirLight");
-	nbPointLightLocation = mainShader.GetUniform("nbPointLight");
-	nbSpotLightLocation = mainShader.GetUniform("nbSpotLight");
+	nbLightLocation = mainShader.GetUniform("nbLights");
 }
 
 void Application::Draw()
@@ -253,13 +253,11 @@ void Application::UpdateGameObjectRender() const
 
 void Application::UpdateLights() const
 {
-	int nbDirLight = GameObjectManager::GetDirLightSize();
-	int nbPointLight = GameObjectManager::GetPointLightSize();
-	int nbSpotLight = GameObjectManager::GetSpotLightSize();
+	int nbLight = GameObjectManager::GetDirLightSize();
+	nbLight += GameObjectManager::GetPointLightSize();
+	nbLight += GameObjectManager::GetSpotLightSize();
 
-	RENDERER.SetUniformValue(nbDirLightLocation, UniformType::INT, &nbDirLight);
-	RENDERER.SetUniformValue(nbPointLightLocation, UniformType::INT, &nbPointLight);
-	RENDERER.SetUniformValue(nbSpotLightLocation, UniformType::INT, &nbSpotLight);
+	RENDERER.SetUniformValue(nbLightLocation, UniformType::INT, &nbLight);
 
 	GameObjectManager::SendLightsToShader();
 }

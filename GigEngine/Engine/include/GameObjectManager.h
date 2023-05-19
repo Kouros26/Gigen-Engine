@@ -52,7 +52,7 @@ public:
 	static void SetCurrentCamera(Camera* camera);
 
 	static void CreateSkyBox();
-	static Skybox*& GetSkyBox();
+	static Skybox* GetSkyBox();
 
 	//ok
 	static void SendLightsToShader();

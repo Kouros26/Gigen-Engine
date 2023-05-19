@@ -7,14 +7,14 @@ class RigidBody;
 class Transform
 {
 public:
-    Transform(const lm::FVec3& pos = { 0 }, const lm::FVec3& rot = { 0 }, const lm::FVec3& scl = { 1 });
-    ~Transform();
+	Transform(const lm::FVec3& pos = { 0 }, const lm::FVec3& rot = { 0 }, const lm::FVec3& scl = { 1 });
+	~Transform();
 
-    void LookAt(const lm::FVec3& target, const lm::FVec3& up);
+	void LookAt(const lm::FVec3& target, const lm::FVec3& up);
 
-    void SetWorldPosition(const lm::FVec3& pos);
-    void SetWorldRotation(const lm::FVec3& rot);
-    void SetWorldScale(const lm::FVec3& scl);
+	void SetWorldPosition(const lm::FVec3& pos);
+	void SetWorldRotation(const lm::FVec3& rot);
+	void SetWorldScale(const lm::FVec3& scl);
 
 	void SetLocalPosition(const lm::FVec3& pos);
 	void SetLocalRotation(const lm::FVec3& rot);
@@ -41,21 +41,21 @@ public:
 	void AddRotation(const lm::FVec3& rot);
 	void AddScale(const lm::FVec3& scl);
 
-    void RigidBodyAddPosition(const lm::FVec3& pPosition);
-    void RigidBodyAddRotation(const lm::FVec3& pRotation);
+	void RigidBodyAddPosition(const lm::FVec3& pPosition);
+	void RigidBodyAddRotation(const lm::FVec3& pRotation);
 
-    void SetOwnerRigidBody(RigidBody* rigidBody);
+	void SetOwnerRigidBody(RigidBody* rigidBody);
 
-    lm::FVec3 GetFront();
-    lm::FVec3 GetUp();
-    lm::FVec3 GetRight();
+	lm::FVec3 GetFront();
+	lm::FVec3 GetUp();
+	lm::FVec3 GetRight();
 
 	lm::FMat4 GetMatrix();
 	lm::FMat4& MatrixGetter();
 
 private:
-    void UpdateMatrix();
-    void LimitRotation();
+	void UpdateMatrix();
+	void LimitRotation();
 
 	RigidBody* ownerRigidBody = nullptr;
 
@@ -63,9 +63,9 @@ private:
 	lm::FVec3 worldRotation{ 0 };
 	lm::FVec3 worldScale{ 1 };
 
-    lm::FVec3 localPosition{ 0 };
-    lm::FVec3 localRotation{ 0 };
-    lm::FVec3 localScale{ 1 };
+	lm::FVec3 localPosition{ 0 };
+	lm::FVec3 localRotation{ 0 };
+	lm::FVec3 localScale{ 1 };
 
 	lm::FMat4 worldMatrix;
 
