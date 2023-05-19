@@ -79,8 +79,15 @@ void GameObjectInspector::DrawObject() const
 
 	if (isGameObject)
 	{
-		DrawGameObject(dynamic_cast<GameObject*>(object));
-		DrawDropTarget(dynamic_cast<GameObject*>(object));
+		if (Skybox* sky = dynamic_cast<Skybox*>(object))
+		{
+			DrawSkyBox(sky);
+		}
+		else
+		{
+			DrawGameObject(dynamic_cast<GameObject*>(object));
+			DrawDropTarget(dynamic_cast<GameObject*>(object));
+		}
 	}
 	else
 	{
@@ -208,6 +215,72 @@ void GameObjectInspector::DrawUIText(UIText * pText) const
 			if (str.find(".ttf") != std::string::npos)
 			{
 				pText->SetFont(path);
+			}
+		}
+
+		ImGui::EndDragDropTarget();
+	}
+}
+
+void GameObjectInspector::DrawSkyBox(Skybox * skybox) const
+{
+	if (!skybox) return;
+
+	const lm::FVec3 rot = skybox->GetTransform().GetWorldRotation();
+	float rotation[] = { rot.x, rot.y, rot.z };
+
+	static bool lockRot = false;
+	ImGui::Text("Rotation"); ImGui::SameLine();
+	if (ImGui::Button(lockRot ? ICON_MD_LOCK "##6" : ICON_MD_LOCK_OPEN "##6"))
+	{
+		lockRot = !lockRot;
+	}
+	ImGui::SameLine();
+
+	if (ImGui::DragFloat3("##7", rotation, g_maxStep, -360.0f, 360.0f, g_floatFormat))
+	{
+		if (lockRot)
+		{
+			LockCalculation(rotation, rot);
+		}
+		skybox->GetTransform().SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
+	}
+
+	const lm::FVec3 col = skybox->GetColor();
+	float color[3] = { col.x, col.y, col.z };
+
+	ImGui::Text("Color"); ImGui::SameLine();
+	if (ImGui::ColorEdit3("##10", color))
+	{
+		skybox->SetColor({ color[0],  color[1], color[2] });
+	}
+
+	if (ImGui::CollapsingHeader(ICON_TEXTURE " Texture"))
+	{
+		std::string path;
+		if (skybox->GetTexture())
+		{
+			path = skybox->GetTexture()->GetFilePath();
+		}
+
+		ImGui::Text("Path :"); ImGui::SameLine();
+		ImGui::Text(path.c_str());
+	}
+
+	ImGui::BeginChild("##");
+	ImGui::EndChild();
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+		{
+			const char* path = static_cast<const char*>(payload->Data);
+			const std::string str(path);
+			if (str.find(".png") != std::string::npos ||
+				str.find(".jpg") != std::string::npos ||
+				str.find(".jpeg") != std::string::npos)
+			{
+				skybox->SetTexture(path);
 			}
 		}
 

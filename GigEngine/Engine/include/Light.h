@@ -28,7 +28,7 @@ class DirLight : public GameObject
 public:
 	DirLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f, const lm::FVec3& color = lm::FVec3(1));
 
-	virtual void SendToShader(const int& pos, const std::string& shaderName);
+	virtual void SendToShader(const int& pos, int type);
 
 	float* GetColor();
 	[[nodiscard]] float GetAmbient() const;
@@ -57,7 +57,7 @@ public:
 		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
 		const lm::FVec3& color = lm::FVec3(1));
 
-	virtual void SendToShader(const int& pos, const std::string& shaderName) override;
+	virtual void SendToShader(const int& pos, int type) override;
 
 	[[nodiscard]] float GetConstant() const;
 	[[nodiscard]] float GetLinear() const;
@@ -84,7 +84,7 @@ public:
 		float cutOff = 45, float outerCutOff = 90,
 		const lm::FVec3& color = lm::FVec3(1));
 
-	virtual void SendToShader(const int& pos, const std::string& shaderName) override;
+	virtual void SendToShader(const int& pos, int type) override;
 
 	[[nodiscard]] float GetCutOff() const;
 	[[nodiscard]] float GetOuterCutOff() const;

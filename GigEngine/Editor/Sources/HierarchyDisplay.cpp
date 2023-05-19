@@ -23,8 +23,8 @@ void HierarchyDisplay::Draw()
 
 	LimitWidthResize();
 	ImGui::SetWindowSize("Scene", { width, height });
-
 	CreatePopUp();
+	DisplaySkybox();
 	if (GameObjectManager::GetSize() > 0)
 	{
 		ImGui::SeparatorText("Objects");
@@ -57,7 +57,7 @@ void HierarchyDisplay::Draw()
 	ImGui::End();
 }
 
-void HierarchyDisplay::DisplayHierarchy()
+void HierarchyDisplay::DisplayHierarchy() const
 {
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
@@ -65,7 +65,7 @@ void HierarchyDisplay::DisplayHierarchy()
 	}
 }
 
-void HierarchyDisplay::DisplayUI()
+void HierarchyDisplay::DisplayUI() const
 {
 	for (int i = 0; i < UIManager::GetUISize(); i++)
 	{
@@ -78,7 +78,7 @@ void HierarchyDisplay::DisplayUI()
 	}
 }
 
-void HierarchyDisplay::DisplayUIElement(UIElement & element)
+void HierarchyDisplay::DisplayUIElement(UIElement & element) const
 {
 	const bool isFocused = (&element == UIManager::GetFocusedElement());
 	int flags = ImGuiTreeNodeFlags_Leaf;
@@ -121,6 +121,32 @@ void HierarchyDisplay::DisplayUIElement(UIElement & element)
 	}
 
 	ImGui::PopID();
+	ImGui::TreePop();
+}
+
+void HierarchyDisplay::DisplaySkybox() const
+{
+	GameObject* skybox = dynamic_cast<GameObject*>(GameObjectManager::GetSkyBox());
+	const bool isFocused = (skybox == GameObjectManager::GetFocusedGameObject());
+	int flags = ImGuiTreeNodeFlags_Leaf;
+
+	if (isFocused)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, { 1,1,0.5f,1 });
+	}
+
+	ImGui::TreeNodeEx("SkyBox", flags);
+
+	if (isFocused)
+	{
+		ImGui::PopStyleColor();
+	}
+
+	if (ImGui::IsItemClicked(0) && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing())
+	{
+		GameObjectManager::SetFocusedGameObject(skybox);
+	}
+
 	ImGui::TreePop();
 }
 
@@ -211,7 +237,7 @@ void HierarchyDisplay::CreatePopUp() const
 	}
 }
 
-void HierarchyDisplay::DisplayGameObject(GameObject & obj, bool isChild)
+void HierarchyDisplay::DisplayGameObject(GameObject & obj, bool isChild) const
 {
 	if (obj.GetParent() && !isChild)
 	{

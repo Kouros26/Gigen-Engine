@@ -11,6 +11,7 @@ class Camera;
 class RigidBody;
 class RectTransform;
 class Transform;
+class Skybox;
 
 class GameObjectInspector : public Displayable
 {
@@ -29,6 +30,8 @@ private:
 	void DrawRectTransform(RectTransform* rectTransform) const;
 	void DrawDropTargetImage(UIImage* pImage) const;
 	void DrawUIText(UIText* pText) const;
+
+	void DrawSkyBox(Skybox* skybox) const;
 
 	void DrawTransform(Transform* transform) const;
 	void DrawModel(GameObject* pObject) const;
