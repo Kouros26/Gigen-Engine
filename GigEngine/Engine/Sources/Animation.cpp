@@ -175,13 +175,13 @@ Animation::Animation(const std::string& pAnimationPath, Model* pModel)
 Animation::~Animation()
 = default;
 
+void Animation::Init()
+{
+}
+
 Bone* Animation::FindBone(const std::string& pName)
 {
-	const auto it = std::ranges::find_if(bones,
-	                                     [&](const Bone& Bone)
-	                                     {
-		                                     return Bone.GetBoneName() == pName;
-	                                     }
+	const auto it = std::ranges::find_if(bones,[&](const Bone& Bone){return Bone.GetBoneName() == pName;}
 	);
     if (it == bones.end()) return nullptr;
     else return &(*it);

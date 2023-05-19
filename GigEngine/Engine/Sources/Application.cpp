@@ -27,7 +27,13 @@ Application::Application()
 
 	WorldPhysics::GetInstance().InitPhysicWorld();
 	Scene::LoadScene(Scene::GetCurrentSceneName());
-	GameObject* sk = GameObjectManager::CreateGameObject("sk");
+	sk = GameObjectManager::CreateGameObject("sk");
+	sk->SetModel("Engine/Models/SKM_Manny_Simple.fbx");
+	Animation* anim = new Animation("Engine/Models/MM_Walk_Fwd.fbx", sk->GetModel());
+	sk->GetTransform().SetWorldRotation({ -90, 0, 180 });
+	sk->GetTransform().SetWorldScale(0.05f);
+	sk->CreateAnimator();
+	sk->GetAnimator()->PlayAnimation(anim);
 }
 
 Application::~Application()
@@ -189,7 +195,7 @@ void Application::Draw()
 	{
 		editorCamera.Update();
 	}
-
+	//
 	mainShader.Use(); //start using the main shader
 
 	if (!isEditor && !isPause)
@@ -203,6 +209,10 @@ void Application::Draw()
 	RENDERER.Enable(RD_DEPTH_TEST);
 	RENDERER.DepthFunction(RD_LESS);
 	UpdateGameObjectRender(); //render model if they have one
+
+	sk->GetAnimator()->UpdateAnimation(Time::GetDeltaTime());
+	//ok
+	
 
 	mainShader.UnUse(); //stop using the main shader
 

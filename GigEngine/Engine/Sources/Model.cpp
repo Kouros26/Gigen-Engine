@@ -95,7 +95,7 @@ void Model::DrawSkeleton() const
 {
     lm::FVec3 start{ boneMap.find("root")->second.offset.m_matrix->x, boneMap.find("root")->second.offset.m_matrix->y, boneMap.find("root")->second.offset.m_matrix->z };
     lm::FVec3 end{ boneMap.find("pelvis")->second.offset.m_matrix->x, boneMap.find("pelvis")->second.offset.m_matrix->y, boneMap.find("pelvis")->second.offset.m_matrix->z };
-    Lines::DrawLine(start, end, { 0,1,0 }, 5);
+    Lines::DrawLine(start, end, { 0,1,0 }, 0);
 }
 
 void Model::Init()

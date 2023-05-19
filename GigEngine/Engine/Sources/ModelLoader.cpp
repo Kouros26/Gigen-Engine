@@ -44,7 +44,7 @@ void ModelLoader::ProcessMesh(const aiMesh* pMesh, const aiScene* pScene, std::v
 
     for (unsigned int i = 0; i < pMesh->mNumVertices; i++)
     {
-        mesh->vertices[i * VERTEX_SIZE] = pMesh->mVertices[i].x;
+    	mesh->vertices[i * VERTEX_SIZE] = pMesh->mVertices[i].x;
         mesh->vertices[(i * VERTEX_SIZE) + 1] = pMesh->mVertices[i].y;
         mesh->vertices[(i * VERTEX_SIZE) + 2] = pMesh->mVertices[i].z;
 
@@ -59,6 +59,12 @@ void ModelLoader::ProcessMesh(const aiMesh* pMesh, const aiScene* pScene, std::v
         {
             mesh->vertices[(i * VERTEX_SIZE) + 6] = pMesh->mTextureCoords[0][i].x;
             mesh->vertices[(i * VERTEX_SIZE) + 7] = pMesh->mTextureCoords[0][i].y;
+        }
+
+        for (int j = 0; j < MAX_BONE_INFLUENCE; ++j)
+        {
+            mesh->vertices[(i * VERTEX_SIZE) + 8 + j] = -1.0f;
+            mesh->vertices[(i * VERTEX_SIZE) + 12 + j] = 0;
         }
     }
 
@@ -82,9 +88,10 @@ void ModelLoader::ProcessBones(const aiMesh* pMesh, const aiScene* pScene, Mesh*
     {
         int boneId = -1;
         std::string boneName = pMesh->mBones[boneIndex]->mName.C_Str();
-
+             
         if (!boneInfo.contains(boneName))
         {
+            std::cout << boneName << " : " << boneCounter << std::endl;
             BoneInfo newBoneInfo;
             newBoneInfo.id = boneCounter;
             newBoneInfo.offset = AIMat4toFMat4(pMesh->mBones[boneIndex]->mOffsetMatrix);
@@ -141,7 +148,7 @@ void ModelLoader::ProcessMaterial(const aiScene* pScene, std::vector<Material*>&
     }
 }
 
-void ModelLoader::SetVertexBoneData(const Mesh* pMesh, int pVertexId, int pId, int pWeight)
+void ModelLoader::SetVertexBoneData(const Mesh* pMesh, int pVertexId, int pId, float pWeight)
 {
     for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
     {

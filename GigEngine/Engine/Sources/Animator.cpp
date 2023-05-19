@@ -1,5 +1,7 @@
 #include "Animator.h"
 
+#include "Application.h"
+
 Animator::Animator(Animation* pAnimation)
 	: currentAnimation(nullptr), currentTime(0)
 {
@@ -34,6 +36,12 @@ void Animator::UpdateAnimation(float pDeltaTime)
 		currentTime = fmod(currentTime, currentAnimation->GetDuration());
 		CalculateBoneTransform(&currentAnimation->GetRootNode(), lm::FMat4(1.0f));
 	}
+
+	for (int i = 0; i < finalBoneMatrices.size(); i++)
+	{
+		std::string s = "finalBonesMatrices[" + std::to_string(i) + "]";
+		Application::GetMainShader().SetMat4(finalBoneMatrices[i], s.c_str());
+	}
 }
 
 void Animator::CalculateBoneTransform(const NodeData* pNode, const lm::FMat4& pParentTransform)
@@ -45,6 +53,10 @@ void Animator::CalculateBoneTransform(const NodeData* pNode, const lm::FMat4& pP
 	{
 		bone->Update(currentTime);
 		pNodeTransform = bone->GetLocalTransform();
+	}
+	else
+	{
+		std::cout << "bone not found : " << pNodeName << std::endl;
 	}
 
 	const lm::FMat4 globalTransformation = pParentTransform * pNodeTransform;

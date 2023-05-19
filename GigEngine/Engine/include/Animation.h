@@ -88,6 +88,8 @@ public:
     Animation(const std::string& pAnimationPath, Model* pModel);
     ~Animation() override;
 
+    void Init() override;
+
     Bone* FindBone(const std::string& pName);
 
     [[nodiscard]] float GetTicksPerSecond() const;
