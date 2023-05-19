@@ -228,8 +228,6 @@ Skybox* GameObjectManager::GetSkyBox()
 	return skybox;
 }
 
-//ok
-
 void GameObjectManager::SendLightsToShader()
 {
 	for (int i = 0; i < dirLights.size(); i++)
