@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Inputs.h"
 #include "Watch.h"
+#include "GameObjectManager.h"
 
 #include "Transform.h"
 #include "Vec3/FVec3.hpp"
@@ -57,17 +58,6 @@ void EditorCamera::ChangeSpeed()
 
 	if (!GigInput::Inputs::GetKey(GigInput::Keys::RIGHT_SHIFT))
 		pressRightShift = false;
-
-	HitResult result;
-	std::vector<GameObject*> ignored;
-	ignored.push_back(this);
-	if (GigInput::Inputs::GetKey(GigInput::Keys::TAB))
-	{
-		if (WorldPhysics::GetInstance().RayCast(GetTransform().GetWorldPosition(), GetFront() * 100, result, RayCastDebug::Timer, 5, ignored))
-		{
-			std::cout << "Raycast hit " << result.hitObject->GetName() << std::endl;
-		}
-	}
 }
 
 void EditorCamera::Move()
@@ -114,7 +104,7 @@ void EditorCamera::Zoom()
 
 void EditorCamera::Look()
 {
-	if (GigInput::Inputs::GetMouse().rightClick == 1)
+	if (GigInput::Inputs::GetMouse().rightClick)
 	{
 		Application::GetWindow().SetMouseIcon(CursorShape::EYE);
 		const float Ry = static_cast<float>(GigInput::Inputs::GetMouse().mouseOffsetX * static_cast<double>(sensitivity));
@@ -124,5 +114,15 @@ void EditorCamera::Look()
 
 		const lm::FVec3 vecRot = { -Rx, Ry, 0 };
 		GetTransform().AddRotation(vecRot);
+	}
+
+	if (GigInput::Inputs::GetMouse().OnLeftClick())
+	{
+		HitResult result;
+
+		if (WorldPhysics::GetInstance().SimpleRayCast(GetTransform().GetWorldPosition(), GetFront() * 1000, result, RayCastDebug::Forever, 5, lm::FVec3(1)))
+		{
+			GameObjectManager::SetFocusedGameObject(result.hitObject);
+		}
 	}
 }

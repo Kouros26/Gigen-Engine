@@ -63,7 +63,7 @@ bool GigInput::Inputs::GetKeyUp(const Keys& pKey)
 	return inputs[key] == static_cast<int>(KeyState::RELEASE);
 }
 
-GigInput::Mouse GigInput::Inputs::GetMouse()
+GigInput::Mouse& GigInput::Inputs::GetMouse()
 {
 	return mouse;
 }
@@ -79,8 +79,16 @@ void GigInput::Inputs::UpdateKey(int key, int action)
 
 void GigInput::Inputs::UpdateMouseButton(int button, int action)
 {
-	if (button == static_cast<int>(MouseButton::LEFT))
-		mouse.leftClick = action;
+	mouse.leftClickOnce = false;
+
+	if (button == static_cast<int>(MouseButton::LEFT)) 
+	{
+		if (mouse.leftClick != action) 
+		{
+			mouse.leftClick = action;
+			mouse.leftClickOnce = action;
+		}
+	}
 
 	if (button == static_cast<int>(MouseButton::RIGHT))
 		mouse.rightClick = action;
@@ -92,4 +100,14 @@ void GigInput::Inputs::UpdateMouseButton(int button, int action)
 void GigInput::Inputs::UpdateMouseWheelOffset(double offset)
 {
 	mouse.wheelOffsetY = offset;
+}
+
+bool GigInput::Mouse::OnLeftClick()
+{
+	if (leftClickOnce) 
+	{
+		leftClickOnce = false;
+		return true;
+	}
+	return false;
 }
