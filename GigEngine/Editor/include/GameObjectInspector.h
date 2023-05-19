@@ -31,7 +31,7 @@ private:
 	void DrawDropTargetImage(UIImage* pImage) const;
 	void DrawUIText(UIText* pText) const;
 
-	void DrawSkyBox(Skybox* skybox);
+	void DrawSkyBox(Skybox* skybox) const;
 
 	void DrawTransform(Transform* transform) const;
 	void DrawModel(GameObject* pObject) const;

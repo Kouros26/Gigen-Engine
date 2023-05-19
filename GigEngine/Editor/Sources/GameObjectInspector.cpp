@@ -222,7 +222,7 @@ void GameObjectInspector::DrawUIText(UIText * pText) const
 	}
 }
 
-void GameObjectInspector::DrawSkyBox(Skybox * skybox)
+void GameObjectInspector::DrawSkyBox(Skybox * skybox) const
 {
 	if (!skybox) return;
 
@@ -246,7 +246,7 @@ void GameObjectInspector::DrawSkyBox(Skybox * skybox)
 		skybox->GetTransform().SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
 	}
 
-	lm::FVec3 col = skybox->GetColor();
+	const lm::FVec3 col = skybox->GetColor();
 	float color[3] = { col.x, col.y, col.z };
 
 	ImGui::Text("Color"); ImGui::SameLine();
