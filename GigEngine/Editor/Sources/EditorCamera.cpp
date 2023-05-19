@@ -120,7 +120,7 @@ void EditorCamera::Look()
 	{
 		HitResult result;
 
-		if (WorldPhysics::GetInstance().SimpleRayCast(GetTransform().GetWorldPosition(), GetFront() * 1000, result, RayCastDebug::Forever, 5, lm::FVec3(1)))
+		if (WorldPhysics::GetInstance().SimpleRayCast(GetTransform().GetWorldPosition(), GetFront() * 1000, result, RayCastDebug::None, 5, lm::FVec3(1)))
 		{
 			GameObjectManager::SetFocusedGameObject(result.hitObject);
 		}
