@@ -3,7 +3,7 @@
 #include <string>
 
 DirLight::DirLight(float ambient, float diffuse, float specular, const lm::FVec3& color)
-	:ambient(ambient), diffuse(diffuse), specular(specular)
+	: GameObject("Light"), ambient(ambient), diffuse(diffuse), specular(specular)
 {
 	this->color[0] = color.x;
 	this->color[1] = color.y;
