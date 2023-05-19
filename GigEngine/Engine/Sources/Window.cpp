@@ -23,7 +23,7 @@ void Window::Init()
 	const GLFWvidmode mode = *glfwGetVideoMode(MyMonitor);
 
 	width = mode.width;
-	height = mode.height;
+	height = mode.height - 25;
 
 	//if I put my monitor here, can't debug
 	window = glfwCreateWindow(width, height, APPLICATION_NAME, nullptr, nullptr);
@@ -35,7 +35,7 @@ void Window::Init()
 		return;
 	}
 
-	glfwSetWindowPos(window, 0, 0);
+	glfwSetWindowPos(window, 0, 25);
 	glfwSetWindowUserPointer(window, this);
 	glfwSetFramebufferSizeCallback(window, FrameBufferResizeCallback);
 	glfwMakeContextCurrent(window);

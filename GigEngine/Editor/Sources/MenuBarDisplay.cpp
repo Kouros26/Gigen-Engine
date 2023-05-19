@@ -88,16 +88,6 @@ void MenuBarDisplay::Draw()
 
     DrawPlayPause();
 
-	ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - 12);
-	ImGui::PushStyleColor(ImGuiCol_Button, { 1,0,0,0.8f });
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 1,0,0,1 });
-	if (ImGui::Button(ICON_CLOSE))
-	{
-		Application::GetWindow().Close();
-	}
-	ImGui::PopStyleColor();
-	ImGui::PopStyleColor();
-
     ImGui::EndMainMenuBar();
 }
 

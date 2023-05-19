@@ -21,7 +21,7 @@ ToolsDisplay::~ToolsDisplay()
 void ToolsDisplay::Draw()
 {
     width = InterfaceManager::GetWidth() - InterfaceManager::GetClassWidth<HierarchyDisplay>();
-    ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width,  InterfaceManager::GetHeight() - height });
+    ImGui::SetNextWindowPos({ InterfaceManager::GetWidth() - width,  InterfaceManager::GetHeight() - height - g_menuBarSize });
     ImGui::SetNextWindowSize({ width, height });
 
     //noMove et NoCollapse
