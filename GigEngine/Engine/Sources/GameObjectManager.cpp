@@ -244,8 +244,6 @@ void GameObjectManager::SendLightsToShader()
 	}
 }
 
-//
-
 int GameObjectManager::GetDirLightSize()
 {
 	int nbLight = 0;
