@@ -15,6 +15,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "Animator.h"
+
 GameObject::GameObject() : Object()
 {
 }
@@ -115,16 +117,9 @@ void GameObject::CreateSphereRigidBody(float radius, const lm::FVec3& scale, flo
     transform.SetOwnerRigidBody(rigidBody);
 }
 
-void GameObject::CreateAnimator()
+Animator* GameObject::GetAnimator()
 {
-	delete animator;
-
-	animator = new Animator(nullptr);
-}
-
-Animator* GameObject::GetAnimator() const
-{
-	return animator;
+	return GetComponent<Animator>();
 }
 
 void GameObject::SetModel(std::string const& filePath)

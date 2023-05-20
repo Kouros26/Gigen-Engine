@@ -168,7 +168,7 @@ Animation::Animation(const std::string& pAnimationPath, Model* pModel)
     const auto animation = scene->mAnimations[0];
     duration = animation->mDuration;
     ticksPerSecond = animation->mTicksPerSecond;
-    ReadHierarchyData(rootNode, scene->mRootNode);
+    ReadHierarchyData(rootNode, scene->mRootNode->mChildren[0]);
     ReadMissingBones(animation, *pModel);
 }
 
@@ -183,16 +183,18 @@ Bone* Animation::FindBone(const std::string& pName)
 {
 	const auto it = std::ranges::find_if(bones,[&](const Bone& Bone){return Bone.GetBoneName() == pName;}
 	);
-    if (it == bones.end()) return nullptr;
-    else return &(*it);
+    if (it == bones.end()) 
+        return nullptr;
+
+	return &(*it);
 }
 
-float Animation::GetTicksPerSecond() const
+double Animation::GetTicksPerSecond() const
 {
     return ticksPerSecond;
 }
 
-float Animation::GetDuration() const
+double Animation::GetDuration() const
 {
     return duration;
 }
@@ -214,13 +216,13 @@ std::vector<Bone>& Animation::GetBones()
 
 void Animation::ReadMissingBones(const aiAnimation* pAnimation, Model& pModel)
 {
-	const int size = pAnimation->mNumChannels;
+	const unsigned int size = pAnimation->mNumChannels;
 
     auto& boneInfoMap = pModel.GetBoneInfoMap();
     int& boneCount = pModel.GetBoneCount();
 
     //reading channels(bones engaged in an animation and their keyframes)
-    for (int i = 0; i < size; i++)
+    for (unsigned int i = 0; i < size; i++)
     {
 	    const auto channel = pAnimation->mChannels[i];
         std::string boneName = channel->mNodeName.data;
@@ -245,7 +247,7 @@ void Animation::ReadHierarchyData(NodeData& pOutData, const aiNode* pNode)
     pOutData.transform = ModelLoader::AIMat4toFMat4(pNode->mTransformation);
     pOutData.childrenCount = pNode->mNumChildren;
 
-    for (int i = 0; i < pNode->mNumChildren; i++)
+    for (unsigned int i = 0; i < pNode->mNumChildren; i++)
     {
         NodeData newData;
         ReadHierarchyData(newData, pNode->mChildren[i]);

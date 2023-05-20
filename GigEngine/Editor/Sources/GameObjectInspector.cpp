@@ -717,11 +717,6 @@ void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
             pObject->AddScript();
         }
 
-		if (ImGui::MenuItem( "Animator"))
-		{
-			pObject->CreateAnimator();
-		}
-
         ImGui::EndPopup();
     }
 }

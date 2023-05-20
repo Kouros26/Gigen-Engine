@@ -1,22 +1,50 @@
 #pragma once
 #include "Animation.h"
+#include "Component.h"
 
 constexpr unsigned int g_max_bones = 100;
 
-class Animator
+struct AnimationState
+{
+    std::string stateName;
+
+    Animation* stateAnim;
+
+    AnimationState* parent;
+    std::vector<AnimationState> children;
+
+    float timeToTransitionToThisState;
+
+    AnimationState(Animation* pAnimation, const std::string& pStateName, AnimationState* pParentState, float ptimeToTransitionToThisState);
+};
+
+class Animator : public Component
 {
 private:
     std::vector<lm::FMat4> finalBoneMatrices;
-    Animation* currentAnimation;
+    AnimationState rootState;
+    AnimationState& currentState;
+    AnimationState* targetedState;
     float currentTime;
+    float transitionTime;
+    bool isTransitioning = false;
 
 public:
 
-    Animator(Animation* pAnimation);
+    Animator(GameObject* pOwner);
 
-    void PlayAnimation(Animation* pAnimation);
-    void UpdateAnimation(float pDeltaTime);
-    void CalculateBoneTransform(const NodeData* pNode, const lm::FMat4& pParentTransform);
+    void Start() override;
 
-    std::vector<lm::FMat4> GetFinalBoneMatrices();
+    void Update(float pDeltaTime) override;
+
+	Component* Clone(GameObject* newGameObject) override;
+
+    void StateChange(const std::string& pNewStateName);
+
+    AnimationState& GetAnimationStateRoot();
+    std::vector<lm::FMat4>& GetFinalBoneMatrices();
+
+private:
+
+	void CalculateBoneTransform(const NodeData* pNode, const lm::FMat4& pParentTransform);
 };

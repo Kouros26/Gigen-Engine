@@ -32,7 +32,7 @@ struct NodeData
 {
     lm::FMat4 transform;
     std::string name;
-    int childrenCount;
+    unsigned int childrenCount;
     std::vector<NodeData> children;
 };
 
@@ -76,8 +76,9 @@ private:
 class Animation : public IResource
 {
 private:
-    float duration;
-    int ticksPerSecond;
+
+    double duration;
+    double ticksPerSecond;
     std::vector<Bone> bones;
     NodeData rootNode;
     std::map<std::string, BoneInfo> boneMap;
@@ -92,8 +93,8 @@ public:
 
     Bone* FindBone(const std::string& pName);
 
-    [[nodiscard]] float GetTicksPerSecond() const;
-    [[nodiscard]] float GetDuration() const;
+    [[nodiscard]] double GetTicksPerSecond() const;
+    [[nodiscard]] double GetDuration() const;
     NodeData& GetRootNode();
     std::map<std::string, BoneInfo>& GetBoneIDMap();
     std::vector<Bone>& GetBones();
@@ -101,5 +102,5 @@ public:
 private:
 
     void ReadMissingBones(const aiAnimation* pAnimation, Model& pModel);
-    void ReadHierarchyData(NodeData& pOutData, const aiNode* pNode);
+    static void ReadHierarchyData(NodeData& pOutData, const aiNode* pNode);
 };

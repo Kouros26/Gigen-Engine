@@ -1,47 +1,76 @@
 #include "Animator.h"
-
 #include "Application.h"
 
-Animator::Animator(Animation* pAnimation)
-	: currentAnimation(nullptr), currentTime(0)
+AnimationState::AnimationState(Animation* pAnimation, const std::string& pStateName, AnimationState* pParentState,
+	float ptimeToTransitionToThisState)
+		: stateName(pStateName), stateAnim(pAnimation), parent(pParentState), timeToTransitionToThisState(ptimeToTransitionToThisState)
 {
-	if (pAnimation)
-	{
-		finalBoneMatrices.reserve(pAnimation->GetBones().size());
-
-		for (int i = 0; i < finalBoneMatrices.capacity(); i++)
-			finalBoneMatrices.emplace_back(1.0f);
-	}
-
-	else
-	{
-		finalBoneMatrices.reserve(g_max_bones);
-
-		for (int i = 0; i < g_max_bones; i++)
-			finalBoneMatrices.emplace_back(1.0f);
-	}
+	if (parent)
+		parent->children.push_back(*this);
 }
 
-void Animator::PlayAnimation(Animation* pAnimation)
+Animator::Animator(GameObject* pOwner)
+	: Component(pOwner), rootState(nullptr, "Idle", nullptr, 3), currentState(rootState), currentTime(0)
 {
-	currentAnimation = pAnimation;
-	currentTime = 0.0f;
+	finalBoneMatrices.reserve(g_max_bones);
+
+	for (int i = 0; i < g_max_bones; i++)
+		finalBoneMatrices.emplace_back(1.0f);
 }
 
-void Animator::UpdateAnimation(float pDeltaTime)
+void Animator::Start()
 {
-	if (currentAnimation)
+	currentState.stateAnim = rootState.stateAnim;
+	currentTime = 0.0;
+}
+
+void Animator::Update(float pDeltaTime)
+{
+	if (currentState.stateAnim)
 	{
-		currentTime += currentAnimation->GetTicksPerSecond() * pDeltaTime;
-		currentTime = fmod(currentTime, currentAnimation->GetDuration());
-		CalculateBoneTransform(&currentAnimation->GetRootNode(), lm::FMat4(1.0f));
+		currentTime += currentState.stateAnim->GetTicksPerSecond() * pDeltaTime;
+		currentTime = fmod(currentTime, currentState.stateAnim->GetDuration());
+		CalculateBoneTransform(&currentState.stateAnim->GetRootNode(), lm::FMat4(1.0f));
+
+		if (isTransitioning)
+		{
+			transitionTime += pDeltaTime;
+			CalculateBoneTransform(&targetedState->stateAnim->GetRootNode(), lm::FMat4(1.0f));
+		}
 	}
 
-	for (int i = 0; i < finalBoneMatrices.size(); i++)
+	for (unsigned int i = 0; i < finalBoneMatrices.size(); i++)
 	{
 		std::string s = "finalBonesMatrices[" + std::to_string(i) + "]";
 		Application::GetMainShader().SetMat4(finalBoneMatrices[i], s.c_str());
 	}
+}
+
+Component* Animator::Clone(GameObject* newGameObject)
+{
+	return new Animator(newGameObject);
+}
+
+void Animator::StateChange(const std::string& pNewStateName)
+{
+	for (auto& child : currentState.children)
+		if (child.stateName == pNewStateName)
+		{
+			targetedState = &child;
+			isTransitioning = true;
+			return;
+		}
+
+	if (currentState.parent->stateName == pNewStateName)
+	{
+		targetedState = currentState.parent;
+		isTransitioning = true;
+	}
+}
+
+AnimationState& Animator::GetAnimationStateRoot()
+{
+	return rootState;
 }
 
 void Animator::CalculateBoneTransform(const NodeData* pNode, const lm::FMat4& pParentTransform)
@@ -49,19 +78,15 @@ void Animator::CalculateBoneTransform(const NodeData* pNode, const lm::FMat4& pP
 	const std::string pNodeName = pNode->name;
 	lm::FMat4 pNodeTransform = pNode->transform;
 
-	if (Bone* bone = currentAnimation->FindBone(pNodeName))
+	if (Bone* bone = currentState.stateAnim->FindBone(pNodeName))
 	{
 		bone->Update(currentTime);
 		pNodeTransform = bone->GetLocalTransform();
 	}
-	else
-	{
-		std::cout << "bone not found : " << pNodeName << std::endl;
-	}
 
 	const lm::FMat4 globalTransformation = pParentTransform * pNodeTransform;
 
-	auto boneInfoMap = currentAnimation->GetBoneIDMap();
+	auto boneInfoMap = currentState.stateAnim->GetBoneIDMap();
 	if (boneInfoMap.contains(pNodeName))
 	{
 		const int index = boneInfoMap[pNodeName].id;
@@ -73,7 +98,7 @@ void Animator::CalculateBoneTransform(const NodeData* pNode, const lm::FMat4& pP
 		CalculateBoneTransform(&pNode->children[i], globalTransformation);
 }
 
-std::vector<lm::FMat4> Animator::GetFinalBoneMatrices()
+std::vector<lm::FMat4>& Animator::GetFinalBoneMatrices()
 {
 	return finalBoneMatrices;
 }

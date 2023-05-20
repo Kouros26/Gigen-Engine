@@ -11,7 +11,8 @@
 #include "Log.h"
 #include "Behaviour.h"
 #include <iostream>
-
+#include "Animation.h"
+#include "Animator.h"
 #include "RigidBody.h"
 #include "SceneSaver.h"
 #include "WorldPhysics.h"
@@ -28,12 +29,14 @@ Application::Application()
 	WorldPhysics::GetInstance().InitPhysicWorld();
 	Scene::LoadScene(Scene::GetCurrentSceneName());
 	sk = GameObjectManager::CreateGameObject("sk");
-	sk->SetModel("Engine/Models/SKM_Manny_Simple.fbx");
-	Animation* anim = new Animation("Engine/Models/MM_Walk_Fwd.fbx", sk->GetModel());
-	sk->GetTransform().SetWorldRotation({ -90, 0, 180 });
-	sk->GetTransform().SetWorldScale(0.05f);
-	sk->CreateAnimator();
-	sk->GetAnimator()->PlayAnimation(anim);
+	sk->SetModel("Engine/Models/Monke.fbx");
+	sk->SetTexture("Engine/Textures/Monkey.png");
+	Animation* anim = new Animation("Engine/Animations/Idle.fbx", sk->GetModel());
+	//sk->GetTransform().SetWorldRotation({ -90, 0, 180 });
+	sk->GetTransform().SetWorldScale(0.005f);
+	sk->AddComponent<Animator>();
+	sk->GetAnimator()->GetAnimationStateRoot().stateAnim = anim;
+	AnimationState idle2{ anim, "Idle2", &sk->GetAnimator()->GetAnimationStateRoot(), 2 };
 }
 
 Application::~Application()
@@ -209,10 +212,6 @@ void Application::Draw()
 	RENDERER.Enable(RD_DEPTH_TEST);
 	RENDERER.DepthFunction(RD_LESS);
 	UpdateGameObjectRender(); //render model if they have one
-
-	sk->GetAnimator()->UpdateAnimation(Time::GetDeltaTime());
-	//ok
-	
 
 	mainShader.UnUse(); //stop using the main shader
 
