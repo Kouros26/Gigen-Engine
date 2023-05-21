@@ -13,6 +13,7 @@ struct Collision;
 class Component;
 class Model;
 class Texture;
+class Animator;
 
 class GameObject : public Object
 {
@@ -34,6 +35,8 @@ public:
     void CreateBoxRigidBody(const lm::FVec3& halfExtents, const lm::FVec3& scale, float mass);
     void CreateCapsuleRigidBody(float radius, float height, const lm::FVec3& scale, float mass);
     void CreateSphereRigidBody(float radius, const lm::FVec3& scale, float mass);
+
+    Animator* GetAnimator(); //TEMP
 
     virtual void UpdateRender() const;
     void UpdateComponents() const;

@@ -123,7 +123,7 @@ void Mesh::Draw()
 void Mesh::SetupBuffers()
 {
 	Buffer VBO{ this->VBO, this->vertices, verticesSize };
-	Buffer EBO{ this->EBO, this->indices,indicesSize };
+	Buffer EBO{ this->EBO, this->indices, indicesSize };
 	BufferVAO VAO{ this->VAO };
 	RENDERER.SetupBuffer(VBO, EBO, VAO);
 }

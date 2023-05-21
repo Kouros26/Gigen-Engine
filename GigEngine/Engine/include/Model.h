@@ -21,10 +21,11 @@ public:
 	Model& operator=(const Model& other);
 	Model& operator=(Model&& other) noexcept;
 	void Draw(Texture* texture) const;
+	void DrawSkeleton() const;
 
 	void Init() override;
 
-	auto& GetBoneInfoMap();
+	std::map<std::string, BoneInfo>& GetBoneInfoMap();
 	int& GetBoneCount();
 
 private:

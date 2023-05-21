@@ -12,11 +12,13 @@
 #include "Behaviour.h"
 #include "AudioSource.h"
 #include <iostream>
-
+#include "Animation.h"
+#include "Animator.h"
 #include "RigidBody.h"
 #include "SceneSaver.h"
 #include "WorldPhysics.h"
 #include "ScriptInterpreter.h"
+#include "IMGUI/imgui.h"
 
 #include "UIImage.h"
 
@@ -132,6 +134,13 @@ void Application::StartGame()
 
 void Application::Run()
 {
+	ImGui::Text(sk->GetAnimator()->GetCurrentState()->stateName.c_str());
+	if (ImGui::Button("Anim1"))
+		sk->GetAnimator()->StateChange("Idle");
+
+	if (ImGui::Button("Anim2"))
+		sk->GetAnimator()->StateChange("Run");
+
 	window.ProcessInput();
 	Time::UpdateDeltaTime();
 	Draw();
@@ -190,7 +199,7 @@ void Application::Draw()
 	{
 		editorCamera.Update();
 	}
-
+	//
 	mainShader.Use(); //start using the main shader
 
 	if (!isEditor && !isPause)
