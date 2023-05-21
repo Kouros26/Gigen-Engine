@@ -47,10 +47,9 @@ Bone::Bone(const std::string& pName, int pId, const aiNodeAnim* pChannel)
 
 void Bone::Update(float pAnimationTime)
 {
-	const lm::FMat4 translation = InterpolatePosition(pAnimationTime);
-	const lm::FMat4 rotation = InterpolateRotation(pAnimationTime);
-	const lm::FMat4 scale = InterpolateScaling(pAnimationTime);
-    localTransform = translation * rotation * scale;
+	localPos = InterpolatePosition(pAnimationTime);
+	localRot = InterpolateRotation(pAnimationTime);
+	localScl = InterpolateScaling(pAnimationTime);
 }
 
 int Bone::GetPositionIndex(float pAnimationTime) const
@@ -88,7 +87,22 @@ int Bone::GetScaleIndex(float pAnimationTime) const
 
 lm::FMat4 Bone::GetLocalTransform() const
 {
-    return localTransform;
+    return AnimUtils::GetTransform(localPos, localRot, localScl);
+}
+
+lm::FVec3& Bone::GetLocalPos()
+{
+    return localPos;
+}
+
+lm::FQuat& Bone::GetLocalRot()
+{
+    return localRot;
+}
+
+lm::FVec3& Bone::GetLocalScl()
+{
+    return localScl;
 }
 
 std::string Bone::GetBoneName() const
@@ -111,53 +125,44 @@ float Bone::GetScaleFactor(float pLastTimeStamp, float pNextTimeStamp, float pAn
     return scaleFactor;
 }
 
-lm::FMat4 Bone::InterpolatePosition(float pAnimationTime)
+lm::FVec3 Bone::InterpolatePosition(float pAnimationTime)
 {
     if (numPositions == 1)
-        return lm::FMat4::Translation(positions[0].position);
+        return positions[0].position;
 
     const int p0Index = GetPositionIndex(pAnimationTime);
     const int p1Index = p0Index + 1;
     const float scaleFactor = GetScaleFactor(positions[p0Index].timeStamp,
                                              positions[p1Index].timeStamp, pAnimationTime);
-    const lm::FVec3 finalPosition = lm::FVec3::Lerp(positions[p0Index].position,
-                                                    positions[p1Index].position, scaleFactor);
-    return lm::FMat4::Translation(finalPosition);
+    return lm::FVec3::Lerp(positions[p0Index].position,positions[p1Index].position, scaleFactor);
 }
 
-lm::FMat4 Bone::InterpolateRotation(float pAnimationTime)
+lm::FQuat Bone::InterpolateRotation(float pAnimationTime)
 {
     if (numRotations == 1)
-    {
-	    const auto rotation = lm::FQuat::Normalize(rotations[0].orientation);
-        lm::FMat3 mat3{ lm::FQuat::ToRotateMat3(rotation) };
-        return { mat3 };
-    }
+        return lm::FQuat::Normalize(rotations[0].orientation);
 
     const int p0Index = GetRotationIndex(pAnimationTime);
     const int p1Index = p0Index + 1;
     const float scaleFactor = GetScaleFactor(rotations[p0Index].timeStamp,
                                              rotations[p1Index].timeStamp, pAnimationTime);
-    lm::FQuat finalRotation = lm::FQuat::SLerp(rotations[p0Index].orientation,
-        rotations[p1Index].orientation, scaleFactor);
-    finalRotation = lm::FQuat::Normalize(finalRotation);
-    lm::FMat3 mat3{ lm::FQuat::ToRotateMat3(finalRotation) };
+    const lm::FQuat finalRotation = lm::FQuat::SLerp(rotations[p0Index].orientation,
+                                                     rotations[p1Index].orientation, scaleFactor);
 
-    return { mat3 };
+    return lm::FQuat::Normalize(finalRotation);
 }
 
-lm::FMat4 Bone::InterpolateScaling(float pAnimationTime)
+lm::FVec3 Bone::InterpolateScaling(float pAnimationTime)
 {
     if (numScalings == 1)
-        return lm::FMat4::Scale(lm::FMat4(1.0f), scales[0].scale);
+        return scales[0].scale;
 
     const int p0Index = GetScaleIndex(pAnimationTime);
     const int p1Index = p0Index + 1;
     const float scaleFactor = GetScaleFactor(scales[p0Index].timeStamp,
                                              scales[p1Index].timeStamp, pAnimationTime);
-    const lm::FVec3 finalScale = lm::FVec3::Lerp(scales[p0Index].scale, scales[p1Index].scale
-                                                 , scaleFactor);
-    return lm::FMat4::Scale(lm::FMat4(1.0f), finalScale);
+
+    return lm::FVec3::Lerp(scales[p0Index].scale, scales[p1Index].scale, scaleFactor);
 }
 
 Animation::Animation(const std::string& pAnimationPath, Model* pModel)
@@ -253,4 +258,11 @@ void Animation::ReadHierarchyData(NodeData& pOutData, const aiNode* pNode)
         ReadHierarchyData(newData, pNode->mChildren[i]);
         pOutData.children.push_back(newData);
     }
+}
+
+lm::FMat4 AnimUtils::GetTransform(const lm::FVec3& pPos, const lm::FQuat& pRot, const lm::FVec3& pScl)
+{
+	lm::FMat4 bob = lm::FMat4::Translation(pPos) * lm::FMat4(lm::FQuat::ToRotateMat3(pRot)) * lm::FMat4::Scale({1.0f},
+		pScl);
+    return bob;
 }

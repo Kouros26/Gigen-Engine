@@ -46,9 +46,12 @@ private:
     int numRotations;
     int numScalings;
 
-    lm::FMat4 localTransform;
     std::string name;
     int id;
+
+    lm::FVec3 localPos;
+    lm::FQuat localRot;
+    lm::FVec3 localScl;
 
 public:
 
@@ -60,17 +63,22 @@ public:
     [[nodiscard]] int GetRotationIndex(float pAnimationTime) const;
     [[nodiscard]] int GetScaleIndex(float pAnimationTime) const;
 
-    [[nodiscard]] lm::FMat4 GetLocalTransform() const;
     [[nodiscard]] std::string GetBoneName() const;
     [[nodiscard]] int GetBoneID() const;
+
+    [[nodiscard]] lm::FMat4 GetLocalTransform() const;
+    lm::FVec3& GetLocalPos();
+    lm::FQuat& GetLocalRot();
+    lm::FVec3& GetLocalScl();
+
 
 private:
 
     float GetScaleFactor(float pLastTimeStamp, float pNextTimeStamp, float pAnimationTime);
 
-    lm::FMat4 InterpolatePosition(float pAnimationTime);
-    lm::FMat4 InterpolateRotation(float pAnimationTime);
-    lm::FMat4 InterpolateScaling(float pAnimationTime);
+    lm::FVec3 InterpolatePosition(float pAnimationTime);
+    lm::FQuat InterpolateRotation(float pAnimationTime);
+    lm::FVec3 InterpolateScaling(float pAnimationTime);
 };
 
 class Animation : public IResource
@@ -104,3 +112,8 @@ private:
     void ReadMissingBones(const aiAnimation* pAnimation, Model& pModel);
     static void ReadHierarchyData(NodeData& pOutData, const aiNode* pNode);
 };
+
+namespace AnimUtils
+{
+    lm::FMat4 GetTransform(const lm::FVec3& pPos, const lm::FQuat& pRot, const lm::FVec3& pScl);
+}

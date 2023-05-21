@@ -10,7 +10,7 @@ AnimationState::AnimationState(Animation* pAnimation, const std::string& pStateN
 }
 
 Animator::Animator(GameObject* pOwner)
-	: Component(pOwner), rootState(nullptr, "Idle", nullptr, 3), currentState(rootState), currentTime(0)
+	: Component(pOwner), rootState(nullptr, "Idle", nullptr, 3), currentState(&rootState)
 {
 	finalBoneMatrices.reserve(g_max_bones);
 
@@ -20,23 +20,35 @@ Animator::Animator(GameObject* pOwner)
 
 void Animator::Start()
 {
-	currentState.stateAnim = rootState.stateAnim;
+	currentState->stateAnim = rootState.stateAnim;
 	currentTime = 0.0;
 }
 
 void Animator::Update(float pDeltaTime)
 {
-	if (currentState.stateAnim)
+	if (currentState->stateAnim)
 	{
-		currentTime += currentState.stateAnim->GetTicksPerSecond() * pDeltaTime;
-		currentTime = fmod(currentTime, currentState.stateAnim->GetDuration());
-		CalculateBoneTransform(&currentState.stateAnim->GetRootNode(), lm::FMat4(1.0f));
+		currentTime += currentState->stateAnim->GetTicksPerSecond() * pDeltaTime;
+		currentTime = fmod(currentTime, currentState->stateAnim->GetDuration());
 
 		if (isTransitioning)
 		{
-			transitionTime += pDeltaTime;
-			CalculateBoneTransform(&targetedState->stateAnim->GetRootNode(), lm::FMat4(1.0f));
+			transitionTimer += pDeltaTime;
+			transitionTime += targetedState->stateAnim->GetTicksPerSecond() * pDeltaTime;
+			transitionTime = fmod(transitionTime, targetedState->stateAnim->GetDuration());
+
+			if (transitionTimer >= targetedState->timeToTransitionToThisState)
+			{
+				currentTime = fmod(transitionTimer * targetedState->stateAnim->GetTicksPerSecond(), targetedState->stateAnim->GetDuration());
+				std::cout << currentTime << std::endl;
+				transitionTime = 0;
+				transitionTimer = 0;
+				isTransitioning = false;
+				currentState = targetedState;
+				targetedState = nullptr;
+			}
 		}
+		CalculateBoneTransform(&currentState->stateAnim->GetRootNode(), lm::FMat4(1.0f));
 	}
 
 	for (unsigned int i = 0; i < finalBoneMatrices.size(); i++)
@@ -53,7 +65,7 @@ Component* Animator::Clone(GameObject* newGameObject)
 
 void Animator::StateChange(const std::string& pNewStateName)
 {
-	for (auto& child : currentState.children)
+	for (auto& child : currentState->children)
 		if (child.stateName == pNewStateName)
 		{
 			targetedState = &child;
@@ -61,9 +73,12 @@ void Animator::StateChange(const std::string& pNewStateName)
 			return;
 		}
 
-	if (currentState.parent->stateName == pNewStateName)
+	if (!currentState->parent)
+		return;
+
+	if (currentState->parent->stateName == pNewStateName)
 	{
-		targetedState = currentState.parent;
+		targetedState = currentState->parent;
 		isTransitioning = true;
 	}
 }
@@ -73,29 +88,59 @@ AnimationState& Animator::GetAnimationStateRoot()
 	return rootState;
 }
 
+AnimationState* Animator::GetCurrentState() const
+{
+	return currentState;
+}
+
 void Animator::CalculateBoneTransform(const NodeData* pNode, const lm::FMat4& pParentTransform)
 {
-	const std::string pNodeName = pNode->name;
-	lm::FMat4 pNodeTransform = pNode->transform;
+	currentStateNode.nodeName = pNode->name;
+	currentStateNode.transform = pNode->transform;
 
-	if (Bone* bone = currentState.stateAnim->FindBone(pNodeName))
+	if (Bone* bone = currentState->stateAnim->FindBone(currentStateNode.nodeName))
 	{
 		bone->Update(currentTime);
-		pNodeTransform = bone->GetLocalTransform();
+		currentStateNode.localPos = bone->GetLocalPos();
+		currentStateNode.localRot = bone->GetLocalRot();
+		currentStateNode.localScl = bone->GetLocalScl();
 	}
 
-	const lm::FMat4 globalTransformation = pParentTransform * pNodeTransform;
-
-	auto boneInfoMap = currentState.stateAnim->GetBoneIDMap();
-	if (boneInfoMap.contains(pNodeName))
+	if (targetedState)
 	{
-		const int index = boneInfoMap[pNodeName].id;
-		const lm::FMat4 offset = boneInfoMap[pNodeName].offset;
+		if (Bone* bone = targetedState->stateAnim->FindBone(currentStateNode.nodeName))
+		{
+			bone->Update(transitionTime);
+			targetedStateNode.localPos = bone->GetLocalPos();
+			targetedStateNode.localRot = bone->GetLocalRot();
+			targetedStateNode.localScl = bone->GetLocalScl();
+
+			PerformCrossFade();
+		}
+	}
+
+	const lm::FMat4 globalTransformation = pParentTransform * AnimUtils::GetTransform(currentStateNode.localPos, currentStateNode.localRot, currentStateNode.localScl);
+
+	auto boneInfoMap = currentState->stateAnim->GetBoneIDMap();
+	if (boneInfoMap.contains(currentStateNode.nodeName))
+	{
+		const int index = boneInfoMap[currentStateNode.nodeName].id;
+		const lm::FMat4 offset = boneInfoMap[currentStateNode.nodeName].offset;
 		finalBoneMatrices[index] = globalTransformation * offset;
 	}
 
 	for (int i = 0; i < pNode->childrenCount; i++)
 		CalculateBoneTransform(&pNode->children[i], globalTransformation);
+}
+
+void Animator::PerformCrossFade()
+{
+	currentStateNode.localPos = lm::FVec3::Lerp(currentStateNode.localPos, targetedStateNode.localPos,
+		transitionTimer / targetedState->timeToTransitionToThisState);
+	currentStateNode.localRot = lm::FQuat::SLerp(currentStateNode.localRot, targetedStateNode.localRot,
+					transitionTimer / targetedState->timeToTransitionToThisState);
+	currentStateNode.localScl = lm::FVec3::Lerp(currentStateNode.localScl, targetedStateNode.localScl,
+		transitionTimer / targetedState->timeToTransitionToThisState);
 }
 
 std::vector<lm::FMat4>& Animator::GetFinalBoneMatrices()

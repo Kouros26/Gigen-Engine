@@ -17,6 +17,7 @@
 #include "SceneSaver.h"
 #include "WorldPhysics.h"
 #include "ScriptInterpreter.h"
+#include "IMGUI/imgui.h"
 
 #include "UIImage.h"
 
@@ -32,11 +33,12 @@ Application::Application()
 	sk->SetModel("Engine/Models/Monke.fbx");
 	sk->SetTexture("Engine/Textures/Monkey.png");
 	Animation* anim = new Animation("Engine/Animations/Idle.fbx", sk->GetModel());
-	//sk->GetTransform().SetWorldRotation({ -90, 0, 180 });
-	sk->GetTransform().SetWorldScale(0.005f);
+	Animation* animRun = new Animation("Engine/Animations/Run.fbx", sk->GetModel());
+	sk->GetTransform().SetWorldRotation({ 180, 0, 0 });
+	sk->GetTransform().SetWorldScale(0.000005f);
 	sk->AddComponent<Animator>();
 	sk->GetAnimator()->GetAnimationStateRoot().stateAnim = anim;
-	AnimationState idle2{ anim, "Idle2", &sk->GetAnimator()->GetAnimationStateRoot(), 2 };
+	AnimationState run{ animRun, "Run", &sk->GetAnimator()->GetAnimationStateRoot(), 0.6f };
 }
 
 Application::~Application()
@@ -140,6 +142,13 @@ void Application::StartGame()
 
 void Application::Run()
 {
+	ImGui::Text(sk->GetAnimator()->GetCurrentState()->stateName.c_str());
+	if (ImGui::Button("Anim1"))
+		sk->GetAnimator()->StateChange("Idle");
+
+	if (ImGui::Button("Anim2"))
+		sk->GetAnimator()->StateChange("Run");
+
 	window.ProcessInput();
 	Time::UpdateDeltaTime();
 	Draw();
