@@ -28,14 +28,6 @@ struct KeyScale
     float timeStamp;
 };
 
-struct NodeData
-{
-    lm::FMat4 transform;
-    std::string name;
-    unsigned int childrenCount;
-    std::vector<NodeData> children;
-};
-
 class Bone
 {
 private:
@@ -70,7 +62,6 @@ public:
     lm::FVec3& GetLocalPos();
     lm::FQuat& GetLocalRot();
     lm::FVec3& GetLocalScl();
-
 
 private:
 
@@ -108,9 +99,6 @@ public:
     std::vector<Bone>& GetBones();
 
 private:
-
-    void ReadMissingBones(const aiAnimation* pAnimation, Model& pModel);
-    static void ReadHierarchyData(NodeData& pOutData, const aiNode* pNode);
 };
 
 namespace AnimUtils

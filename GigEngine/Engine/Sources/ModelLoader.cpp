@@ -5,8 +5,11 @@
 #include "assimp/postprocess.h"
 #include <assimp/scene.h>
 #include <Vec3/FVec3.hpp>
-
+#include "Model.h"
+#include <cassert>
 #include "Quaternion/FQuat.hpp"
+#include "Animation.h"
+#include <assimp/anim.h>
 
 void ModelLoader::LoadModel(std::vector<Mesh*>& meshes, std::vector<Material*>& materials, std::map<std::string, BoneInfo>& boneInfo, int& boneCounter, std::string const& pFilePath)
 {
@@ -44,7 +47,7 @@ void ModelLoader::ProcessMesh(const aiMesh* pMesh, const aiScene* pScene, std::v
 
     for (unsigned int i = 0; i < pMesh->mNumVertices; i++)
     {
-    	mesh->vertices[i * VERTEX_SIZE] = pMesh->mVertices[i].x;
+        mesh->vertices[i * VERTEX_SIZE] = pMesh->mVertices[i].x;
         mesh->vertices[(i * VERTEX_SIZE) + 1] = pMesh->mVertices[i].y;
         mesh->vertices[(i * VERTEX_SIZE) + 2] = pMesh->mVertices[i].z;
 
@@ -77,7 +80,7 @@ void ModelLoader::ProcessMesh(const aiMesh* pMesh, const aiScene* pScene, std::v
         mesh->indices[(i * FACE_SIZE) + 2] = pMesh->mFaces[i].mIndices[2];
     }
 
-    ProcessBones(pMesh, pScene, mesh,boneInfo, boneCounter);
+    ProcessBones(pMesh, pScene, mesh, boneInfo, boneCounter);
 
     meshes.emplace_back(mesh);
 }
@@ -88,7 +91,7 @@ void ModelLoader::ProcessBones(const aiMesh* pMesh, const aiScene* pScene, Mesh*
     {
         int boneId = -1;
         std::string boneName = pMesh->mBones[boneIndex]->mName.C_Str();
-             
+
         if (!boneInfo.contains(boneName))
         {
             std::cout << boneName << " : " << boneCounter << std::endl;
@@ -108,7 +111,7 @@ void ModelLoader::ProcessBones(const aiMesh* pMesh, const aiScene* pScene, Mesh*
 
         for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
         {
-	        const int vertexId = weights[weightIndex].mVertexId;
+            const int vertexId = weights[weightIndex].mVertexId;
             const float weight = weights[weightIndex].mWeight;
             SetVertexBoneData(mesh, vertexId, boneId, weight);
         }
@@ -152,7 +155,7 @@ void ModelLoader::SetVertexBoneData(const Mesh* pMesh, int pVertexId, int pId, f
 {
     for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
     {
-	    if (pMesh->vertices[(pVertexId * VERTEX_SIZE) + 8 + i] < 0)
+        if (pMesh->vertices[(pVertexId * VERTEX_SIZE) + 8 + i] < 0)
         {
             pMesh->vertices[(pVertexId * VERTEX_SIZE) + 8 + i] = pId;
             pMesh->vertices[(pVertexId * VERTEX_SIZE) + 12 + i] = pWeight;
@@ -177,4 +180,57 @@ lm::FVec3 ModelLoader::AIVec3ToFVec3(const aiVector3D& pVector)
 lm::FQuat ModelLoader::AIQuatToFQuat(const aiQuaternion& pQuaternion)
 {
     return { pQuaternion.x, pQuaternion.y, pQuaternion.z, pQuaternion.w };
+}
+
+void ModelLoader::LoadAnimation(std::string& pAnimationPath, class Model*& pModel, double& pDuration, double& pTicksPerSecond, std::map<std::string, BoneInfo>& pBoneMap, NodeData& RootNode, std::vector<class Bone>& pBones)
+{
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile(pAnimationPath, aiProcess_Triangulate);
+    assert(scene && scene->mRootNode);
+    const auto animation = scene->mAnimations[0];
+    pDuration = animation->mDuration;
+    pTicksPerSecond = animation->mTicksPerSecond;
+    ReadHierarchyData(RootNode, scene->mRootNode->mChildren[0]);
+    ReadMissingBones(animation, *pModel, pBones, pBoneMap);
+}
+
+void ModelLoader::ReadMissingBones(const aiAnimation* pAnimation, Model& pModel, std::vector<class Bone>& pBones, std::map<std::string, BoneInfo>& pBoneMap)
+{
+    const unsigned int size = pAnimation->mNumChannels;
+
+    auto& boneInfoMap = pModel.GetBoneInfoMap();
+    int& boneCount = pModel.GetBoneCount();
+
+    //reading channels(bones engaged in an animation and their keyframes)
+    for (unsigned int i = 0; i < size; i++)
+    {
+        const auto channel = pAnimation->mChannels[i];
+        std::string boneName = channel->mNodeName.data;
+
+        if (!boneInfoMap.contains(boneName))
+        {
+            boneInfoMap[boneName].id = boneCount;
+            boneCount++;
+        }
+        pBones.emplace_back(channel->mNodeName.data,
+            boneInfoMap[channel->mNodeName.data].id, channel);
+    }
+
+    pBoneMap = boneInfoMap;
+}
+
+void ModelLoader::ReadHierarchyData(NodeData& pOutData, const aiNode* pNode)
+{
+    assert(pNode);
+
+    pOutData.name = pNode->mName.data;
+    pOutData.transform = ModelLoader::AIMat4toFMat4(pNode->mTransformation);
+    pOutData.childrenCount = pNode->mNumChildren;
+
+    for (unsigned int i = 0; i < pNode->mNumChildren; i++)
+    {
+        NodeData newData;
+        ReadHierarchyData(newData, pNode->mChildren[i]);
+        pOutData.children.push_back(newData);
+    }
 }
