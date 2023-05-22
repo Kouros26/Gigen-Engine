@@ -18,8 +18,6 @@
 #include "SceneSaver.h"
 #include "WorldPhysics.h"
 #include "ScriptInterpreter.h"
-#include "IMGUI/imgui.h"
-
 #include "UIImage.h"
 
 using namespace GigRenderer;
@@ -134,13 +132,6 @@ void Application::StartGame()
 
 void Application::Run()
 {
-	ImGui::Text(sk->GetAnimator()->GetCurrentState()->stateName.c_str());
-	if (ImGui::Button("Anim1"))
-		sk->GetAnimator()->StateChange("Idle");
-
-	if (ImGui::Button("Anim2"))
-		sk->GetAnimator()->StateChange("Run");
-
 	window.ProcessInput();
 	Time::UpdateDeltaTime();
 	Draw();
