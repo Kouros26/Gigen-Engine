@@ -31,7 +31,6 @@ public:
 
 private:
 
-	GameObject* sk;
 	static inline Window window;
 	static inline EditorCamera editorCamera;
 

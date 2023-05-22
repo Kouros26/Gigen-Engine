@@ -40,6 +40,7 @@ private:
     float transitionTime = 0;
     float transitionTimer = 0;
     bool isTransitioning = false;
+    bool isBoneAnimated = false;
 
     HandledNode currentStateNode;
     HandledNode targetedStateNode;

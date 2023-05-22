@@ -1,8 +1,9 @@
 #include "Animator.h"
 #include "Application.h"
+#include "Mat3/FMat3.hpp"
 
 AnimationState::AnimationState(Animation* pAnimation, const std::string& pStateName, AnimationState* pParentState,
-	float ptimeToTransitionToThisState)
+                               float ptimeToTransitionToThisState)
 		: stateName(pStateName), stateAnim(pAnimation), parent(pParentState), timeToTransitionToThisState(ptimeToTransitionToThisState)
 {
 	if (parent)
@@ -100,6 +101,7 @@ void Animator::CalculateBoneTransform(const NodeData* pNode, const lm::FMat4& pP
 
 	if (Bone* bone = currentState->stateAnim->FindBone(currentStateNode.nodeName))
 	{
+		isBoneAnimated = true;
 		bone->Update(currentTime);
 		currentStateNode.localPos = bone->GetLocalPos();
 		currentStateNode.localRot = bone->GetLocalRot();
@@ -119,7 +121,16 @@ void Animator::CalculateBoneTransform(const NodeData* pNode, const lm::FMat4& pP
 		}
 	}
 
-	const lm::FMat4 globalTransformation = pParentTransform * AnimUtils::GetTransform(currentStateNode.localPos, currentStateNode.localRot, currentStateNode.localScl);
+	lm::FMat4 globalTransformation;
+
+	if (isBoneAnimated)
+	{
+		globalTransformation = pParentTransform * AnimUtils::GetTransform(currentStateNode.localPos, currentStateNode.localRot, currentStateNode.localScl);
+		isBoneAnimated = false;
+	}
+
+	else
+		globalTransformation = pParentTransform * currentStateNode.transform;
 
 	auto boneInfoMap = currentState->stateAnim->GetBoneIDMap();
 	if (boneInfoMap.contains(currentStateNode.nodeName))
