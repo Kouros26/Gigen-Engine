@@ -13,6 +13,7 @@
 #include "AudioSource.h"
 #include <iostream>
 
+#include "ShadowMapping.h"
 #include "RigidBody.h"
 #include "SceneSaver.h"
 #include "WorldPhysics.h"
@@ -33,6 +34,7 @@ Application::Application()
 Application::~Application()
 {
 	Lines::Clear();
+	ShadowMapping::Clear();
 	GameObjectManager::Cleanup();
 	AudioSource::Clear();
 	WorldPhysics::GetInstance().DestroyPhysicWorld();
@@ -104,18 +106,22 @@ bool Application::IsInEditor()
 {
 	return isEditor;
 }
+
 bool Application::IsInPause()
 {
 	return isPause;
 }
+
 bool Application::IsUsingEditorCam()
 {
 	return useEditorCam;
 }
+
 bool Application::IsShowUI()
 {
 	return showUI;
 }
+
 void Application::StartGame()
 {
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
@@ -147,8 +153,6 @@ void Application::SwapFrames()
 	window.swapBuffers();
 }
 
-//ok
-
 void Application::Init()
 {
 	window.Init();
@@ -158,9 +162,7 @@ void Application::Init()
 	UIManager::Init();
 	InitMainShader();
 
-	//to remove
-	UIManager::AddTextElement();
-	UIManager::AddImageElement();
+	ShadowMapping::Init();
 }
 
 void Application::InitMainShader()
@@ -171,17 +173,22 @@ void Application::InitMainShader()
 	if (!mainShader.Link(mainVertex, mainFragment))
 		std::cout << "Error linking main shader" << std::endl;
 
+	lightSpaceLocation = mainShader.GetUniform("lightSpaceMatrix");
 	ModelLocation = mainShader.GetUniform("model");
 	viewProjLocation = mainShader.GetUniform("viewProj");
 	viewPosLocation = mainShader.GetUniform("viewPos");
 
 	nbLightLocation = mainShader.GetUniform("nbLights");
+
+	int truc = 0;
+	mainShader.SetInt(truc, "ourTexture");
+	truc++;
+	mainShader.SetInt(truc, "shadowMap");
 }
 
 void Application::Draw()
 {
 	ClearWindow();
-
 	RENDERER.Disable(RD_DEPTH_TEST);
 	if (GameObjectManager::GetSkyBox())
 		GameObjectManager::GetSkyBox()->Draw();
@@ -191,21 +198,23 @@ void Application::Draw()
 		editorCamera.Update();
 	}
 
-	mainShader.Use(); //start using the main shader
-
 	if (!isEditor && !isPause)
 	{
 		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
 	}
 
-	UpdateUniforms(); //then send the global uniforms
-	UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
-
+	//shadowMapping ====================================================================================ook
 	RENDERER.Enable(RD_DEPTH_TEST);
-	RENDERER.DepthFunction(RD_LESS);
-	UpdateGameObjectRender(); //render model if they have one
-
-	mainShader.UnUse(); //stop using the main shader
+	ShadowMapping::BeginRender();
+	RenderSceneShadows();
+	ShadowMapping::EndRender();
+	
+	RENDERER.BindFrameBuffer(RD_FRAMEBUFFER, 0);
+	RENDERER.Clear(RD_DEPTH_BUFFER_BIT);
+	mainShader.Use(); //start using the main shader
+	RenderScene();
+	mainShader.UnUse(); //start using the main shader
+	//shadowMapping =====================================================================================
 
 	//update audio with camera position
 	Camera* currentCamera = useEditorCam ? &editorCamera : GameObjectManager::GetCurrentCamera();
@@ -215,6 +224,32 @@ void Application::Draw()
 
 	if (showUI)
 		UIManager::DrawUI(); // render UI
+}
+
+void Application::RenderScene()
+{
+	UpdateUniforms(); //then send the global uniforms
+	UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
+
+	RENDERER.Enable(RD_DEPTH_TEST);
+	RENDERER.DepthFunction(RD_LESS);
+	UpdateGameObjectRender(); //render model if they have one
+}
+
+void Application::RenderSceneShadows()
+{
+	lm::FMat4 mat = GameObjectManager::GetDirLightSpaceMatrix();
+	ShadowMapping::SendLight(mat);
+
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
+	{
+		GameObject* object = GameObjectManager::GetGameObject(i);
+
+		object->UpdateHierarchy();
+
+		ShadowMapping::SendModel(object->GetTransform().MatrixGetter());
+		object->UpdateRender();
+	}
 }
 
 void Application::ClearWindow()
@@ -243,8 +278,6 @@ void Application::UpdateGameObjectRender() const
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		GameObject* object = GameObjectManager::GetGameObject(i);
-
-		object->UpdateHierarchy();
 
 		RENDERER.SetUniformValue(ModelLocation, UniformType::MAT4, &object->GetTransform().MatrixGetter());
 		object->UpdateRender();
@@ -291,6 +324,11 @@ void Application::UpdateUniforms() const
 		viewPos = lm::FVec3(0);
 	}
 
+	lm::FMat4 mat = GameObjectManager::GetDirLightSpaceMatrix();
+	
+	GigRenderer::RENDERER.BindTexture(RD_TEXTURE_2D, ShadowMapping::GetdepthMap(), RD_TEXTURE1);
+
+	RENDERER.SetUniformValue(lightSpaceLocation, UniformType::MAT4, &mat);
 	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, &viewProj);
 	RENDERER.SetUniformValue(viewPosLocation, UniformType::VEC3, &viewPos);
 }

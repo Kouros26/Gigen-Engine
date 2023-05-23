@@ -83,7 +83,7 @@ void GigInput::Inputs::UpdateMouseButton(int button, int action)
 
 	if (button == static_cast<int>(MouseButton::LEFT)) 
 	{
-		if (mouse.leftClick != action) 
+		if (mouse.leftClick != (bool)action) 
 		{
 			mouse.leftClick = action;
 			mouse.leftClickOnce = action;

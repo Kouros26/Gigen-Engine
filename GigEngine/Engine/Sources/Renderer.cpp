@@ -1,5 +1,6 @@
 #include <GLAD/glad.h>
 #include "Renderer.h"
+#include "ShadowMapping.h"
 #include "Font.h"
 #include "UIImage.h"
 #include "GLFW/glfw3.h"
@@ -245,7 +246,7 @@ void Renderer::Clear(unsigned int pMask)
 void Renderer::LoadTexture(unsigned int& pTexture, int pWidth, int pHeight, const void* pData)
 {
 	glGenTextures(1, &pTexture);
-	BindTexture(GL_TEXTURE_2D, pTexture);
+	BindTexture(GL_TEXTURE_2D, pTexture, RD_TEXTURE0);
 	// set the texture wrapping/filtering options (on the currently bound texture object)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -255,13 +256,13 @@ void Renderer::LoadTexture(unsigned int& pTexture, int pWidth, int pHeight, cons
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pWidth, pHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	BindTexture(GL_TEXTURE_2D, RD_FALSE);
+	BindTexture(GL_TEXTURE_2D, RD_FALSE, RD_TEXTURE0);
 }
 
 void Renderer::LoadImguiTexture(unsigned int& pTexture, int pWidth, int pHeight, const void* pData)
 {
 	glGenTextures(1, &pTexture);
-	BindTexture(GL_TEXTURE_2D, pTexture);
+	BindTexture(GL_TEXTURE_2D, pTexture, RD_TEXTURE0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
@@ -273,11 +274,12 @@ void Renderer::LoadImguiTexture(unsigned int& pTexture, int pWidth, int pHeight,
 #endif
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pWidth, pHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData);
 
-	BindTexture(GL_TEXTURE_2D, RD_FALSE);
+	BindTexture(GL_TEXTURE_2D, RD_FALSE, RD_TEXTURE0);
 }
 
-void Renderer::BindTexture(unsigned int pTarget, unsigned int pTexture)
+void Renderer::BindTexture(unsigned int pTarget, unsigned int pTexture, unsigned int activeText)
 {
+	glActiveTexture(activeText);
 	glBindTexture(pTarget, pTexture);
 }
 
@@ -500,7 +502,7 @@ void Renderer::LoadFont(Font* f) const
 			texture,
 			lm::FVec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
 			lm::FVec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-			face->glyph->advance.x
+			(unsigned int)face->glyph->advance.x
 		};
 
 		f->AddCharacter(std::pair<char, Character>(c, character));
@@ -518,4 +520,42 @@ void Renderer::LoadFont(Font* f) const
 
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
+}
+
+void GigRenderer::Renderer::BindFrameBuffer(unsigned int type, unsigned int buff)
+{
+	glBindFramebuffer(type, buff);
+}
+
+void GigRenderer::Renderer::DeleteFrameBuffer(unsigned int buff)
+{
+	glDeleteFramebuffers(1, &buff);
+}
+
+void GigRenderer::Renderer::InitShadowMapping() const
+{
+	glGenFramebuffers(1, &ShadowMapping::GetdepthMapFBO());
+
+	const unsigned int SHADOW_WIDTH = 1920, SHADOW_HEIGHT = 1080;
+
+	glGenTextures(1, &ShadowMapping::GetdepthMap());
+	glBindTexture(GL_TEXTURE_2D, ShadowMapping::GetdepthMap());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapping::GetdepthMapFBO());
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, ShadowMapping::GetdepthMap(), 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void GigRenderer::Renderer::RenderShadowMapping() const
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapping::GetdepthMapFBO());
+	glClear(GL_DEPTH_BUFFER_BIT);
 }

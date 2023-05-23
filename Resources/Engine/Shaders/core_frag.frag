@@ -3,9 +3,11 @@
 in vec3 fragNormal;
 in vec2 fragTexCoord;
 in vec3 fragPos;
+in vec4 FragPosLightSpace;
 
 uniform vec3 viewPos;
 uniform sampler2D ourTexture;
+uniform sampler2D shadowMap;
 
 out vec4 outColor;
 
@@ -45,6 +47,22 @@ uniform Light lights[NB_MAX_LIGHT];
 uniform Material material;
 
 uniform int nbLights;
+
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+    //perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+    return shadow;
+}
 
 vec3 CalcDirLight(Light _light, vec3 _normal, vec3 _viewDir)
 {
@@ -120,5 +138,9 @@ void main() {
 	for(int i = 0; i < nbLights; i++)
 		result += CalcLight(lights[i], norm, fragPos, viewDir);
 
+	float shadow = ShadowCalculation(FragPosLightSpace);
+	result.x -= (1.0 - shadow);
+	//result.y -= (0.5 - shadow);
+	//result.z -= (0.5 - shadow);
 	outColor = vec4(result, 1.0) * texture(ourTexture, fragTexCoord);
 }

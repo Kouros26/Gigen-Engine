@@ -39,12 +39,12 @@ void Texture::Load()
 
 void Texture::Bind()
 {
-    RENDERER.BindTexture(RD_TEXTURE_2D, texture);
+    RENDERER.BindTexture(RD_TEXTURE_2D, texture, RD_TEXTURE0);
 }
 
 void Texture::UnBind()
 {
-    RENDERER.BindTexture(RD_TEXTURE_2D, 0);
+    RENDERER.BindTexture(RD_TEXTURE_2D, 0, RD_TEXTURE0);
 }
 
 bool Texture::isValid()

@@ -54,7 +54,6 @@ public:
 	static void CreateSkyBox();
 	static Skybox* GetSkyBox();
 
-	//ok
 	static void SendLightsToShader();
 	static int GetDirLightSize();
 	static int GetPointLightSize();
@@ -66,6 +65,8 @@ public:
 	static std::vector<GameObject*> FindObjectsByName(const std::string& name);
 	static GameObject* FindObjectByName(const std::string& name);
 	static GameObject* FindObjectById(unsigned int id);
+
+	static lm::FMat4 GetDirLightSpaceMatrix();
 
 private:
 	static GameObject* AddGameObject(GameObject* object);
