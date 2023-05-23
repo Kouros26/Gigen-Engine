@@ -4,6 +4,7 @@
 #include "RigidBody.h"
 #include "Log.h"
 #include "GameObject.h"
+#include "AudioSource.h"
 
 void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
 {
@@ -92,6 +93,20 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
         "SetGravityEnabled", &RigidBody::SetGravityEnabled,
         "GetGravity", &RigidBody::GetGravity
 
+    );
+
+    luaState.new_usertype<AudioSource>("AudioSource",
+        sol::base_classes, sol::bases<Component>(),
+
+        "Play", &AudioSource::Play,
+        "Pause", &AudioSource::Pause,
+        "UnPause", &AudioSource::UnPause,
+        "Stop", &AudioSource::Stop,
+        "SetVolume", &AudioSource::SetVolume,
+        "SetAudio", &AudioSource::SetAudioWithLuaPath,
+        "SetLoop", &AudioSource::SetIsLooping,
+        "Set3D", &AudioSource::SetIs2D,
+        "IsPlaying", &AudioSource::GetIsPlaying
     );
 }
 

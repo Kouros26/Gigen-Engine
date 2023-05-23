@@ -788,7 +788,7 @@ void GameObjectInspector::DrawScriptsComponent(GameObject * pObject) const
 			const std::string& name = script->GetScriptName();
 			if (ImGui::TreeNode(name.c_str()))
 			{
-				ImGui::Text(ReadScript("../../../Resources/Editor/Scripts/" + name).c_str());
+				/*ImGui::Text(ReadScript("../../../Resources/Editor/Scripts/" + name).c_str());*/
 				if (ImGui::IsItemClicked(1))
 				{
 					ImGui::OpenPopup("ScriptPopUp");
