@@ -43,6 +43,12 @@ Component* GigScripting::Behaviour::Clone(GameObject* newGameObject)
     return new Behaviour(newGameObject);
 }
 
+std::string GigScripting::Behaviour::GetType()
+{
+    const std::string type(typeid(this).name());
+    return type.substr(6, type.size() - 16);
+}
+
 const std::string& GigScripting::Behaviour::GetScriptName() const
 {
     return scriptName;
@@ -70,7 +76,6 @@ bool GigScripting::Behaviour::RegisterToLuaContext(const std::string& pScriptFol
         {
             scriptTable = result[0];
             scriptTable["owner"] = gameObject;
-            // Update(0.016f);
             return true;
         }
         else
@@ -84,9 +89,4 @@ bool GigScripting::Behaviour::RegisterToLuaContext(const std::string& pScriptFol
 void GigScripting::Behaviour::UnregisterFromLuaContext()
 {
     scriptTable = sol::nil;
-}
-
-std::string GigScripting::Behaviour::GetName() const
-{
-    return scriptName;
 }

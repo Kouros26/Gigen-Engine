@@ -3,19 +3,19 @@
 #include <string>
 
 DirLight::DirLight(float ambient, float diffuse, float specular, const lm::FVec3& color)
-	:ambient(ambient), diffuse(diffuse), specular(specular)
+	: GameObject("Light"), ambient(ambient), diffuse(diffuse), specular(specular)
 {
 	this->color[0] = color.x;
 	this->color[1] = color.y;
 	this->color[2] = color.z;
 }
 
-void DirLight::SendToShader(const int& pos, const std::string& shaderName)
+void DirLight::SendToShader(const int& pos, int type)
 {
 	if (!IsActive())
 		return;
 
-	std::string str = shaderName + "[" + std::to_string(pos) + "].";
+	std::string str = "lights[" + std::to_string(pos) + "].";
 	const std::string temp = str;
 
 	const lm::FVec3 dir = GetTransform().GetFront();
@@ -33,6 +33,8 @@ void DirLight::SendToShader(const int& pos, const std::string& shaderName)
 	shader.SetFloat(diffuse, (str.append(g_diffuseShaderName)).c_str());
 	str = temp;
 	shader.SetFloat(specular, (str.append(g_specularShaderName)).c_str());
+	str = temp;
+	shader.SetInt(type, (str.append("type")).c_str());
 }
 
 float* DirLight::GetColor()
@@ -88,14 +90,14 @@ PointLight::PointLight(float ambient, float diffuse, float specular, float const
 {
 }
 
-void PointLight::SendToShader(const int& pos, const std::string& shaderName)
+void PointLight::SendToShader(const int& pos, int type)
 {
 	if (!IsActive())
 		return;
 
-	DirLight::SendToShader(pos, shaderName);
+	DirLight::SendToShader(pos, type);
 
-	std::string str = shaderName + "[" + std::to_string(pos) + "].";
+	std::string str = "lights[" + std::to_string(pos) + "].";
 	const std::string temp = str;
 
 	const lm::FVec3 posi = GetTransform().GetWorldPosition();
@@ -155,14 +157,14 @@ SpotLight::SpotLight(float ambient, float diffuse, float specular, float constan
 {
 }
 
-void SpotLight::SendToShader(const int& pos, const std::string& shaderName)
+void SpotLight::SendToShader(const int& pos, int type)
 {
 	if (!IsActive())
 		return;
 
-	PointLight::SendToShader(pos, shaderName);
+	PointLight::SendToShader(pos, type);
 
-	std::string str = shaderName + "[" + std::to_string(pos) + "].";
+	std::string str = "lights[" + std::to_string(pos) + "].";
 	const std::string temp = str;
 
 	ShaderProgram& shader = Application::GetMainShader();

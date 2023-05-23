@@ -1,7 +1,5 @@
 #include "SceneSaver.h"
-#include <fstream>
-#include <filesystem>
-#include <array>
+#include "AudioSource.h"
 #include "BoxRigidBody.h"
 #include "CapsuleRigidBody.h"
 #include "Component.h"
@@ -12,6 +10,9 @@
 #include "Texture.h"
 #include "Behaviour.h"
 #include "WorldPhysics.h"
+#include <fstream>
+#include <filesystem>
+#include <array>
 
 void ProcessedObject::Clear()
 {
@@ -161,6 +162,13 @@ std::string& Scene::GetCurrentSceneName()
 	return currentScene;
 }
 
+Scene& Scene::GetInstance()
+{
+	static Scene scene;
+
+	return scene;
+}
+
 void Scene::GetValues(GameObject* pGameObject)
 {
 	//type
@@ -219,8 +227,17 @@ void Scene::GetValues(GameObject* pGameObject)
 	//components
 	for (ProcessedObject::componentSize = 0; ProcessedObject::componentSize < pGameObject->GetComponentCount(); ProcessedObject::componentSize++)
 	{
-		const std::string& component = static_cast<GigScripting::Behaviour*>(pGameObject->GetComponentByID(ProcessedObject::componentSize))->GetScriptName();
+		Component* comp = pGameObject->GetComponentByID(ProcessedObject::componentSize);
+		const std::string& component = comp->GetType();
 		ProcessedObject::components += component + ' ';
+
+		if (component == "Behaviour")
+			ProcessedObject::components += static_cast<GigScripting::Behaviour*>(comp)->GetScriptName();
+
+		else if (component == "AudioSource")
+			GetAudioValues(static_cast<AudioSource*>(comp));
+
+		ProcessedObject::components += ' ';
 	}
 
 	//model
@@ -232,7 +249,22 @@ void Scene::GetValues(GameObject* pGameObject)
 		ProcessedObject::texture = pGameObject->GetTexture()->GetFilePath();
 }
 
-void Scene::GetLightValues(DirLight* pGameObject)
+void Scene::GetAudioValues(AudioSource* pAudioSource) const
+{
+	if (pAudioSource->GetAudio().empty())
+		ProcessedObject::components += "none ";
+	else
+		ProcessedObject::components += pAudioSource->GetAudio() + ' ';
+
+	pAudioSource->GetIs2D() ? ProcessedObject::components += "true " : ProcessedObject::components += "false ";
+	pAudioSource->GetPlayOnStart() ? ProcessedObject::components += "true " : ProcessedObject::components += "false ";
+	pAudioSource->GetIsLooping() ? ProcessedObject::components += "true " : ProcessedObject::components += "false ";
+
+	ProcessedObject::components += std::to_string(pAudioSource->GetVolume()) + ' ';
+	ProcessedObject::components += std::to_string(pAudioSource->GetMinDistance()) + ' ';
+}
+
+void Scene::GetLightValues(DirLight* pGameObject) const
 {
 	ProcessedObject::otherValues += VecToString(pGameObject->GetAmbient(), pGameObject->GetDiffuse(), pGameObject->GetSpecular());
 
@@ -252,7 +284,7 @@ void Scene::GetLightValues(DirLight* pGameObject)
 	ProcessedObject::otherValues += ' ' + VecToString(pGameObject->GetColor()[0], pGameObject->GetColor()[1], pGameObject->GetColor()[2]);
 }
 
-void Scene::GetCameraValues(const Camera* pGameObject)
+void Scene::GetCameraValues(const Camera* pGameObject) const
 {
 	ProcessedObject::otherValues += VecToString(pGameObject->GetFov(), pGameObject->GetNear(), pGameObject->GetFar())
 		+ ' ' + std::to_string(pGameObject->GetRatio());
@@ -347,7 +379,7 @@ void Scene::ProcessTransform(const std::string& pLine, GameObject* pOutGameObjec
 		lm::FVec3{ data[3], data[4], data[5] },
 		lm::FVec3{ data[6], data[7], data[8] });
 }
-//
+
 void Scene::ProcessRigidBody(const std::string& pLine, GameObject* pOutGameObject)
 {
 	const std::vector<std::string> strings = SplitString(pLine);
@@ -388,17 +420,40 @@ void Scene::ProcessComponents(const std::string& pLine, GameObject* pOutGameObje
 
 	for (int i = 1; i < strings.size(); i++)
 	{
-		if (!strings[i].empty())
+		if (strings[i].empty())
+			continue;
+
+		if (strings[i] == "AudioSource")
+		{
+			LoadSound(strings, pOutGameObject, i);
+			i += 6;
+		}
+
+		else if (strings[i] == "Behaviour")
 			pOutGameObject->AddComponent<GigScripting::Behaviour>(strings[i]);
 	}
 }
 
-std::string Scene::VecToString(const float pFirst, const float pSecond, const float pThird)
+void Scene::LoadSound(const std::vector<std::string>& pStrings, GameObject* pOutGameObject, int i) const
+{
+	const auto source = pOutGameObject->AddComponent<AudioSource>();
+
+	if (pStrings[i + 1] != "none")
+		source->SetAudio(pStrings[i + 1]);
+
+	pStrings[i + 2] == "true" ? source->SetIs2D(true) : source->SetIs2D(false);
+	pStrings[i + 3] == "true" ? source->SetPlayOnStart(true) : source->SetPlayOnStart(false);
+	pStrings[i + 4] == "true" ? source->SetIsLooping(true) : source->SetIsLooping(false);
+	source->SetVolume(stof(pStrings[i + 5]));
+	source->SetMinDistance(stof(pStrings[i + 6]));
+}
+
+std::string Scene::VecToString(const float pFirst, const float pSecond, const float pThird) const
 {
 	return std::to_string(pFirst) + ' ' + std::to_string(pSecond) + ' ' + std::to_string(pThird);
 }
 
-std::string Scene::VecToString(const lm::FVec3& pVec)
+std::string Scene::VecToString(const lm::FVec3& pVec) const
 {
 	return std::to_string(pVec.x) + ' ' + std::to_string(pVec.y) + ' ' + std::to_string(pVec.z);
 }

@@ -2,6 +2,7 @@
 #include "IResource.h"
 
 const char* const g_defaultTexturePath = "Engine/Textures/default.png";
+const char* const g_defaultTexturePath2 = "Engine/Textures/default2.png";
 
 class Texture : public IResource
 {

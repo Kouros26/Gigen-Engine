@@ -54,3 +54,4 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/assimp/lib/assimp-v
 target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/assimp/lib/IrrXML.lib)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/assimp/lib/zlibstatic.lib)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/FREETYPE/freetype.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPENDS_DIR}/IRRKLANG/irrKlang.lib)

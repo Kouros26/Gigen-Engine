@@ -19,10 +19,12 @@ public:
 	static void Play();
 	static void Pause();
 	static void Stop();
+	static void ShowUI();
 	static void UseEditorCam();
 	static bool IsInEditor();
 	static bool IsInPause();
 	static bool IsUsingEditorCam();
+	static bool IsShowUI();
 
 	void Run();
 	void SwapFrames();
@@ -39,14 +41,14 @@ private:
 	static inline bool isPause = false;
 	static inline bool useEditorCam = false;
 
+	static inline bool showUI = true;
+
 	//main shader
 	static inline ShaderProgram mainShader;
 	int viewProjLocation;
 	int ModelLocation;
 	int viewPosLocation;
-	int nbDirLightLocation;
-	int nbPointLightLocation;
-	int nbSpotLightLocation;
+	int nbLightLocation;
 
 	void Init();
 	void InitMainShader();

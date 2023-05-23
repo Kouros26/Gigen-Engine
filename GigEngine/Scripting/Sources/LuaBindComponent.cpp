@@ -2,12 +2,17 @@
 #include "Component.h"
 #include "Transform.h"
 #include "RigidBody.h"
+#include "Log.h"
 #include "GameObject.h"
+#include "AudioSource.h"
 
 void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
 {
     auto& luaState = pLuaState;
-
+    luaState["Physics"]["Delegate"] = [&pLuaState](std::string DelegateString)
+    {
+        DelegatePhysics(pLuaState, DelegateString);
+    };
     luaState.new_usertype<Component>("Component",
         "GetOwner", [](Component* pComp) { return pComp->GetGameObject(); }
     );
@@ -89,4 +94,51 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
         "GetGravity", &RigidBody::GetGravity
 
     );
+
+    luaState.new_usertype<AudioSource>("AudioSource",
+        sol::base_classes, sol::bases<Component>(),
+
+        "Play", &AudioSource::Play,
+        "Pause", &AudioSource::Pause,
+        "UnPause", &AudioSource::UnPause,
+        "Stop", &AudioSource::Stop,
+        "SetVolume", &AudioSource::SetVolume,
+        "SetAudio", &AudioSource::SetAudioWithLuaPath,
+        "SetLoop", &AudioSource::SetIsLooping,
+        "Set3D", &AudioSource::SetIs2D,
+        "IsPlaying", &AudioSource::GetIsPlaying
+    );
+}
+
+void GigScripting::LuaBindComponent::DelegatePhysics(sol::state& pLuaState, std::string DelegateString)
+{
+    if (DelegateFromString(pLuaState, DelegateString))
+    {
+        getFunctionFromString(DelegateString) = pLuaState[DelegateString];
+    }
+}
+
+bool  GigScripting::LuaBindComponent::DelegateFromString(sol::state& pLuaState, std::string DelegateString)
+{
+    if (pLuaState[DelegateString].valid())
+    {
+        return true;
+    }
+    else
+    {
+        std::string err = DelegateString + " Does not exist";
+        GIG_LOG(err.c_str());
+    }
+    return false;
+}
+
+std::function<void(GameObject*)>& GigScripting::LuaBindComponent::getFunctionFromString(std::string pInput)
+{
+    if (pInput.compare("OnCollisionEnter") == 0)
+        return delegateFunctions.OnCollisionEnter;
+
+    if (pInput.compare("OnCollisionExit") == 0)
+        return delegateFunctions.OnCollisionExit;
+
+    return delegateFunctions.defaultReturn;
 }

@@ -11,7 +11,9 @@ public:
 	void Draw() override;
 
 private:
-	const char* GetIconOfFile(const std::string& str) const;
+	[[nodiscard]] const char* GetIconOfFile(const std::string& str) const;
+
+	bool isDragging = false;
 
 	const std::string rootDirPath = "../../../Resources";
 	std::string currentDirPath;

@@ -22,6 +22,8 @@ namespace GigScripting
 
         virtual Component* Clone(GameObject* newGameObject) override;
 
+        virtual std::string GetType() override;
+
         [[nodiscard]] const std::string& GetScriptName() const;
 
         sol::table& GetScriptTable();
@@ -32,8 +34,6 @@ namespace GigScripting
         bool RegisterToLuaContext(const std::string& pScriptFolder, sol::state& pState);
 
         void UnregisterFromLuaContext();
-
-        std::string GetName() const;
 
     public:
         const std::string scriptName;

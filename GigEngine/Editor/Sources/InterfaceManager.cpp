@@ -13,7 +13,7 @@ void InterfaceManager::DrawEditor()
 
 	const float posX = GetClassWidth<HierarchyDisplay>();
 	const float posY = GetClassHeight<ToolsDisplay>();
-	Application::GetWindow().SetViewPort(static_cast<int>(posX), static_cast<int>(posY), static_cast<int>(width - GetClassWidth<GameObjectInspector>() - posX), static_cast<int>(height - posY));
+	Application::GetWindow().SetViewPort(static_cast<int>(posX), static_cast<int>(posY + g_menuBarSize * 2), static_cast<int>(width - GetClassWidth<GameObjectInspector>() - posX), static_cast<int>(height - posY - g_menuBarSize * 2));
 }
 
 void InterfaceManager::AddEditorElement(Displayable* pElement)

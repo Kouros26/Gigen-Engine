@@ -99,7 +99,11 @@ namespace GigInput
 		bool rightClick;
 		bool leftClick;
 
+		bool leftClickOnce;
+
 		bool wheelClick;
+
+		bool OnLeftClick();
 	};
 
 	class Inputs
@@ -113,7 +117,7 @@ namespace GigInput
 
 		static bool GetKeyUp(const Keys& pKey);
 
-		static Mouse GetMouse();
+		static Mouse& GetMouse();
 
 		static void UpdateKey(int key, int action);
 

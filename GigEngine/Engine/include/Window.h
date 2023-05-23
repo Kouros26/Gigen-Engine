@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-
+#include "Mat4/FMat4.hpp"
 #include <GLFW/glfw3.h>
 
 enum class CursorShape
@@ -26,9 +26,16 @@ public:
 	[[nodiscard]] unsigned int GetWidth() const;
 	[[nodiscard]] unsigned int GetHeight() const;
 
+	[[nodiscard]] unsigned int GetVPWidth() const;
+	[[nodiscard]] unsigned int GetVPHeight() const;
+	[[nodiscard]] unsigned int GetVPX() const;
+	[[nodiscard]] unsigned int GetVPY() const;
+
 	[[nodiscard]] bool ShouldClose() const;
 	[[nodiscard]] GLFWwindow* GetGLFWWindow() const;
 	std::string& GetGLSLVersion();
+
+	lm::FMat4& GetOrthoMatrix();
 
 	float GetViewPortRatio() const;
 	void SetViewPort(unsigned int pX, unsigned int pY, unsigned int pWidth, unsigned int pHeight);
@@ -46,7 +53,14 @@ private:
 	unsigned int width = 0;
 	unsigned int height = 0;
 
+	unsigned int vpWidth = 0;
+	unsigned int vpHeight = 0;
+	unsigned int vpPosx = 0;
+	unsigned int vpPosy = 0;
+
 	float viewPortRatio = 1;
+
+	lm::FMat4 orthoMatrix;
 
 	void SetIcon(const std::string& pPath) const;
 
