@@ -145,6 +145,10 @@ void GameObjectManager::RemoveGameObject(GameObject* object)
 
 	gameObjects.erase(it);
 
+	if (object->GetChildrenCount() > 0)
+		while (object->GetChildrenCount() > 0)
+			RemoveGameObject(object->GetChild(0));
+
 	const auto pointsTemp = std::ranges::find(pointLights, object);
 
 	if (pointsTemp != pointLights.end())

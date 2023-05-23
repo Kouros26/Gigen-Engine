@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <iostream>
 
+#include "SceneSaver.h"
+
 FileExplorer::FileExplorer()
 {
     currentDirPath = rootDirPath;
@@ -69,8 +71,17 @@ void FileExplorer::Draw()
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0) && !directoryEntry.is_directory())
         {
-            std::string command = "start " + fullPath.string();
-            system(command.c_str());
+            if (fullPath.extension() == ".chad")
+            {
+                std::string bob = fullPath.filename().string();
+                Scene::GetInstance().ReloadScene(bob);
+            }
+
+            else
+            {
+                std::string command = "start " + fullPath.string();
+                system(command.c_str());
+            }
         }
 
         if (ImGui::IsItemHovered())

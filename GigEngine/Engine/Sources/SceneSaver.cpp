@@ -147,6 +147,8 @@ void Scene::LoadScene(const std::string& pSceneName)
 	for (const auto& i : parentChildMemory)
 		GameObjectManager::FindObjectByName(i.first)->AddChild(*GameObjectManager::FindObjectByName(i.second));
 
+	file.close();
+	parentChildMemory.clear();
 	currentScene = pSceneName;
 }
 
@@ -231,7 +233,7 @@ void Scene::GetValues(GameObject* pGameObject)
 		const std::string& component = comp->GetType();
 		ProcessedObject::components += component + ' ';
 
-		if (component == "Behaviour")
+		if (component == "GigScripting::Behaviour")
 			ProcessedObject::components += static_cast<GigScripting::Behaviour*>(comp)->GetScriptName();
 
 		else if (component == "AudioSource")
@@ -429,8 +431,8 @@ void Scene::ProcessComponents(const std::string& pLine, GameObject* pOutGameObje
 			i += 6;
 		}
 
-		else if (strings[i] == "Behaviour")
-			pOutGameObject->AddComponent<GigScripting::Behaviour>(strings[i]);
+		else if (strings[i] == "GigScripting::Behaviour")
+			pOutGameObject->AddComponent<GigScripting::Behaviour>(strings[i + 1]);
 	}
 }
 
