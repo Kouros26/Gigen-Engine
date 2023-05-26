@@ -168,6 +168,7 @@ lm::FVec3 Bone::InterpolateScaling(float pAnimationTime)
 }
 
 Animation::Animation(const std::string& pAnimationPath, Model* pModel)
+	: IResource(pAnimationPath)
 {
     std::string animationPath = pAnimationPath;
     ModelLoader::LoadAnimation(animationPath, pModel, duration, ticksPerSecond, boneMap, rootNode, bones);

@@ -1,5 +1,7 @@
 #include "GameObjectInspector.h"
 #include <fstream>
+
+#include "Animator.h"
 #include "UIManager.h"
 #include "UIImage.h"
 #include "UIText.h"
@@ -601,6 +603,7 @@ void GameObjectInspector::DrawComponents(GameObject * pObject) const
 {
 	DrawScriptsComponent(pObject);
 	DrawAudiosComponent(pObject);
+	DrawAnimationsComponent(pObject);
 }
 
 void GameObjectInspector::DrawLight(GameObject * pObject) const
@@ -926,6 +929,82 @@ void GameObjectInspector::DrawAudiosComponent(GameObject * pObject) const
 					source->SetMinDistance(minDistance);
 				}
 			}
+		}
+	}
+}
+
+void GameObjectInspector::DrawAnimationsComponent(GameObject* pObject) const
+{
+	std::vector<Animator*> animators;
+	pObject->GetComponents<Animator>(animators);
+	if (animators.empty())
+		return;
+
+	const char* temp = ICON_MD_AUDIO_FILE " Animator##";
+
+	for (int i = 0; i < animators.size(); i++)
+	{
+		Animator* animator = animators[i];
+
+		if (!animator)
+			return;
+
+		char name[128];
+		std::string num = std::to_string(i);
+		strcpy(name, temp);
+		strcat(name, num.c_str());
+
+		char popUpName[128] = "AnimationPopUp##";
+		strcat(popUpName, num.c_str());
+
+		std::vector<AnimationState> states;
+		animator->MapStates(states);
+
+		if (ImGui::CollapsingHeader(name))
+		{
+			if (ImGui::IsItemClicked(1))
+				ImGui::OpenPopup(popUpName);
+
+			if (ImGui::BeginPopup(popUpName))
+			{
+				ImGui::SeparatorText("Animator");
+				if (ImGui::MenuItem("Remove"))
+				{
+					pObject->RemoveComponent<Animator>(animator);
+					ImGui::EndPopup();
+					return;
+				}
+				ImGui::EndPopup();
+			}
+
+			ImGui::SetCursorPosX(30);
+			ImGui::BeginGroup();
+			for (int j = 0; j < states.size(); j++)
+			{
+				if (ImGui::CollapsingHeader(states[j].stateName.c_str()))
+				{
+					ImGui::SetCursorPosX(50);
+					ImGui::BeginGroup();
+					ImGui::Text(states[j].stateAnim->GetFilePath().c_str());
+					ImGui::EndGroup();
+				}
+
+				if (ImGui::IsItemClicked(1))
+					ImGui::OpenPopup(states[j].stateName.c_str());
+
+				if (ImGui::BeginPopup(states[j].stateName.c_str()))
+				{
+					ImGui::SeparatorText(states[j].stateName.c_str());
+					if (ImGui::MenuItem("Remove"))
+					{
+						animator->RemoveState(states[j].stateName);
+						ImGui::EndPopup();
+						return;
+					}
+					ImGui::EndPopup();
+				}
+			}
+			ImGui::EndGroup();
 		}
 	}
 }

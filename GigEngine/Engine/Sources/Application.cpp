@@ -19,6 +19,7 @@
 #include "WorldPhysics.h"
 #include "ScriptInterpreter.h"
 #include "UIImage.h"
+#include "IMGUI/imgui.h"
 
 using namespace GigRenderer;
 
@@ -28,6 +29,16 @@ Application::Application()
 
     WorldPhysics::GetInstance().InitPhysicWorld();
     Scene::GetInstance().LoadScene(Scene::GetInstance().GetCurrentSceneName());
+    sk = GameObjectManager::CreateGameObject("sk");
+    sk->SetModel("Engine/Models/Monke.fbx");
+    sk->SetTexture("Engine/Textures/Monkey.png");
+    Animation* anim = new Animation("Engine/Animations/Idle.fbx", sk->GetModel());
+    Animation* animRun = new Animation("Engine/Animations/Run.fbx", sk->GetModel());
+    sk->GetTransform().SetWorldScale(0.005f);
+    sk->AddComponent<Animator>();
+    sk->GetAnimator()->GetAnimationStateRoot().stateAnim = anim;
+    sk->GetAnimator()->GetAnimationStateRoot().timeToTransitionToThisState = 0;
+    sk->GetAnimator()->AddState( animRun, "Run", "Idle", 0.0f);
 }
 
 Application::~Application()
@@ -194,6 +205,15 @@ void Application::InitMainShader()
 
 void Application::Draw()
 {
+    //ImGui::ShowDemoWindow();
+    std::string bob("Current State : " + sk->GetAnimator()->GetCurrentState()->stateName);
+    ImGui::Text(bob.c_str());
+    if (ImGui::Button("Idle State"))
+        sk->GetAnimator()->StateChange("Idle");
+
+    if (ImGui::Button("Running State"))
+        sk->GetAnimator()->StateChange("Run");
+
     ClearWindow();
 
     RENDERER.Disable(RD_DEPTH_TEST);
