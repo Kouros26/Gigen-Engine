@@ -32,3 +32,4 @@ W0.000000 0.000000 0.000000 45.000000 20.000000 0.000000 1.000000 1.000000 1.000
 -50.000000 0.100000 1000.000000 1.245283
 NCamera
 W-3.600000 10.800000 -5.200000 0.000000 0.000000 0.000000 1.000000 1.000000 1.000000
+C2 AudioSource ../../../Resources/Engine/Audio\StarWars-JohnWilliams-DuelOfTheFates.mp3 false true true 1.000000 5.000000  AudioSource ../../../Resources/Engine/Audio\maybe.mp3 false true true 1.000000 5.000000  
