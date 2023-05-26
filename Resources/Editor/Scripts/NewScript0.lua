@@ -1,23 +1,21 @@
-local NewScript0 = 
+local Player = 
  { 
+    camera = nil,
+    transform = nil,
  } 
  
- 
- function NewScript0:Start() 
-    HitResult1 = HitResult.new()
+ function Player:Awake() 
+     self.camera = GameManager:CreateCamera()
+     self.transform = self.owner:GetTransform()
+ end
 
-    if(Physics.RayCast(self.owner:GetTransform():GetPosition(), Vector3.Down() * 1000, HitResult1, RayCastDebug.Timer, 15)) 
-    then
-        Debug.Log("Hit")
-          Debug.Log(tostring(HitResult1.hitObject:GetName()))
-          Debug.Log(tostring(HitResult1.hitPoint))
-    else
-        Debug.Log("No Hit")
-    end
+ 
+ function Player:Start() 
+
  end 
  
- function NewScript0:Update(deltaTime) 
+ function Player:Update(deltaTime) 
  
  end 
  
- return NewScript0
+ return Player
