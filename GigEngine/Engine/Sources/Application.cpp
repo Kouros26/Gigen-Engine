@@ -180,10 +180,10 @@ void Application::InitMainShader()
 
 	nbLightLocation = mainShader.GetUniform("nbLights");
 
-	int truc = 0;
-	mainShader.SetInt(truc, "ourTexture");
-	truc++;
-	mainShader.SetInt(truc, "shadowMap");
+	int text0 = 0;
+	mainShader.SetInt(text0, "ourTexture");
+	int text1 = 1;
+	mainShader.SetInt(text1, "shadowMap");
 }
 
 void Application::Draw()
@@ -203,15 +203,16 @@ void Application::Draw()
 		UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
 	}
 
-	//shadowMapping ====================================================================================ook
+	//shadowMapping ===================================================================================
 	RENDERER.Enable(RD_DEPTH_TEST);
 	ShadowMapping::BeginRender();
 	RenderSceneShadows();
 	ShadowMapping::EndRender();
-	
 	RENDERER.BindFrameBuffer(RD_FRAMEBUFFER, 0);
 	RENDERER.Clear(RD_DEPTH_BUFFER_BIT);
+
 	mainShader.Use(); //start using the main shader
+	RENDERER.ViewPort(window.GetVPX(), window.GetVPY(), window.GetVPWidth(), window.GetVPHeight());
 	RenderScene();
 	mainShader.UnUse(); //start using the main shader
 	//shadowMapping =====================================================================================
@@ -228,6 +229,7 @@ void Application::Draw()
 
 void Application::RenderScene()
 {
+	GigRenderer::RENDERER.BindTexture(RD_TEXTURE_2D, ShadowMapping::GetdepthMap(), 1);
 	UpdateUniforms(); //then send the global uniforms
 	UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
 
@@ -278,7 +280,6 @@ void Application::UpdateGameObjectRender() const
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		GameObject* object = GameObjectManager::GetGameObject(i);
-
 		RENDERER.SetUniformValue(ModelLocation, UniformType::MAT4, &object->GetTransform().MatrixGetter());
 		object->UpdateRender();
 	}
@@ -325,8 +326,6 @@ void Application::UpdateUniforms() const
 	}
 
 	lm::FMat4 mat = GameObjectManager::GetDirLightSpaceMatrix();
-	
-	GigRenderer::RENDERER.BindTexture(RD_TEXTURE_2D, ShadowMapping::GetdepthMap(), RD_TEXTURE1);
 
 	RENDERER.SetUniformValue(lightSpaceLocation, UniformType::MAT4, &mat);
 	RENDERER.SetUniformValue(viewProjLocation, UniformType::MAT4, &viewProj);

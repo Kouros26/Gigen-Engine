@@ -169,6 +169,10 @@ int Renderer::GetUniformLocation(unsigned int pProgram, const char* pName)
 void Renderer::SetUniformValue(unsigned int pProgram, const char* pName, UniformType pType, void* pValue)
 {
 	int location = GetUniformLocation(pProgram, pName);
+	if (location < 0)
+	{
+		std::cout << pName << " not found in uniform" << std::endl;
+	}
 	switch (pType)
 	{
 	case UniformType::FLOAT:
@@ -246,7 +250,7 @@ void Renderer::Clear(unsigned int pMask)
 void Renderer::LoadTexture(unsigned int& pTexture, int pWidth, int pHeight, const void* pData)
 {
 	glGenTextures(1, &pTexture);
-	BindTexture(GL_TEXTURE_2D, pTexture, RD_TEXTURE0);
+	BindTexture(GL_TEXTURE_2D, pTexture, 0);
 	// set the texture wrapping/filtering options (on the currently bound texture object)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -256,13 +260,13 @@ void Renderer::LoadTexture(unsigned int& pTexture, int pWidth, int pHeight, cons
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pWidth, pHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	BindTexture(GL_TEXTURE_2D, RD_FALSE, RD_TEXTURE0);
+	BindTexture(GL_TEXTURE_2D, RD_FALSE, 0);
 }
 
 void Renderer::LoadImguiTexture(unsigned int& pTexture, int pWidth, int pHeight, const void* pData)
 {
 	glGenTextures(1, &pTexture);
-	BindTexture(GL_TEXTURE_2D, pTexture, RD_TEXTURE0);
+	BindTexture(GL_TEXTURE_2D, pTexture, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
@@ -274,12 +278,12 @@ void Renderer::LoadImguiTexture(unsigned int& pTexture, int pWidth, int pHeight,
 #endif
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pWidth, pHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData);
 
-	BindTexture(GL_TEXTURE_2D, RD_FALSE, RD_TEXTURE0);
+	BindTexture(GL_TEXTURE_2D, RD_FALSE, 0);
 }
 
-void Renderer::BindTexture(unsigned int pTarget, unsigned int pTexture, unsigned int activeText)
+void Renderer::BindTexture(unsigned int pTarget, unsigned int pTexture, unsigned int pos)
 {
-	glActiveTexture(activeText);
+	glActiveTexture(GL_TEXTURE0 + pos);
 	glBindTexture(pTarget, pTexture);
 }
 
@@ -317,20 +321,20 @@ void Renderer::SetupBuffer(const Buffer& pVBO, const Buffer& pEBO, const BufferV
 	BindBuffer(BufferType::ELEMENT, pEBO.id);
 	BufferData(BufferType::ELEMENT, pEBO.size * sizeof(unsigned int), pEBO.data, RD_STATIC_DRAW);
 
-    EnableVertexAttribArray(0);       // position
-    VertexAttribPointer(0, 3, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)0);
+	EnableVertexAttribArray(0);       // position
+	VertexAttribPointer(0, 3, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)0);
 
-    EnableVertexAttribArray(1);       // normal
-    VertexAttribPointer(1, 3, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(3 * sizeof(float)));
+	EnableVertexAttribArray(1);       // normal
+	VertexAttribPointer(1, 3, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(3 * sizeof(float)));
 
-    EnableVertexAttribArray(2);       // texture
-    VertexAttribPointer(2, 2, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(6 * sizeof(float)));
+	EnableVertexAttribArray(2);       // texture
+	VertexAttribPointer(2, 2, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(6 * sizeof(float)));
 
-    EnableVertexAttribArray(3);       // id
-    VertexAttribPointer(3, 4, RD_INT, RD_FALSE, 16 * sizeof(float), (void*)(8 * sizeof(float)));
+	EnableVertexAttribArray(3);       // id
+	VertexAttribPointer(3, 4, RD_INT, RD_FALSE, 16 * sizeof(float), (void*)(8 * sizeof(float)));
 
-    EnableVertexAttribArray(4);       // weight
-    VertexAttribPointer(4, 4, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(12 * sizeof(float)));
+	EnableVertexAttribArray(4);       // weight
+	VertexAttribPointer(4, 4, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(12 * sizeof(float)));
 
 	BindBuffer(BufferType::ARRAY, RD_FALSE);
 	BindBuffer(BufferType::VERTEX, RD_FALSE);
@@ -536,16 +540,16 @@ void GigRenderer::Renderer::InitShadowMapping() const
 {
 	glGenFramebuffers(1, &ShadowMapping::GetdepthMapFBO());
 
-	const unsigned int SHADOW_WIDTH = 1920, SHADOW_HEIGHT = 1080;
-
 	glGenTextures(1, &ShadowMapping::GetdepthMap());
 	glBindTexture(GL_TEXTURE_2D, ShadowMapping::GetdepthMap());
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapping::GetdepthMapFBO());
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, ShadowMapping::GetdepthMap(), 0);
@@ -556,6 +560,8 @@ void GigRenderer::Renderer::InitShadowMapping() const
 
 void GigRenderer::Renderer::RenderShadowMapping() const
 {
+	glViewport(0, 0, 1920, 1080);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, ShadowMapping::GetdepthMapFBO());
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
