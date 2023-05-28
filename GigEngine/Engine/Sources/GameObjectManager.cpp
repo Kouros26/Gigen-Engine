@@ -28,6 +28,7 @@ void GameObjectManager::Cleanup()
     for (int i = 0; i < GameObjectManager::GetSize(); i++)
     {
         delete gameObjects[i];
+        gameObjects[i] = nullptr;
     }
 
     delete skybox;

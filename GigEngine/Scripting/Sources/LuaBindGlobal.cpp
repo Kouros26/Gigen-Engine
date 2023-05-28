@@ -133,7 +133,7 @@ void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
     luaState["Inputs"]["GetMousePos"] = []()
     {
         auto mouse = Inputs::GetMouse();
-        return lm::FVec2(static_cast<float>(mouse.x), static_cast<float>(mouse.y));
+        return lm::FVec2(static_cast<float>(mouse.mouseOffsetX), static_cast<float>(mouse.mouseOffsetY));
     };
 
     luaState["Tools"]["BoolToInt"] = [](bool pBool) { return (int)(pBool); };
