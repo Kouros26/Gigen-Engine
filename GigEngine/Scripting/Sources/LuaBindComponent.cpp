@@ -37,7 +37,8 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
         "SetWorldPosition", &Transform::SetWorldPosition,
         "SetWorldRotation", &Transform::SetWorldRotation,
         "SetWorldScale", &Transform::SetWorldScale,
-        "LookAt", &Transform::LookAt
+        "LookAt", &Transform::LookAt,
+        "GetMatrix", &Transform::MatrixGetter
 
     );
 

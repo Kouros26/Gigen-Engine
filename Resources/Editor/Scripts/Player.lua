@@ -4,8 +4,10 @@ local Player =
     transform = nil,
     rigidBody = nil,
     moveSpeed = 10,
-    sensitivity = 60,
-    jumpForce = 10
+    sensitivity = 100,
+    jumpForce = 10,
+    isGrounded = false,
+    jumpTimer = 0,
  } 
  
  function Player:Awake() 
@@ -14,7 +16,7 @@ local Player =
     self.transform:SetRotation(Vector3.new(0))
     self.transform:SetScale(Vector3.new(1))
         
-     self.owner:CreateCapsuleRigidBody(1, 1, Vector3.new(1), 1)
+     self.owner:CreateSphereRigidBody(5, Vector3.new(1), 1)
     --self.owner:CreateBoxRigidBody(Vector3.new(0.5),Vector3.new(1), 1)
     self.rigidBody = self.owner:GetRigidBody()
     self.rigidBody:SetAngularFactor(Vector3.new(0,1,0))
@@ -37,22 +39,25 @@ local Player =
     if (self.camera == nil) then
         self.camera = GameObjectManager.CreateCamera()
         self.owner:AddChild(self.camera)
-        self.camera:GetTransform():SetPosition(self.transform:GetPosition())
+        self.camera:GetTransform():SetPosition(Vector3.new(0, 0, 0))
     end
 
 
  end 
  
  function Player:Update(deltaTime) 
-    Move(deltaTime, self.moveSpeed, self.camera:GetTransform())
+    local hit = HitResult.new()
+    Physics.RayCast(self.transform:GetPosition(), -self.transform:GetUp() * 10, hit)
+    if(Vector3.Distance(self.transform:GetPosition(),hit.hitPoint) < 3) then
+        self.isGrounded = true
+    end
+
+
+    Move(deltaTime, self.moveSpeed, self.transform, self.camera, hit.hitPoint, self.isGrounded)
    
     Look(deltaTime, self.sensitivity, self.camera:GetTransform())
 
-    Jump(deltaTime, self.transform, self.jumpForce)
-
-
-    local position = self.camera:GetTransform():GetPosition()
-    self.transform:SetPosition(position)
+    Jump(deltaTime, self.transform, self.jumpForce, self.isGrounded, self.jumpTimer)
 
  end
  
@@ -80,21 +85,50 @@ local Player =
 
 
     transform:SetRotation(rotation)
-    Debug.Log("rotation: " .. tostring(rotation))
  end
 
+function CalculateFront(camera)
+    local matrix = camera:GetTransform():GetMatrix()
+   
+    local inverse = Matrix4.Inverse(matrix)
+    local front = Vector3.new(inverse[2].x, inverse[2].y, inverse[2].z)
+    return front:Normalize()
 
- function Move(deltaTime, moveSpeed, transform)
+end
+
+function CalculateUp(camera)
+    local matrix = camera:GetTransform():GetMatrix()
+   
+    local inverse = Matrix4.Inverse(matrix)
+    local up = Vector3.new(inverse[1].x , inverse[1].y, inverse[1].z)
+    return up:Normalize()
+    
+end
+
+function CalculateRight(camera)
+    local matrix = camera:GetTransform():GetMatrix()
+   
+    local inverse = Matrix4.Inverse(matrix)
+    local right = Vector3.new(inverse[0].x, inverse[0].y, inverse[0].z)
+    return right:Normalize()    
+end
+
+
+
+ function Move(deltaTime, moveSpeed, transform, camera, groundPos, isGrounded)
+    
+
+
     local moveDir = Vector3.new(0)
     if Inputs.GetKey(Keys.W) then
-        moveDir = moveDir + transform:GetFront()
+        moveDir = moveDir + CalculateFront(camera)
     elseif Inputs.GetKey(Keys.S) then
-        moveDir = moveDir - transform:GetFront()
+        moveDir = moveDir - CalculateFront(camera)
     end
     if Inputs.GetKey(Keys.A) then
-        moveDir = moveDir + transform:GetRight()
+        moveDir = moveDir + CalculateRight(camera)
     elseif Inputs.GetKey(Keys.D) then
-        moveDir = moveDir - transform:GetRight()
+        moveDir = moveDir - CalculateRight(camera)
     end
     moveDir = moveDir:Normalize()
     moveDir = moveDir * moveSpeed * deltaTime
@@ -102,13 +136,29 @@ local Player =
     local position = transform:GetPosition()
     position = position + moveDir
 
+    if (groundPos ~= nil and isGrounded) then
+        position.y = groundPos.y + 5
+    end
+    
+
     transform:SetPosition(position)
-    Debug.Log("moveDir: " .. tostring(moveDir))
+
 end
 
-function Jump(deltaTime, transform, jumpForce)
+function Jump(deltaTime, transform, jumpForce, isGrounded, jumpTimer)
+    if (isGrounded == false and jumpTimer > 2) then
+        return
+    end
+
+    if (isGrounded == false) then
+        jumpTimer = jumpTimer + deltaTime
+    else
+        jumpTimer = 0
+    end
+    
     local jumpDir = Vector3.new(0)
     if Inputs.GetKey(Keys.Space) then
+        isGrounded = false
         jumpDir = jumpDir + transform:GetUp()
     end
     jumpDir = jumpDir:Normalize()
@@ -118,7 +168,6 @@ function Jump(deltaTime, transform, jumpForce)
     position = position + jumpDir
 
     transform:SetPosition(position)
-    Debug.Log("jumpDir: " .. tostring(jumpDir))
     
 end
 
@@ -129,11 +178,11 @@ end
 
 
 
-function Player:OnCollisionEnter(otherActor)
+function OnCollisionEnter(otherActor)
     Debug.Log("OnCollisionEnter")
 end
 
-function Player:OnCollisionExit(otherActor)
+function OnCollisionExit(otherActor)
     Debug.Log("OnCollisionExit")
 end
  
