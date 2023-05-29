@@ -58,8 +58,7 @@ void UIImage::Draw()
 	};
 	// render glyph texture over quad
 
-	//texture->Bind();
-	RENDERER.BindTexture(RD_TEXTURE_2D, ShadowMapping::GetdepthMap(), 0);
+	texture->Bind();
 	// update content of VBO memory
 	RENDERER.BindBuffer(GigRenderer::BufferType::VERTEX, VBO);
 	RENDERER.BufferSubData(GigRenderer::BufferType::VERTEX, 0, sizeof(vertices), vertices);
