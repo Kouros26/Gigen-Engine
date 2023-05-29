@@ -3,11 +3,13 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "ResourceManager.h"
+#include "Renderer.h"
+#include "ShadowMapping.h"
 
 Model::Model(std::string const& pFilePath)
     :IResource(pFilePath)
 {
-    LoadModel(meshes, materials,boneMap,boneCounter, pFilePath);
+    LoadModel(meshes, materials, boneMap, boneCounter, pFilePath);
 }
 
 Model::Model(const Model& other)
@@ -59,7 +61,8 @@ Model& Model::operator=(Model&& other) noexcept
 
 void Model::Draw(Texture* texture) const
 {
-    if (texture) 
+    //GigRenderer::RENDERER.BindTexture(RD_TEXTURE_2D, ShadowMapping::GetdepthMap(), 20);
+    if (texture)
     {
         texture->Bind();
     }

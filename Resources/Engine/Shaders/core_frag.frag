@@ -1,4 +1,4 @@
-#version 330
+#version 460
 
 in vec3 fragNormal;
 in vec2 fragTexCoord;
@@ -6,8 +6,8 @@ in vec3 fragPos;
 in vec4 FragPosLightSpace;
 
 uniform vec3 viewPos;
-uniform sampler2D ourTexture;
-uniform sampler2D shadowMap;
+layout(binding = 0) uniform sampler2D ourTexture;
+layout(binding = 1) uniform sampler2D shadowMap;
 
 out vec4 outColor;
 
@@ -28,7 +28,7 @@ struct Light
 
 	float cutOff;
 	float outerCutOff;
-	
+
 	int type;
 };
 
@@ -55,16 +55,16 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // check whether current frag pos is in shadow
 	float bias = 0.005;
-	float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;  
+	float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
 
 	 if(projCoords.z > 1.0)
         shadow = 0.0;
-    
+
     return shadow;
 }
 
@@ -84,7 +84,7 @@ vec3 CalcDirLight(Light _light, vec3 _normal, vec3 _viewDir, float _shadow)
 	//specular *= (1.0 - _shadow);
 
 	return ((_light.ambient * material.ambient) + (diffuse * material.diffuse) + (specular * material.specular)) * _light.color;
-}  
+}
 
 vec3 CalcPointLight(Light _light, vec3 _normal, vec3 _fragPos, vec3 _viewDir, float _shadow)
 {
@@ -100,7 +100,7 @@ vec3 CalcPointLight(Light _light, vec3 _normal, vec3 _fragPos, vec3 _viewDir, fl
 	//specular *= (1.0 - _shadow);
 
 	return ((_light.ambient * material.ambient) + (diffuse * material.diffuse) + (specular * material.specular)) * _light.color;
-} 
+}
 
 vec3 CalcSpotLight(Light _light, vec3 _normal, vec3 _fragPos, vec3 _viewDir, float _shadow)
 {
@@ -148,12 +148,12 @@ void main() {
 
     vec3 result;
 	float shadow = ShadowCalculation(FragPosLightSpace);
-	
+
 	for(int i = 0; i < nbLights; i++)
 		result += CalcLight(lights[i], norm, fragPos, viewDir, shadow);
 
 	if(shadow > 0)
 		result /= 2;
 
-	outColor = vec4(result, 1.0) * texture(ourTexture, fragTexCoord);
+	outColor = vec4(result, 1.0)  * texture(ourTexture, fragTexCoord);
 }
