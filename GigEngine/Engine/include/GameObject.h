@@ -60,6 +60,9 @@ public:
 	virtual void OnCollisionEnter(const Collision& collision);
 	virtual void OnCollisionExit(const Collision& collision);
 
+	virtual void OnTriggerEnter(const Collision& collision);
+	virtual void OnTriggerExit(const Collision& collision);
+
 	void AddComponent(Component* newComponent);
 
 	//create new component of type and return the new component

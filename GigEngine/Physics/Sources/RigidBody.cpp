@@ -16,7 +16,7 @@ RigidBody::~RigidBody()
 	delete rbShape;
 }
 
-void RigidBody::SetRBState(const RBState& pState) const
+void RigidBody::SetRBState(const RBState& pState)
 {
 	if (pState == state)
 		return;
@@ -32,18 +32,28 @@ void RigidBody::SetRBState(const RBState& pState) const
 	case RBState::STATIC:
 		body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_STATIC_OBJECT);
 		break;
+	case RBState::TRIGGER:
+		body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
+		break;
 	}
 
 	switch (pState)
 	{
 	case RBState::DYNAMIC:
 		body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_DYNAMIC_OBJECT);
+		state = RBState::DYNAMIC;
 		break;
 	case RBState::KINETIC:
 		body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+		state = RBState::KINETIC;
 		break;
 	case RBState::STATIC:
 		body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
+		state = RBState::STATIC;
+		break;
+	case RBState::TRIGGER:
+		body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+		state = RBState::TRIGGER;
 		break;
 	}
 }
@@ -272,6 +282,23 @@ int RigidBody::GetCollisionFlag() const
 		return static_cast<int>(RBState::KINETIC);
 	case btCollisionObject::CF_STATIC_OBJECT:
 		return static_cast<int>(RBState::STATIC);
+	case btCollisionObject::CF_NO_CONTACT_RESPONSE:
+		return static_cast<int>(RBState::TRIGGER);
+	default:
+		return static_cast<int>(RBState::DYNAMIC);
+	}
+}
+
+int RigidBody::GetRBState() const
+{
+	switch (body->getCollisionFlags())
+	{
+	case btCollisionObject::CF_KINEMATIC_OBJECT:
+		return static_cast<int>(RBState::KINETIC);
+	case btCollisionObject::CF_STATIC_OBJECT:
+		return static_cast<int>(RBState::STATIC);
+	case btCollisionObject::CF_NO_CONTACT_RESPONSE:
+		return 4;
 	default:
 		return static_cast<int>(RBState::DYNAMIC);
 	}
@@ -287,9 +314,9 @@ btTransform RigidBody::GetTransfrom() const
 	return transform;
 }
 
-void RigidBody::SetMass(btScalar pMass)
+void RigidBody::SetMass(const float pValue)
 {
-	mass = pMass;
+	mass = pValue;
 }
 
 void RigidBody::SetScale(const lm::FVec3& pNewScale)

@@ -454,7 +454,7 @@ void GameObjectInspector::DrawRigidBody(GameObject* pObject) const
         }
 
         ImGui::Text("Collision type"); ImGui::SameLine();
-        const char* items[] = { "Dynamic", "Kinetic", "Static" };
+        const char* items[] = { "Dynamic", "Kinetic", "Static", "Trigger"};
         int item_current = rigid->GetCollisionFlag();
         ImGui::Combo("##20", &item_current, items, IM_ARRAYSIZE(items));
         if (item_current != rigid->GetCollisionFlag())

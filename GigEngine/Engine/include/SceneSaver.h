@@ -64,8 +64,8 @@ private:
 	void ProcessComponents(const std::string& pLine, GameObject* pOutGameObject);
 	void LoadSound(const std::vector<std::string>& pStrings, GameObject* pOutGameObject, int i) const;
 
-	std::string VecToString(const float pFirst, const float pSecond, const float pThird) const;
-	std::string VecToString(const lm::FVec3& pVec) const;
+	[[nodiscard]] std::string VecToString(const float pFirst, const float pSecond, const float pThird) const;
+	[[nodiscard]] std::string VecToString(const lm::FVec3& pVec) const;
 	std::vector<std::string> SplitString(const std::string& pString, char delimiter = ' ');
 
 	std::string sceneFolder = "Scenes/";
