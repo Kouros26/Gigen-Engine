@@ -20,8 +20,16 @@ void MenuBarDisplay::Draw()
 
     if (ImGui::BeginMenu("File"))
     {
-        if (ImGui::MenuItem("test", "shortcut", false, true)) {}
-        if (ImGui::MenuItem("test2", "truc", false, false)) {}
+        if (ImGui::MenuItem("New Scene", "", false, true))
+        {
+            static char name[64];
+            ImGui::InputText("Scene Name", name, sizeof(name));
+            if (ImGui::Button("Create"))
+            {
+                Scene::GetInstance().SaveScene(std::string(name) + ".chad");
+            }
+        }
+        if (ImGui::MenuItem("Save", "", false, true)) {}
 
         ImGui::EndMenu();
     }

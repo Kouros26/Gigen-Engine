@@ -14,11 +14,12 @@
 #include <iostream>
 
 #include "ShadowMapping.h"
+#include "Animation.h"
+#include "Animator.h"
 #include "RigidBody.h"
 #include "SceneSaver.h"
 #include "WorldPhysics.h"
 #include "ScriptInterpreter.h"
-
 #include "UIImage.h"
 
 using namespace GigRenderer;
@@ -81,7 +82,23 @@ void Application::Play()
 
 void Application::Pause()
 {
-    isPause = !isPause;
+	isPause = !isPause;
+	for (int i = 0; i < GameObjectManager::GetSize(); i++)
+	{
+		GameObject* object = GameObjectManager::GetGameObject(i);
+		if (object->IsActive())
+		{
+			std::vector<AudioSource*> audio;
+			object->GetComponents<AudioSource>(audio);
+			for (AudioSource* s : audio)
+			{
+				if (isPause)
+					s->Pause();
+				else
+					s->UnPause();
+			}
+		}
+	}
 }
 
 void Application::Stop()
@@ -185,7 +202,7 @@ void Application::InitMainShader()
     int text1 = 20; //shadow ma
     mainShader.SetInt(text1, "shadowMap");
 }
-
+//
 void Application::Draw()
 {
     ClearWindow();

@@ -167,6 +167,11 @@ void WorldPhysics::DrawDebug() const
     world->debugDrawWorld();
 }
 
+void WorldPhysics::SetGravity(const lm::FVec3& pGravity) const
+{
+    world->setGravity(btVector3(pGravity.x, pGravity.y, pGravity.z));
+}
+
 void WorldPhysics::CheckCollision()
 {
     if (!dispatcher)

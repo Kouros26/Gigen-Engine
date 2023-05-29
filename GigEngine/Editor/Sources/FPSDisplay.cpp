@@ -39,6 +39,16 @@ void FPSDisplay::VSync()
 		Time::FPS::ToggleVSync(vSync);
 
 	lastVSync = vSync;
+
+	ImGui::Text("TimeScale"); ImGui::SameLine();
+	ImGui::SliderFloat("##4", &timeScale, 0.0f, 4.f, "%.2f");
+
+	if (timeScale != lastTimeScale)
+		Time::SetTimeScale(timeScale);
+
+	lastTimeScale = timeScale;
+
+
 }
 
 void FPSDisplay::FPSGraph() const

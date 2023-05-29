@@ -6,6 +6,7 @@
 #include "Model.h"
 #include "Texture.h"
 #include "Component.h"
+#include "AudioSource.h"
 
 void GigScripting::LuaBindGameObject::BindGameObject(sol::state& pLuaState)
 {
@@ -49,7 +50,33 @@ void GigScripting::LuaBindGameObject::BindGameObject(sol::state& pLuaState)
                 return behaviour->GetScriptTable();
             else
                 return sol::nil;
+        },
+
+        "AddAudioSource", [](GameObject& pThis)
+        {
+            return pThis.AddComponent<AudioSource>();
+        },
+            "GetAudioSource", [](GameObject& pThis, int pIndex = 0) -> AudioSource*
+        {
+            std::vector<AudioSource*> audioSources;
+            pThis.GetComponents<AudioSource>(audioSources);
+            if (audioSources.size() > pIndex)
+                return audioSources[pIndex];
+            else
+                return nullptr;
+        },
+            "CreateBoxRigidBody", [](GameObject& pThis, lm::FVec3& pHalfExtent, lm::FVec3& pScale, float pMass)
+        {
+            return pThis.CreateBoxRigidBody(pHalfExtent, pScale, pMass);
+        },
+            "CreateSphereRigidBody", [](GameObject& pThis, float pRadius, lm::FVec3& pScale, float pMass)
+        {
+            return pThis.CreateSphereRigidBody(pRadius, pScale, pMass);
+        },
+            "CreateCapsuleRigidBody", [](GameObject& pThis, float pRadius, float pHeight, lm::FVec3& pScale, float pMass)
+        {
+            return pThis.CreateCapsuleRigidBody(pRadius, pHeight, pScale, pMass);
         }
 
-    );
+        );
 }
