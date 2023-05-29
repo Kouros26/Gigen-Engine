@@ -203,22 +203,24 @@ void Application::Draw()
         UpdateGameObjectComponent(); //first because components can change the transform, destroy etc
     }
 
-    //shadowMapping ===================================================================================
+    Camera* currentCamera = useEditorCam || isEditor ? &editorCamera : GameObjectManager::GetCurrentCamera();
+    GameObjectManager::UpdateLightSpaceMatrix(currentCamera);
+
+    //shadowMapping =====================================================================================
     RENDERER.Enable(RD_DEPTH_TEST);
     ShadowMapping::BeginRender();
     RenderSceneShadows();
     ShadowMapping::EndRender();
     RENDERER.BindFrameBuffer(RD_FRAMEBUFFER, 0);
     RENDERER.Clear(RD_DEPTH_BUFFER_BIT);
+    //shadowMapping =====================================================================================
 
     mainShader.Use(); //start using the main shader
     RENDERER.ViewPort(window.GetVPX(), window.GetVPY(), window.GetVPWidth(), window.GetVPHeight());
     RenderScene();
     mainShader.UnUse(); //start using the main shader
-    //shadowMapping =====================================================================================
 
     //update audio with camera position
-    Camera* currentCamera = useEditorCam ? &editorCamera : GameObjectManager::GetCurrentCamera();
     AudioSource::UpdateAudioEngine(currentCamera);
 
     Lines::DrawLines(); //render debug lines or guizmos
@@ -229,7 +231,7 @@ void Application::Draw()
 
 void Application::RenderScene()
 {
-    GigRenderer::RENDERER.BindTexture(RD_TEXTURE_2D, ShadowMapping::GetdepthMap(), 0);
+    GigRenderer::RENDERER.BindTexture(RD_TEXTURE_2D, ShadowMapping::GetdepthMap(), 1);
     UpdateUniforms(); //then send the global uniforms
     UpdateLights(); //send the lights to the shader (lights are gameobject, so they have been updated)
 

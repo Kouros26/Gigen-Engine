@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "Vec3/FVec3.hpp"
+#include "Mat4/FMat4.hpp"
 #include "Skybox.h"
 
 class GameObject;
@@ -29,6 +30,8 @@ public:
 	static GameObject* CreateGameObject(GameObject&& other) noexcept = delete;
 	static GameObject* CreateGameObject(const GameObject* other);
 	static GameObject* CreateGameObject(GameObject*&& other) noexcept = delete;
+
+	static void UpdateLightSpaceMatrix(Camera* cam);
 
 	//rule of 5
 	GameObject& operator=(const GameObject& other) const;
@@ -66,10 +69,12 @@ public:
 	static GameObject* FindObjectByName(const std::string& name);
 	static GameObject* FindObjectById(unsigned int id);
 
-	static lm::FMat4 GetDirLightSpaceMatrix();
+	static lm::FMat4& GetDirLightSpaceMatrix();
 
 private:
 	static GameObject* AddGameObject(GameObject* object);
+
+	inline static lm::FMat4 lightSpaceMatrix;
 
 	inline static Skybox* skybox = nullptr;
 	inline static Camera* currentCamera;

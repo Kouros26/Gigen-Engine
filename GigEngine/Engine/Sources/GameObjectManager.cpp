@@ -208,21 +208,32 @@ GameObject* GameObjectManager::FindObjectById(unsigned int id)
 	return nullptr;
 }
 
-lm::FMat4 GameObjectManager::GetDirLightSpaceMatrix()
+void GameObjectManager::UpdateLightSpaceMatrix(Camera* cam)
 {
 	if (dirLights.size() == 0)
 	{
-		return lm::FMat4();
+		lightSpaceMatrix = lm::FMat4();
+		return;
 	}
 
 	DirLight* light = dirLights[0];
-	lm::FMat4 proj = lm::FMat4::Orthographic(-100, 100, 100, -100, 0, 100);
+	static lm::FMat4 proj = lm::FMat4::Orthographic(-300, 300, 300, -300, 0, 800);
+
+	lm::FVec3 offset = cam->GetTransform().GetWorldPosition();
+	offset += light->GetTransform().GetFront() * 50;
+	
 	lm::FMat4 view = lm::FMat4::LookAt(
-		light->GetTransform().GetWorldPosition(),
-		lm::FVec3(0),
+		offset,
+		cam->GetTransform().GetWorldPosition(),
 		lm::FVec3::Up
 	);
-	return proj * view;
+
+	lightSpaceMatrix = proj * view;
+}
+
+lm::FMat4& GameObjectManager::GetDirLightSpaceMatrix()
+{
+	return lightSpaceMatrix;
 }
 
 Camera* GameObjectManager::GetCurrentCamera()

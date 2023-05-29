@@ -3,8 +3,6 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "ResourceManager.h"
-#include "Renderer.h"
-#include "ShadowMapping.h"
 
 Model::Model(std::string const& pFilePath)
     :IResource(pFilePath)
@@ -61,7 +59,6 @@ Model& Model::operator=(Model&& other) noexcept
 
 void Model::Draw(Texture* texture) const
 {
-    //GigRenderer::RENDERER.BindTexture(RD_TEXTURE_2D, ShadowMapping::GetdepthMap(), 20);
     if (texture)
     {
         texture->Bind();
