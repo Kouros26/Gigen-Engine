@@ -14,6 +14,8 @@
 #include <filesystem>
 #include <array>
 
+#include "UIManager.h"
+
 void ProcessedObject::Clear()
 {
 	type.clear();
@@ -73,6 +75,20 @@ void Scene::SaveScene(const std::string& pSceneName)
 
 		ProcessedObject::Clear();
 	}
+
+	for (int i = 0; i < UIManager::GetUIElements().size(); i++)
+	{
+		GetUIValues(UIManager::GetUIElement(i));
+		ProcessedObject::Clear();
+	}
+
+
+	for (int i = 0; i < UIManager::GetWorldElements().size(); i++)
+	{
+		GetUIValues(UIManager::GetWorldElement(i));
+		ProcessedObject::Clear();
+	}
+
 
 	file.close();
 
@@ -284,6 +300,11 @@ void Scene::GetLightValues(DirLight* pGameObject) const
 	}
 
 	ProcessedObject::otherValues += ' ' + VecToString(pGameObject->GetColor()[0], pGameObject->GetColor()[1], pGameObject->GetColor()[2]);
+}
+
+void Scene::GetUIValues(UIElement* pUI) const
+{
+	//ProcessedObject::otherValues += 
 }
 
 void Scene::GetCameraValues(const Camera* pGameObject) const

@@ -17,7 +17,8 @@ public:
 	lm::FVec2 GetPosition();
 	lm::FVec2 GetSize();
 
-	_NODISCARD lm::FMat4& getMatrix();
+	[[nodiscard]] lm::FMat4& getMatrix();
+
 private:
 	lm::FVec2 position;
 	lm::FVec2 size;
