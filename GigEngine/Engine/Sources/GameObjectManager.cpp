@@ -25,11 +25,10 @@ GameObject*& GameObjectManager::GetGameObject(int i)
 
 void GameObjectManager::Cleanup()
 {
-    for (int i = 0; i < GameObjectManager::GetSize(); i++)
+    while (!gameObjects.empty())
     {
-        delete gameObjects[i];
+        RemoveGameObject(gameObjects[0]);
     }
-
     delete skybox;
 
     gameObjects.clear();
@@ -149,7 +148,9 @@ void GameObjectManager::RemoveGameObject(GameObject* object)
 
     if (object->GetChildrenCount() > 0)
         while (object->GetChildrenCount() > 0)
+        {
             RemoveGameObject(object->GetChild(0));
+        }
 
     const auto pointsTemp = std::ranges::find(pointLights, object);
 

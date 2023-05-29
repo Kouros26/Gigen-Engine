@@ -117,6 +117,7 @@ void GameObjectInspector::DrawGameObject(GameObject* pObject) const
 
 void GameObjectInspector::DrawUIElement(UIElement* pUI) const
 {
+    if (!pUI) return;
     DrawRectTransform(&pUI->GetRectTransform());
 
     bool isWorld = pUI->GetIsWorld();

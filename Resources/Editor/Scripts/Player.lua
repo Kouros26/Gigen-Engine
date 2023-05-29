@@ -4,7 +4,8 @@ local Player =
     transform = nil,
     rigidBody = nil,
     moveSpeed = 10,
-    sensitivity = 10,
+    sensitivity = 60,
+    jumpForce = 10
  } 
  
  function Player:Awake() 
@@ -24,34 +25,34 @@ local Player =
     Physics.Delegate("OnCollisionEnter")
     Physics.Delegate("OnCollisionExit")
 
-
-
-   
     if (self.transform == nil) then
         self.transform = self.owner:GetTransform()
     end
 
     if (self.rigidBody == nil) then
         self.rigidBody = self.owner:GetRigidBody()
-        self.rigidBody:SetAngularFactor(Vector3.new(0,1,0))
+        self.rigidBody:SetAngularFactor(Vector3.new(0,0,0))
     end
-
+    
     if (self.camera == nil) then
         self.camera = GameObjectManager.CreateCamera()
         self.owner:AddChild(self.camera)
-        self.camera:GetTransform():SetPosition(Vector3.new(0, 0, 0))
+        self.camera:GetTransform():SetPosition(self.transform:GetPosition())
     end
+
 
  end 
  
  function Player:Update(deltaTime) 
-    Move(deltaTime, self.moveSpeed, self.transform)
+    Move(deltaTime, self.moveSpeed, self.camera:GetTransform())
    
     Look(deltaTime, self.sensitivity, self.camera:GetTransform())
 
-    local rotation = self.transform:GetRotation()
-    rotation.y = self.camera:GetTransform():GetRotation().y
-    self.transform:SetRotation(rotation)
+    Jump(deltaTime, self.transform, self.jumpForce)
+
+
+    local position = self.camera:GetTransform():GetPosition()
+    self.transform:SetPosition(position)
 
  end
  
@@ -75,7 +76,7 @@ local Player =
     end
     
     rotation.y = rotation.y + mouseDelta.x * sensitivity * deltaTime
-    rotation.x = rotation.x + mouseDelta.y * sensitivity * deltaTime
+    rotation.x = rotation.x - mouseDelta.y * sensitivity * deltaTime
 
 
     transform:SetRotation(rotation)
@@ -104,6 +105,29 @@ local Player =
     transform:SetPosition(position)
     Debug.Log("moveDir: " .. tostring(moveDir))
 end
+
+function Jump(deltaTime, transform, jumpForce)
+    local jumpDir = Vector3.new(0)
+    if Inputs.GetKey(Keys.Space) then
+        jumpDir = jumpDir + transform:GetUp()
+    end
+    jumpDir = jumpDir:Normalize()
+    jumpDir = jumpDir * jumpForce * deltaTime
+
+    local position = transform:GetPosition()
+    position = position + jumpDir
+
+    transform:SetPosition(position)
+    Debug.Log("jumpDir: " .. tostring(jumpDir))
+    
+end
+
+
+
+
+
+
+
 
 function Player:OnCollisionEnter(otherActor)
     Debug.Log("OnCollisionEnter")
