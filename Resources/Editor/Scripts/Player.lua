@@ -47,7 +47,7 @@ local Player =
  function Player:Update(deltaTime) 
     local hit = HitResult.new()
     Physics.RayCast(self.transform:GetPosition(), -self.transform:GetUp() * 20, hit)
-    if(Vector3.Distance(self.transform:GetPosition(),hit.hitPoint) < 3) then
+    if(Vector3.Distance(self.transform:GetPosition(),hit.hitPoint) < 7) then
         self.isGrounded = true
     else
         self.isGrounded = false
@@ -58,6 +58,7 @@ local Player =
     Look(deltaTime, self)
 
     Jump(deltaTime, self)
+
 
  end
  
@@ -151,6 +152,7 @@ function Jump(deltaTime, this)
     
     local jumpDir = Vector3.new(0)
     if Inputs.GetKey(Keys.Space) then
+
         jumpDir = jumpDir + this.transform:GetUp()
     end
     jumpDir = jumpDir:Normalize()
