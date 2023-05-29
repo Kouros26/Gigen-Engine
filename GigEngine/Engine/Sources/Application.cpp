@@ -206,14 +206,13 @@ void Application::Draw()
     Camera* currentCamera = useEditorCam || isEditor ? &editorCamera : GameObjectManager::GetCurrentCamera();
     GameObjectManager::UpdateLightSpaceMatrix(currentCamera);
 
-    //shadowMapping =====================================================================================
+    //shadowMapping
     RENDERER.Enable(RD_DEPTH_TEST);
     ShadowMapping::BeginRender();
     RenderSceneShadows();
     ShadowMapping::EndRender();
     RENDERER.BindFrameBuffer(RD_FRAMEBUFFER, 0);
     RENDERER.Clear(RD_DEPTH_BUFFER_BIT);
-    //shadowMapping =====================================================================================
 
     mainShader.Use(); //start using the main shader
     RENDERER.ViewPort(window.GetVPX(), window.GetVPY(), window.GetVPWidth(), window.GetVPHeight());
