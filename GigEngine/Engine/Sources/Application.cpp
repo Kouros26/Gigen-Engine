@@ -101,6 +101,9 @@ void Application::Pause()
 void Application::Stop()
 {
 	isPause = false;
+
+	window.setCursorShow(true);
+
 	GameObjectManager::SetCurrentCamera(nullptr);
 	Scene::GetInstance().ReloadScene(Scene::GetInstance().GetCurrentSceneName());
 	isEditor = true;
@@ -134,6 +137,10 @@ bool Application::IsShowUI()
 }
 void Application::StartGame()
 {
+	if (!IsUsingEditorCam())
+	{
+		window.setCursorShow(false);
+	}
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		const GameObject* object = GameObjectManager::GetGameObject(i);
