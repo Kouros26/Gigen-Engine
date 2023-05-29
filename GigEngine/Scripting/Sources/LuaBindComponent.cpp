@@ -79,7 +79,11 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
             sol::resolve<void(const lm::FVec3&)const>(&RigidBody::SetLinearFactor),
             sol::resolve<void(const float)const>(&RigidBody::SetLinearFactor)
         ),
-        "SetAngularFactor", &RigidBody::SetAngularFactor,
+        "SetAngularFactor", sol::overload
+        (
+            sol::resolve<void(const lm::FVec3&)const>(&RigidBody::SetAngularFactor),
+            sol::resolve<void(const float)const>(&RigidBody::SetAngularFactor)
+        ),
         "GetLinearFactor", &RigidBody::GetLinearFactor,
         "GetAngularFactor", &RigidBody::GetAngularFactor,
         "IsTrigger", &RigidBody::IsTrigger,

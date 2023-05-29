@@ -75,6 +75,7 @@ public:
     void SetLinearFactor(const float pValue) const;
     void SetLinearFactor(const lm::FVec3& pValue) const;
     void SetAngularFactor(const float pValue) const;
+    void SetAngularFactor(const lm::FVec3& pValue) const;
     [[nodiscard]] lm::FVec3 GetLinearFactor() const;
     [[nodiscard]] lm::FVec3 GetAngularFactor() const;
     static bool IsTrigger();
@@ -97,5 +98,6 @@ public:
     void SetGravityEnabled(const bool pState) const;
     void ClearForces() const;
     void SetGravity(const lm::FVec3& pValue) const;
+    void LockAxisOfRotation(const lm::FVec3& pAxis) const;
     [[nodiscard]] lm::FVec3 GetGravity() const;
 };

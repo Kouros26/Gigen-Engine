@@ -193,7 +193,7 @@ void Application::InitMainShader()
 
 	nbLightLocation = mainShader.GetUniform("nbLights");
 }
-
+//
 void Application::Draw()
 {
 	ClearWindow();

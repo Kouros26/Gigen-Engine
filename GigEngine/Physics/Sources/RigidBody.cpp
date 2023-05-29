@@ -194,6 +194,11 @@ void RigidBody::SetAngularFactor(const float pValue) const
 	body->setAngularFactor(pValue);
 }
 
+void RigidBody::SetAngularFactor(const lm::FVec3& pValue) const
+{
+    body->setAngularFactor(btVector3(pValue.x, pValue.y, pValue.z));
+}
+
 lm::FVec3 RigidBody::GetLinearFactor() const
 {
 	return { body->getAngularFactor().x(), body->getAngularFactor().y(), body->getAngularFactor().z() };
@@ -312,6 +317,11 @@ void RigidBody::ClearForces() const
 void RigidBody::SetGravity(const lm::FVec3& pValue) const
 {
 	body->setGravity({ pValue.x, pValue.y, pValue.z });
+}
+
+void RigidBody::LockAxisOfRotation(const lm::FVec3& pAxis) const
+{
+	body->setAngularFactor({ pAxis.x, pAxis.y, pAxis.z });
 }
 
 lm::FVec3 RigidBody::GetGravity() const
