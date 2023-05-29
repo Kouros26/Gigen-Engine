@@ -4,7 +4,7 @@ local Player =
     transform = nil,
     rigidBody = nil,
     moveSpeed = 10,
-    sensitivity = 100,
+    sensitivity = 200,
     jumpForce = 10,
     isGrounded = false,
     jumpTimer = 0,
@@ -17,7 +17,6 @@ local Player =
     self.transform:SetScale(Vector3.new(1))
         
      self.owner:CreateSphereRigidBody(5, Vector3.new(1), 1)
-    --self.owner:CreateBoxRigidBody(Vector3.new(0.5),Vector3.new(1), 1)
     self.rigidBody = self.owner:GetRigidBody()
     self.rigidBody:SetAngularFactor(Vector3.new(0,1,0))
  end
@@ -47,24 +46,25 @@ local Player =
  
  function Player:Update(deltaTime) 
     local hit = HitResult.new()
-    Physics.RayCast(self.transform:GetPosition(), -self.transform:GetUp() * 10, hit)
+    Physics.RayCast(self.transform:GetPosition(), -self.transform:GetUp() * 20, hit)
     if(Vector3.Distance(self.transform:GetPosition(),hit.hitPoint) < 3) then
         self.isGrounded = true
+    else
+        self.isGrounded = false
     end
 
-
-    Move(deltaTime, self.moveSpeed, self.transform, self.camera, hit.hitPoint, self.isGrounded)
+    Move(deltaTime, self)
    
-    Look(deltaTime, self.sensitivity, self.camera:GetTransform())
+    Look(deltaTime, self)
 
-    Jump(deltaTime, self.transform, self.jumpForce, self.isGrounded, self.jumpTimer)
+    Jump(deltaTime, self)
 
  end
  
 
- function Look(deltaTime, sensitivity, transform)
+ function Look(deltaTime, this)
     local mouseDelta = Inputs.GetMousePos()
-    local rotation = transform:GetRotation()
+    local rotation = this.camera:GetTransform():GetRotation()
     if (mouseDelta.x == 0 and mouseDelta.y == 0 ) then
         return
     end
@@ -80,11 +80,11 @@ local Player =
         mouseDelta.y = -1
     end
     
-    rotation.y = rotation.y + mouseDelta.x * sensitivity * deltaTime
-    rotation.x = rotation.x - mouseDelta.y * sensitivity * deltaTime
+    rotation.y = rotation.y + mouseDelta.x * this.sensitivity * deltaTime
+    rotation.x = rotation.x - mouseDelta.y * this.sensitivity * deltaTime
 
 
-    transform:SetRotation(rotation)
+    this.camera:GetTransform():SetRotation(rotation)
  end
 
 function CalculateFront(camera)
@@ -115,68 +115,53 @@ end
 
 
 
- function Move(deltaTime, moveSpeed, transform, camera, groundPos, isGrounded)
-    
-
+ function Move(deltaTime, this)
 
     local moveDir = Vector3.new(0)
     if Inputs.GetKey(Keys.W) then
-        moveDir = moveDir + CalculateFront(camera)
+        moveDir = moveDir + CalculateFront(this.camera)
     elseif Inputs.GetKey(Keys.S) then
-        moveDir = moveDir - CalculateFront(camera)
+        moveDir = moveDir - CalculateFront(this.camera)
     end
     if Inputs.GetKey(Keys.A) then
-        moveDir = moveDir + CalculateRight(camera)
+        moveDir = moveDir + CalculateRight(this.camera)
     elseif Inputs.GetKey(Keys.D) then
-        moveDir = moveDir - CalculateRight(camera)
+        moveDir = moveDir - CalculateRight(this.camera)
     end
     moveDir = moveDir:Normalize()
-    moveDir = moveDir * moveSpeed * deltaTime
+    moveDir = moveDir * this.moveSpeed * deltaTime
 
-    local position = transform:GetPosition()
-    position = position + moveDir
-
-    if (groundPos ~= nil and isGrounded) then
-        position.y = groundPos.y + 5
-    end
+    moveDir.y = 0
     
 
-    transform:SetPosition(position)
+    this.transform:AddPosition(moveDir)
 
 end
 
-function Jump(deltaTime, transform, jumpForce, isGrounded, jumpTimer)
-    if (isGrounded == false and jumpTimer > 2) then
+function Jump(deltaTime, this)
+    if (this.isGrounded == false and this.jumpTimer > 2) then
         return
     end
 
     if (isGrounded == false) then
-        jumpTimer = jumpTimer + deltaTime
+        this.jumpTimer = this.jumpTimer + deltaTime
     else
-        jumpTimer = 0
+        this.jumpTimer = 0
     end
     
     local jumpDir = Vector3.new(0)
     if Inputs.GetKey(Keys.Space) then
-        isGrounded = false
-        jumpDir = jumpDir + transform:GetUp()
+        jumpDir = jumpDir + this.transform:GetUp()
     end
     jumpDir = jumpDir:Normalize()
-    jumpDir = jumpDir * jumpForce * deltaTime
+    jumpDir = jumpDir * this.jumpForce * deltaTime
 
-    local position = transform:GetPosition()
+    local position = this.transform:GetPosition()
     position = position + jumpDir
 
-    transform:SetPosition(position)
+    this.transform:SetPosition(position)
     
 end
-
-
-
-
-
-
-
 
 function OnCollisionEnter(otherActor)
     Debug.Log("OnCollisionEnter")
