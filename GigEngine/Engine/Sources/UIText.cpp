@@ -66,7 +66,7 @@ void UIText::Draw()
 		const auto [TextureID, Size, Bearing, Advance] = font->GetCharacter(c);
 
 		const float xpos = x + Bearing.x * size.x;
-		float ypos = y - (Size.y - Bearing.y) * size.y;
+		const float ypos = y - (Size.y - Bearing.y) * size.y;
 
 		const float w = Size.x * size.x;
 		const float h = Size.y * size.y;

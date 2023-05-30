@@ -37,7 +37,7 @@ void UIImage::Draw()
 {
 	GigRenderer::RENDERER.BindVertexArray(VAO);
 
-	lm::FVec2 size = GetRectTransform().GetSize();
+	const lm::FVec2 size = GetRectTransform().GetSize();
 	// iterate through all characters
 	std::string::const_iterator c;
 
