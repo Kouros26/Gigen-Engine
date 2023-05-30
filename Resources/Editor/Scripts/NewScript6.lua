@@ -13,11 +13,11 @@ local NewScript6 =
  end 
 
 
-    function NewScript6:OnTriggerEnter(other)
+    function OnTriggerEnter(other)
         Debug.Log("OnTriggerEnter")
     end
 
-    function NewScript6:OnTriggerExit(other)
+    function OnTriggerExit(other)
         Debug.Log("OnTriggerExit")
     end
 
