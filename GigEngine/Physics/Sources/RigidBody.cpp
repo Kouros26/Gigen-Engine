@@ -334,6 +334,8 @@ void RigidBody::SetGravityEnabled(const bool pState) const
 		body->setGravity({ 0,-9.81f,0, });
 }
 
+
+
 void RigidBody::ClearForces() const
 {
 	SetVelocity(0);
