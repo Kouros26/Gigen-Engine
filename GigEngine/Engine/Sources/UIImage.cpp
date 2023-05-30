@@ -1,6 +1,7 @@
 #include "UIImage.h"
 #include "Renderer.h"
 #include "Application.h"
+#include "ShadowMapping.h"
 #include "ResourceManager.h"
 
 using namespace GigRenderer;
@@ -56,6 +57,7 @@ void UIImage::Draw()
 		{ xpos + w, ypos + h,   1.0f, 0.0f }
 	};
 	// render glyph texture over quad
+
 	texture->Bind();
 	// update content of VBO memory
 	RENDERER.BindBuffer(GigRenderer::BufferType::VERTEX, VBO);
@@ -65,5 +67,5 @@ void UIImage::Draw()
 	RENDERER.DrawArray(GL_TRIANGLES, 0, 6);
 
 	RENDERER.BindVertexArray(0);
-	RENDERER.BindTexture(GL_TEXTURE_2D, 0);
+	RENDERER.BindTexture(GL_TEXTURE_2D, 0, RD_TEXTURE0);
 }

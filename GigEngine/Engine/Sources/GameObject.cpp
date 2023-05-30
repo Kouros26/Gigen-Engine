@@ -221,6 +221,16 @@ void GameObject::OnCollisionExit(const Collision& collision)
     }
 }
 
+void GameObject::OnTriggerEnter(const Collision& collision)
+{
+    std::cout << collision.other->GetName() << " with" << GetName() << std::endl;
+}
+
+void GameObject::OnTriggerExit(const Collision& collision)
+{
+    std::cout << collision.other->GetName() << " exited" << GetName() << std::endl;
+}
+
 void GameObject::UpdateRender() const
 {
     if (model && IsActive())

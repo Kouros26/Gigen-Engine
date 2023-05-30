@@ -61,7 +61,7 @@ void UIText::Draw()
 			{ xpos + w, ypos + h,   1.0f, 0.0f }
 		};
 		// render glyph texture over quad
-		RENDERER.BindTexture(GL_TEXTURE_2D, TextureID);
+		RENDERER.BindTexture(GL_TEXTURE_2D, TextureID, RD_TEXTURE0);
 		RENDERER.BindBuffer(GigRenderer::BufferType::VERTEX, font->GetVBO());
 		RENDERER.BufferSubData(GigRenderer::BufferType::VERTEX, 0, sizeof(vertices), vertices);
 		RENDERER.BindBuffer(GigRenderer::BufferType::VERTEX, 0);
@@ -70,5 +70,5 @@ void UIText::Draw()
 		x += (Advance >> 6) * size.x; // bitshift by 6 to get value in pixels (2^6 = 64)
 	}
 	RENDERER.BindVertexArray(0);
-	RENDERER.BindTexture(GL_TEXTURE_2D, 0);
+	RENDERER.BindTexture(GL_TEXTURE_2D, 0, RD_TEXTURE0);
 }

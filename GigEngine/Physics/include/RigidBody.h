@@ -8,7 +8,8 @@ enum class RBState
 {
     DYNAMIC,
     KINETIC,
-    STATIC
+    STATIC,
+    TRIGGER
 };
 
 enum class RigidBodyType
@@ -25,6 +26,8 @@ struct CollisionCallBacks
 {
     CollisionEnterCallBack onEnter;
     CollisionExitCallBack onExit;
+    CollisionEnterCallBack triggerEnter;
+    CollisionExitCallBack triggerExit;
 };
 
 class RigidBody
@@ -46,7 +49,7 @@ public:
     RigidBody(GameObject* pOwner);
     ~RigidBody();
 
-	void SetRBState(const RBState& pState) const;
+	void SetRBState(const RBState& pState);
 	void RemoveRBState(const RBState& pState) const;
 	void SetMotionState(CustomMotionState* pMotionState);
 
@@ -90,9 +93,10 @@ public:
     [[nodiscard]] CollisionCallBacks* GetCallBacks() const;
     RigidBodyType& GetShapeType();
     btScalar& GetMass();
-    int GetCollisionFlag() const;
+    [[nodiscard]] int GetCollisionFlag() const;
+    [[nodiscard]] int GetRBState() const;
     const lm::FVec3& GetScale();
-    btTransform GetTransfrom() const;
+    [[nodiscard]] btTransform GetTransfrom() const;
     void SetMass(const float pValue);
 	void SetScale(const lm::FVec3& pNewScale);
     void SetGravityEnabled(const bool pState) const;
