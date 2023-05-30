@@ -145,5 +145,11 @@ std::function<void(GameObject*)>& GigScripting::LuaBindComponent::getFunctionFro
     if (pInput.compare("OnCollisionExit") == 0)
         return delegateFunctions.OnCollisionExit;
 
+    if (pInput.compare("OnTriggerEnter") == 0)
+        return delegateFunctions.OnTriggerEnter;
+
+    if (pInput.compare("OnTriggerExit") == 0)
+        return delegateFunctions.OnTriggerExit;
+
     return delegateFunctions.defaultReturn;
 }

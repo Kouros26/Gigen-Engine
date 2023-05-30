@@ -3,11 +3,24 @@ local NewScript6 =
  } 
  
  function NewScript6:Start() 
- 
+    Physics.Delegate("OnTriggerEnter")
+    Physics.Delegate("OnTriggerExit")
+
  end 
  
  function NewScript6:Update(deltaTime) 
  
  end 
+
+
+    function NewScript6:OnTriggerEnter(other)
+        Debug.Log("OnTriggerEnter")
+    end
+
+    function NewScript6:OnTriggerExit(other)
+        Debug.Log("OnTriggerExit")
+    end
+
+
  
  return NewScript6
