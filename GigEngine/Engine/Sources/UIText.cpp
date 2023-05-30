@@ -36,10 +36,30 @@ void UIText::Draw()
 	// activate corresponding render state
 	RENDERER.BindVertexArray(font->GetVAO());
 
+	const lm::FVec2 size = GetRectTransform().GetSize();
+
 	float x = GetRectTransform().GetPosition().x;
 	float y = GetRectTransform().GetPosition().y;
 
-	const lm::FVec2 size = GetRectTransform().GetSize();
+	switch (GetRectTransform().GetAnchorX())
+	{
+	case AnchorX::CENTER:
+		x += (Application::GetWindow().GetVPWidth() / 2);
+		break;
+	case AnchorX::RIGHT:
+		x += Application::GetWindow().GetVPWidth();
+		break;
+	}
+
+	switch (GetRectTransform().GetAnchorY())
+	{
+	case AnchorY::CENTER:
+		y += (Application::GetWindow().GetVPHeight() / 2);
+		break;
+	case AnchorY::UP:
+		y += Application::GetWindow().GetVPHeight();
+		break;
+	}
 
 	for (const char c : text)
 	{

@@ -41,8 +41,28 @@ void UIImage::Draw()
 	// iterate through all characters
 	std::string::const_iterator c;
 
-	const float xpos = GetRectTransform().GetPosition().x;
-	const float ypos = GetRectTransform().GetPosition().y;
+	float xpos = GetRectTransform().GetPosition().x;
+	float ypos = GetRectTransform().GetPosition().y;
+
+	switch (GetRectTransform().GetAnchorX())
+	{
+	case AnchorX::CENTER:
+		xpos += (Application::GetWindow().GetVPWidth() / 2) - (size.x / 2);
+		break;
+	case AnchorX::RIGHT:
+		xpos += Application::GetWindow().GetVPWidth() - size.x;
+		break;
+	}
+
+	switch (GetRectTransform().GetAnchorY())
+	{
+	case AnchorY::CENTER:
+		ypos += (Application::GetWindow().GetVPHeight() / 2) - (size.y / 2);
+		break;
+	case AnchorY::UP:
+		ypos += Application::GetWindow().GetVPHeight() - size.y;
+		break;
+	}
 
 	const float w = size.x;
 	const float h = size.y;

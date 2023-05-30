@@ -163,6 +163,24 @@ void GameObjectInspector::DrawRectTransform(RectTransform* rectTransform) const
         {
             rectTransform->SetSize(lm::FVec2(scale[0], scale[1]));
         }
+
+        ImGui::Text("Anchor X"); ImGui::SameLine();
+        const char* itemsX[] = { "Left", "Center", "Right" };
+        int item_currentX = (int)rectTransform->GetAnchorX();
+        ImGui::Combo("##55", &item_currentX, itemsX, IM_ARRAYSIZE(itemsX));
+        if (item_currentX != (int)rectTransform->GetAnchorX())
+        {
+            rectTransform->SetAnchorX((AnchorX)item_currentX);
+        }
+
+        ImGui::Text("Anchor Y"); ImGui::SameLine();
+        const char* itemsY[] = { "Down", "Center", "Up" };
+        int item_currentY = (int)rectTransform->GetAnchorY();
+        ImGui::Combo("##56", &item_currentY, itemsY, IM_ARRAYSIZE(itemsY));
+        if (item_currentY != (int)rectTransform->GetAnchorY())
+        {
+            rectTransform->SetAnchorY((AnchorY)item_currentY);
+        }
     }
 }
 
