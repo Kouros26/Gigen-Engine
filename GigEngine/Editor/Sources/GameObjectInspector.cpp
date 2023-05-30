@@ -313,9 +313,9 @@ void GameObjectInspector::DrawTransform(Transform* transform) const
 
     if (ImGui::CollapsingHeader(ICON_TRANSFORM " Transform"))
     {
-        const lm::FVec3 rot = transform->GetWorldRotation();
-        const lm::FVec3 pos = transform->GetWorldPosition();
-        const lm::FVec3 scl = transform->GetWorldScale();
+        const lm::FVec3 rot = transform->GetLocalRotation();
+        const lm::FVec3 pos = transform->GetLocalPosition();
+        const lm::FVec3 scl = transform->GetLocalScale();
 
         float translation[] = { pos.x, pos.y, pos.z };
         float scale[] = { scl.x, scl.y, scl.z };
@@ -339,7 +339,7 @@ void GameObjectInspector::DrawTransform(Transform* transform) const
             {
                 LockCalculation(translation, pos);
             }
-            transform->SetWorldPosition(lm::FVec3(translation[0], translation[1], translation[2]));
+            transform->AssignLocalPosition(lm::FVec3(translation[0], translation[1], translation[2]));
         }
 
         ImGui::Text("Scale"); ImGui::SameLine();
@@ -356,7 +356,7 @@ void GameObjectInspector::DrawTransform(Transform* transform) const
             {
                 LockCalculation(scale, scl);
             }
-            transform->SetWorldScale(lm::FVec3(scale[0], scale[1], scale[2]));
+            transform->AssignLocalScale(lm::FVec3(scale[0], scale[1], scale[2]));
         }
 
         ImGui::Text("Rotation"); ImGui::SameLine();
@@ -373,7 +373,7 @@ void GameObjectInspector::DrawTransform(Transform* transform) const
             {
                 LockCalculation(rotation, rot);
             }
-            transform->SetWorldRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
+            transform->AssignLocalRotation(lm::FVec3(rotation[0], rotation[1], rotation[2]));
         }
     }
 }
