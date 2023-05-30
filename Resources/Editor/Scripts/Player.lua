@@ -5,7 +5,7 @@ local Player =
     rigidBody = nil,
     moveSpeed = 10,
     sensitivity = 200,
-    jumpForce = 10,
+    jumpForce = 20,
     isGrounded = false,
     jumpTimer = 0,
  } 
@@ -140,16 +140,19 @@ end
 end
 
 function Jump(deltaTime, this)
+    
     if (this.isGrounded == false and this.jumpTimer > 2) then
         return
     end
 
-    if (isGrounded == false) then
+    if (isGrounded == true) then
         this.jumpTimer = this.jumpTimer + deltaTime
     else
         this.jumpTimer = 0
     end
-    
+
+    this.rigidBody:SetGravity(Vector3.new(0,-5,0))
+
     local jumpDir = Vector3.new(0)
     if Inputs.GetKey(Keys.Space) then
 

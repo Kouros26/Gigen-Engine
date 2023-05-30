@@ -267,7 +267,7 @@ void WorldPhysics::CheckCollision()
             else
             {
                 if (callBacks->onExit)
-                    callBacks->onExit(Collision(go1, tempInfo->getContactPoint(i)));
+                    callBacks->onExit(Collision(go1,{ }));
             }
 
             if (tmp1->GetRBState() == btCollisionObject::CF_NO_CONTACT_RESPONSE)
