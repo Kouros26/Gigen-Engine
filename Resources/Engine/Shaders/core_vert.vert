@@ -13,7 +13,6 @@ uniform mat4 finalBonesMatrices[MAX_BONES];
 out vec3 fragNormal;
 out vec2 fragTexCoord;
 out vec3 fragPos;
-out vec3 fragViewPos;
 out vec4 FragPosLightSpace;
 
 uniform mat4 model;
@@ -40,7 +39,8 @@ void main() {
 	
 	if(totalPosition == vec4(0.0f))
 		totalPosition = vec4(inPosition,1.0f);
-	
+
+	fragPos = vec3(model * totalPosition);
     gl_Position = viewProj * model * totalPosition;
     fragNormal =  mat3(transpose(inverse(model))) * inNormal;
     fragTexCoord = inTexCoord;
