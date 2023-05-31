@@ -100,7 +100,7 @@ void Application::Pause()
         }
     }
 }
-//
+
 void Application::Stop()
 {
     isPause = false;

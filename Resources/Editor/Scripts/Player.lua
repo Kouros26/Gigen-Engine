@@ -3,11 +3,14 @@ local Player =
     camera = nil,
     transform = nil,
     rigidBody = nil,
-    moveSpeed = 10,
+    moveSpeed = 2,
     sensitivity = 200,
-    jumpForce = 20,
+    jumpForce = 10,
     isGrounded = false,
     jumpTimer = 0,
+    life = 3,
+    spwanPoint = Vector3.new(0,10,0),
+    toRespawn = false,
  } 
  
  function Player:Awake() 
@@ -33,12 +36,14 @@ local Player =
     if (self.rigidBody == nil) then
         self.rigidBody = self.owner:GetRigidBody()
         self.rigidBody:SetAngularFactor(Vector3.new(0,0,0))
+        self.rigidBody:SetGravity(Vector3.new(0,-0.25,0))
     end
     
     if (self.camera == nil) then
         self.camera = GameObjectManager.CreateCamera()
         self.owner:AddChild(self.camera)
         self.camera:GetTransform():SetPosition(Vector3.new(0, 0, 0))
+
     end
 
 
@@ -59,7 +64,14 @@ local Player =
 
     Jump(deltaTime, self)
 
+    Descend(deltaTime, self)
 
+    if (self.toRespawn == true) then
+        self.transform:SetPosition(self.spwanPoint)
+        self.toRespawn = false
+    end
+
+  
  end
  
 
@@ -147,11 +159,12 @@ function Jump(deltaTime, this)
 
     if (isGrounded == true) then
         this.jumpTimer = this.jumpTimer + deltaTime
+ 
+
     else
         this.jumpTimer = 0
     end
 
-    this.rigidBody:SetGravity(Vector3.new(0,-5,0))
 
     local jumpDir = Vector3.new(0)
     if Inputs.GetKey(Keys.Space) then
@@ -168,12 +181,35 @@ function Jump(deltaTime, this)
     
 end
 
+function Descend(deltaTime, this)
+    local descendDir = Vector3.new(0)
+    if Inputs.GetKey(Keys.LeftShift) then
+        descendDir = descendDir - this.transform:GetUp()
+    end
+    descendDir = descendDir:Normalize()
+    descendDir = descendDir * this.moveSpeed * deltaTime
+
+    local position = this.transform:GetPosition()
+    position = position + descendDir
+
+    this.transform:SetPosition(position)
+
+end
+
+
+
 function OnCollisionEnter(otherActor)
-    Debug.Log("OnCollisionEnter")
+    if (otherActor:GetName() == "Cube") then
+        Player.life = Player.life - 1
+        Player.toRespawn = true
+        if ( Player.life <= 0) then
+            Player.life = 3
+        end
+    end
 end
 
 function OnCollisionExit(otherActor)
-    Debug.Log("OnCollisionExit")
+
 end
  
  return Player
