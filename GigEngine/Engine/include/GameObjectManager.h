@@ -37,16 +37,16 @@ public:
 	GameObject& operator=(const GameObject& other) const;
 	GameObject& operator=(GameObject&& other) noexcept;
 
-	static GameObject* CreateSpotLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
-		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
-		float cutOff = 45, float outerCutOff = 90,
+	static GameObject* CreateSpotLight(float ambient = 0.0f, float diffuse = 0.5f, float specular = 0.5f,
+		float constant = 0.1f, float linear = 0.02f, float quadratic = 0.01f,
+		float cutOff = 10, float outerCutOff = 25,
 		const lm::FVec3& color = lm::FVec3(1));
 
-	static GameObject* CreatePointLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
-		float constant = 0.5f, float linear = 0.5f, float quadratic = 0.5f,
+	static GameObject* CreatePointLight(float ambient = 0.0f, float diffuse = 0.5f, float specular = 0.5f,
+		float constant = 0.1f, float linear = 0.02f, float quadratic = 0.01f,
 		const lm::FVec3& color = lm::FVec3(1));
 
-	static GameObject* CreateDirLight(float ambient = 0.5f, float diffuse = 0.5f, float specular = 0.5f,
+	static GameObject* CreateDirLight(float ambient = 0.0f, float diffuse = 0.5f, float specular = 0.5f,
 		const lm::FVec3& color = lm::FVec3(1));
 
 	static GameObject* CreateCamera();
