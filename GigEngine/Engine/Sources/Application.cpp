@@ -82,25 +82,25 @@ void Application::Play()
 
 void Application::Pause()
 {
-	isPause = !isPause;
-	for (int i = 0; i < GameObjectManager::GetSize(); i++)
-	{
-		GameObject* object = GameObjectManager::GetGameObject(i);
-		if (object->IsActive())
-		{
-			std::vector<AudioSource*> audio;
-			object->GetComponents<AudioSource>(audio);
-			for (AudioSource* s : audio)
-			{
-				if (isPause)
-					s->Pause();
-				else
-					s->UnPause();
-			}
-		}
-	}
+    isPause = !isPause;
+    for (int i = 0; i < GameObjectManager::GetSize(); i++)
+    {
+        GameObject* object = GameObjectManager::GetGameObject(i);
+        if (object->IsActive())
+        {
+            std::vector<AudioSource*> audio;
+            object->GetComponents<AudioSource>(audio);
+            for (AudioSource* s : audio)
+            {
+                if (isPause)
+                    s->Pause();
+                else
+                    s->UnPause();
+            }
+        }
+    }
 }
-
+//
 void Application::Stop()
 {
     isPause = false;

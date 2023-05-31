@@ -37,7 +37,8 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
         "SetWorldPosition", &Transform::SetWorldPosition,
         "SetWorldRotation", &Transform::SetWorldRotation,
         "SetWorldScale", &Transform::SetWorldScale,
-        "LookAt", &Transform::LookAt
+        "LookAt", &Transform::LookAt,
+        "GetMatrix", &Transform::MatrixGetter
 
     );
 
@@ -143,6 +144,12 @@ std::function<void(GameObject*)>& GigScripting::LuaBindComponent::getFunctionFro
 
     if (pInput.compare("OnCollisionExit") == 0)
         return delegateFunctions.OnCollisionExit;
+
+    if (pInput.compare("OnTriggerEnter") == 0)
+        return delegateFunctions.OnTriggerEnter;
+
+    if (pInput.compare("OnTriggerExit") == 0)
+        return delegateFunctions.OnTriggerExit;
 
     return delegateFunctions.defaultReturn;
 }

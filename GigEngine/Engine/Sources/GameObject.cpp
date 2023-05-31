@@ -80,8 +80,6 @@ GameObject::~GameObject()
 
     delete rigidBody;
 
-
-
     if (parent)
         parent->RemoveChild(*this);
 }
@@ -218,6 +216,22 @@ void GameObject::OnCollisionExit(const Collision& collision)
     if (GigScripting::LuaBindComponent::delegateFunctions.OnCollisionExit)
     {
         GigScripting::LuaBindComponent::delegateFunctions.OnCollisionExit(const_cast<Collision*>(&collision)->other);
+    }
+}
+
+void GameObject::OnTriggerEnter(const Collision& collision)
+{
+    if (GigScripting::LuaBindComponent::delegateFunctions.OnTriggerEnter)
+    {
+        GigScripting::LuaBindComponent::delegateFunctions.OnTriggerEnter(const_cast<Collision*>(&collision)->other);
+    }
+}
+
+void GameObject::OnTriggerExit(const Collision& collision)
+{
+    if (GigScripting::LuaBindComponent::delegateFunctions.OnTriggerExit)
+    {
+        GigScripting::LuaBindComponent::delegateFunctions.OnTriggerExit(const_cast<Collision*>(&collision)->other);
     }
 }
 
