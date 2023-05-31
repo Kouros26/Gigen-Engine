@@ -10,7 +10,7 @@ TEngine/Textures/default.png
 NLight
 W0.000000 0.000000 0.000000 -104.199997 -20.000000 0.000000 1.000000 1.000000 1.000000
 *GameObject
-NSphere
-W0.000000 34.599998 0.000000 0.000000 0.000000 0.000000 10.000000 10.000000 10.000000
-MEngine/Models/Basics/Sphere.FBX
-TEngine/Textures/default2.png
+NObject 27
+W0.000000 10.300000 0.000000 -90.000000 0.000000 0.000000 1.000000 1.000000 1.000000
+M../../../Resources/Engine/Models\Monke.fbx
+T../../../Resources/Engine/Textures\Monkey.png
