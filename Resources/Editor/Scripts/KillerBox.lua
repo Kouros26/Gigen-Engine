@@ -1,26 +1,26 @@
-local SpaceBox =
+local KillerBox =
 {
     rigidBody = nil,
     transform = nil,
 }
 
-function SpaceBox:Awake()
+function KillerBox:Awake()
 
-    self.owner:SetModel("Engine/Models/Basics/Sphere.FBX")
-    self.owner:SetName("SpaceBox")
+    self.owner:SetModel("Engine/Models/Basics/Cube.FBX")
+    self.owner:SetName("KillerBox")
 
     self.transform = self.owner:GetTransform()
-    self.transform:SetPosition(Vector3.new(10, 10, 10))
+    self.transform:SetPosition(Vector3.new(-10, 10, -10))
     self.transform:SetRotation(Vector3.new(0))
     self.transform:SetScale(Vector3.new(1))
         
-    self.owner:CreateSphereRigidBody(1.5, Vector3.new(1), 1)
+    self.owner:CreateBoxRigidBody(Vector3.new(1), Vector3.new(1), 1)
     self.rigidBody = self.owner:GetRigidBody()
     self.rigidBody:SetGravity(Vector3.new(0,0,0))
 end
 
 
-function SpaceBox:Start()
+function KillerBox:Start()
 
     if (self.transform == nil) then
         self.transform = self.owner:GetTransform()
@@ -33,13 +33,11 @@ function SpaceBox:Start()
     
 end
 
-function SpaceBox:Update()
+function KillerBox:Update()
     
     self.rigidBody:SetAngularVelocity(Vector3.new(0.1,0.75,0.5))
-    
-    if(self.rigidBody ~= nil) then
-    end
+
 end
 
-return SpaceBox
+return KillerBox
 

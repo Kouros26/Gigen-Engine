@@ -68,6 +68,11 @@ local Player =
 
     Shoot(deltaTime, self)
 
+    if (self.toRespawn == true) then
+        self.transform:SetPosition(self.spwanPoint)
+        self.toRespawn = false
+    end
+
   
  end
  
@@ -212,6 +217,11 @@ end
 
 
 function OnCollisionEnter(otherActor)
+    if(otherActor:GetName() == "KillerBox") then
+        Player.life = Player.life - 1
+        Player.toRespawn = true
+        
+    end
 end
 
 function OnCollisionExit(otherActor)
