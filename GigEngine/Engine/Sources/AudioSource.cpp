@@ -64,7 +64,7 @@ std::string AudioSource::GetType()
 
 void AudioSource::UpdateAudioEngine(Camera* cam)
 {
-    if (engine)
+    if (engine && cam)
     {
         lm::FVec3 pos = cam->GetTransform().GetWorldPosition();
         lm::FVec3 dir = -cam->GetFront();
