@@ -17,7 +17,7 @@ C1 GigScripting::Behaviour Player
 *GameObject
 NCube
 W10.000000 10.000000 10.000000 0.000000 0.000000 0.000000 1.000000 1.000000 1.000000
-Rbox 0.500000 0.500000 0.500000 1.000000 1.000000 1.000000 1.000000 false 0
+Rbox 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000 false 0
 C1 GigScripting::Behaviour SpaceBox 
 MEngine/Models/Basics/Cube.FBX
 TEngine/Textures/default2.png

@@ -3,7 +3,7 @@ local Player =
     camera = nil,
     transform = nil,
     rigidBody = nil,
-    moveSpeed = 2,
+    moveSpeed = 5,
     sensitivity = 200,
     jumpForce = 10,
     isGrounded = false,
@@ -66,10 +66,7 @@ local Player =
 
     Descend(deltaTime, self)
 
-    if (self.toRespawn == true) then
-        self.transform:SetPosition(self.spwanPoint)
-        self.toRespawn = false
-    end
+    Shoot(deltaTime, self)
 
   
  end
@@ -126,6 +123,22 @@ function CalculateRight(camera)
     return right:Normalize()    
 end
 
+
+function Shoot(deltaTime, this)
+    if Inputs.GetKey(Keys.F) then
+       
+        local hit = HitResult.new()
+        
+        Physics.RayCast(this.camera:GetTransform():GetWorldPosition(), this.camera:GetTransform():GetWorldPosition() + CalculateFront(this.camera) * 100, hit, RayCastDebug.OneFrame, 15)
+        Debug.Log("Raycast")
+
+        if(hit.hitObject ~= nil) then
+            hit.hitObject:GetRigidBody():AddForce(CalculateFront(this.camera) * 20)
+            Debug.Log(hit.hitObject:GetName())
+        end
+    end
+    
+end
 
 
  function Move(deltaTime, this)
@@ -199,13 +212,6 @@ end
 
 
 function OnCollisionEnter(otherActor)
-    if (otherActor:GetName() == "Cube") then
-        Player.life = Player.life - 1
-        Player.toRespawn = true
-        if ( Player.life <= 0) then
-            Player.life = 3
-        end
-    end
 end
 
 function OnCollisionExit(otherActor)

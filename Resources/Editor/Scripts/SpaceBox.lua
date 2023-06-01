@@ -31,7 +31,7 @@ end
 
 function SpaceBox:Update()
     
-    self.rigidBody:SetAngularVelocity(Vector3.new(0,0.75,0))
+    self.rigidBody:SetAngularVelocity(Vector3.new(0.1,0.75,0.5))
     
     if(self.rigidBody ~= nil) then
     end
