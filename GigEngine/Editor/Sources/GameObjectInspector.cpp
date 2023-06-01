@@ -988,10 +988,13 @@ void GameObjectInspector::DrawAnimationsComponent(GameObject* pObject) const
 			{
 				if (ImGui::CollapsingHeader(states[j].stateName.c_str()))
 				{
-					ImGui::SetCursorPosX(50);
-					ImGui::BeginGroup();
-					ImGui::Text(states[j].stateAnim->GetFilePath().c_str());
-					ImGui::EndGroup();
+					if (states[j].stateAnim) 
+					{
+						ImGui::SetCursorPosX(50);
+						ImGui::BeginGroup();
+						ImGui::Text(states[j].stateAnim->GetFilePath().c_str());
+						ImGui::EndGroup();
+					}
 				}
 
 				if (ImGui::IsItemClicked(1))
