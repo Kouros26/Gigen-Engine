@@ -96,7 +96,7 @@ public:
     [[nodiscard]] int GetCollisionFlag() const;
     [[nodiscard]] int GetRBState() const;
     const lm::FVec3& GetScale();
-    [[nodiscard]] btTransform GetTransfrom() const;
+    [[nodiscard]] btTransform& GetTransfrom();
     void SetMass(const float pValue);
 	void SetScale(const lm::FVec3& pNewScale);
     void SetGravityEnabled(const bool pState) const;

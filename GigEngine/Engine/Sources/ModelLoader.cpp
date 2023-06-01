@@ -94,7 +94,6 @@ void ModelLoader::ProcessBones(const aiMesh* pMesh, const aiScene* pScene, Mesh*
 
 		if (!boneInfo.contains(boneName))
 		{
-			std::cout << boneName << " : " << boneCounter << std::endl;
 			BoneInfo newBoneInfo;
 			newBoneInfo.id = boneCounter;
 			newBoneInfo.offset = AIMat4toFMat4(pMesh->mBones[boneIndex]->mOffsetMatrix);

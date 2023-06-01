@@ -147,6 +147,9 @@ void Application::StartGame()
 
 		if (object->IsActive())
 		{
+			if (object->GetRigidBody())
+				object->GetRigidBody()->GetRigidBody()->setActivationState(DISABLE_DEACTIVATION);
+
 			for (int j = 0; j < object->GetComponentCount(); j++)
 				object->GetComponentByID(j)->Start();
 		}
@@ -162,6 +165,7 @@ void Application::Run()
 	if (!isEditor && !isPause)
 		WorldPhysics::GetInstance().UpdatePhysics(Time::GetDeltaTime());
 
+	else
 	WorldPhysics::GetInstance().DrawDebug();
 }
 
@@ -283,6 +287,9 @@ void Application::UpdateGameObjectComponent()
 	for (int i = 0; i < GameObjectManager::GetSize(); i++)
 	{
 		const GameObject* object = GameObjectManager::GetGameObject(i);
+
+		if (object->GetName() == "Monkey")
+			std::cout << "Test";
 		object->UpdateComponents();
 	}
 

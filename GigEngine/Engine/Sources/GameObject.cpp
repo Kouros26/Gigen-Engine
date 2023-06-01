@@ -49,7 +49,13 @@ GameObject::GameObject(const GameObject& other)
         AddChild(*GameObjectManager::CreateGameObject(*child));
 
     if (other.model != nullptr)
+    {
         model = ResourceManager::Get<Model>(other.model->GetFilePath());
+
+        if (other.texture != nullptr)
+            texture = ResourceManager::Get<Texture>(other.texture->GetFilePath());
+    }
+
 }
 
 GameObject& GameObject::operator=(const GameObject& other)
@@ -94,7 +100,7 @@ void GameObject::CreateBoxRigidBody(const lm::FVec3& halfExtents = { 1.0f }, con
 {
     delete rigidBody;
 
-    rigidBody = new BoxRigidBody(halfExtents, scale, transform.GetWorldPosition(), mass, this);
+    rigidBody = new BoxRigidBody(halfExtents, transform.GetWorldScale(), transform.GetWorldPosition(), mass, this);
     rigidBody->GetShapeType() = RigidBodyType::BOX;
     transform.SetOwnerRigidBody(rigidBody);
 }
@@ -103,7 +109,7 @@ void GameObject::CreateCapsuleRigidBody(float radius, float height, const lm::FV
 {
     delete rigidBody;
 
-    rigidBody = new CapsuleRigidBody(radius, height, scale, transform.GetWorldPosition(), mass, this);
+    rigidBody = new CapsuleRigidBody(radius, height, transform.GetWorldScale(), transform.GetWorldPosition(), mass, this);
     rigidBody->GetShapeType() = RigidBodyType::CAPSULE;
     transform.SetOwnerRigidBody(rigidBody);
 }
@@ -112,7 +118,7 @@ void GameObject::CreateSphereRigidBody(float radius, const lm::FVec3& scale, flo
 {
     delete rigidBody;
 
-    rigidBody = new SphereRigidBody(radius, scale, transform.GetWorldPosition(), mass, this);
+    rigidBody = new SphereRigidBody(radius, transform.GetWorldScale(), transform.GetWorldPosition(), mass, this);
     rigidBody->GetShapeType() = RigidBodyType::SPHERE;
     transform.SetOwnerRigidBody(rigidBody);
 }

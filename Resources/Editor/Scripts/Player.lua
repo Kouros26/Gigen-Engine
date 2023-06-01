@@ -4,7 +4,7 @@ local Player =
     transform = nil,
     rigidBody = nil,
     moveSpeed = 5,
-    sensitivity = 200,
+    sensitivity = 400,
     jumpForce = 10,
     isGrounded = false,
     jumpTimer = 0,
@@ -14,12 +14,6 @@ local Player =
  } 
  
  function Player:Awake() 
-    self.transform = self.owner:GetTransform()
-    self.transform:SetPosition(Vector3.new(0, 10, 0))
-    self.transform:SetRotation(Vector3.new(0))
-    self.transform:SetScale(Vector3.new(1))
-        
-     self.owner:CreateSphereRigidBody(5, Vector3.new(1), 1)
     self.rigidBody = self.owner:GetRigidBody()
     self.rigidBody:SetAngularFactor(Vector3.new(0,1,0))
  end

@@ -4,7 +4,8 @@
 #include "Mat3/FMat3.hpp"
 
 RigidBody::RigidBody(GameObject* pOwner)
-	: owner(pOwner) {}
+	: owner(pOwner)
+{}
 
 RigidBody::~RigidBody()
 {
@@ -309,7 +310,7 @@ const lm::FVec3& RigidBody::GetScale()
 	return scale;
 }
 
-btTransform RigidBody::GetTransfrom() const
+btTransform& RigidBody::GetTransfrom()
 {
 	return transform;
 }

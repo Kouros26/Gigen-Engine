@@ -217,7 +217,7 @@ GameObject* GameObjectManager::FindObjectById(unsigned int id)
 
 void GameObjectManager::UpdateLightSpaceMatrix(Camera* cam)
 {
-	if (dirLights.size() == 0)
+	if (dirLights.empty() || !cam)
 	{
 		lightSpaceMatrix = lm::FMat4();
 		return;
@@ -228,8 +228,8 @@ void GameObjectManager::UpdateLightSpaceMatrix(Camera* cam)
 
 	lm::FVec3 offset = cam->GetTransform().GetWorldPosition();
 	offset += light->GetTransform().GetFront() * 50;
-	
-	lm::FMat4 view = lm::FMat4::LookAt(
+
+	const lm::FMat4 view = lm::FMat4::LookAt(
 		offset,
 		cam->GetTransform().GetWorldPosition(),
 		lm::FVec3::Up
@@ -266,17 +266,13 @@ Skybox* GameObjectManager::GetSkyBox()
 void GameObjectManager::SendLightsToShader()
 {
     for (int i = 0; i < dirLights.size(); i++)
-    {
         dirLights[i]->SendToShader(i, 0);
-    }
+
     for (int i = 0; i < pointLights.size(); i++)
-    {
         pointLights[i]->SendToShader(i + dirLights.size(), 1);
-    }
+
     for (int i = 0; i < spotLights.size(); i++)
-    {
         spotLights[i]->SendToShader(i + dirLights.size() + pointLights.size(), 2);
-    }
 }
 
 int GameObjectManager::GetDirLightSize()

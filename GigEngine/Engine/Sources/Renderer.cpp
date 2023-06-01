@@ -331,7 +331,7 @@ void Renderer::SetupBuffer(const Buffer& pVBO, const Buffer& pEBO, const BufferV
 	VertexAttribPointer(2, 2, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(6 * sizeof(float)));
 
 	EnableVertexAttribArray(3);       // id
-	VertexAttribPointer(3, 4, RD_INT, RD_FALSE, 16 * sizeof(float), (void*)(8 * sizeof(float)));
+	VertexAttribPointer(3, 4, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(8 * sizeof(float)));
 
 	EnableVertexAttribArray(4);       // weight
 	VertexAttribPointer(4, 4, RD_FLOAT, RD_FALSE, 16 * sizeof(float), (void*)(12 * sizeof(float)));

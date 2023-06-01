@@ -463,6 +463,10 @@ void Scene::ProcessRigidBody(const std::string& pLine, GameObject* pOutGameObjec
 			break;
 		}
 	}
+
+	const btQuaternion quat( lm::degreesToRadians(pOutGameObject->GetTransform().GetWorldRotation().y), lm::degreesToRadians(pOutGameObject->GetTransform().GetWorldRotation().x), lm::degreesToRadians(pOutGameObject->GetTransform().GetWorldRotation().z) );
+	pOutGameObject->GetRigidBody()->GetTransfrom().setRotation(quat);
+	pOutGameObject->GetRigidBody()->GetRigidBody()->setWorldTransform(pOutGameObject->GetRigidBody()->GetTransfrom());
 }
 
 void Scene::ProcessComponents(const std::string& pLine, GameObject* pOutGameObject)

@@ -6,9 +6,9 @@ local SpaceBox =
 
 function SpaceBox:Awake()
     self.transform = self.owner:GetTransform()
-    self.transform:SetPosition(Vector3.new(10, 10, 10))
-    self.transform:SetRotation(Vector3.new(0))
-    self.transform:SetScale(Vector3.new(1))
+    -- self.transform:SetPosition(Vector3.new(10, 10, 10))
+    -- self.transform:SetRotation(Vector3.new(0))
+    -- self.transform:SetScale(Vector3.new(1))
         
     self.owner:CreateBoxRigidBody(Vector3.new(1), Vector3.new(1),1 )
     self.rigidBody = self.owner:GetRigidBody()
