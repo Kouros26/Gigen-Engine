@@ -11,11 +11,20 @@ local Player =
     life = 3,
     spwanPoint = Vector3.new(0,10,0),
     toRespawn = false,
+    ShootSound = nil,
+    isSoundPlaying = false,
  } 
  
  function Player:Awake() 
     self.rigidBody = self.owner:GetRigidBody()
     self.rigidBody:SetAngularFactor(Vector3.new(0,1,0))
+
+    self.ShootSound = self.owner:AddAudioSource()
+    self.ShootSound:SetAudio("Engine/Audio/shot.mp3")
+    self.ShootSound:SetLoop(false)
+    self.ShootSound:SetVolume(0.5)
+    self.ShootSound:PlayOnStart(false)
+    self.ShootSound:Set3D(true)
  end
  
  
@@ -40,6 +49,15 @@ local Player =
 
     end
 
+    if (self.ShootSound == nil) then
+        self.ShootSound = self.owner:GetAudioSource(0)
+        self.ShootSound:SetAudio("Engine/Audio/shot.mp3")
+        self.ShootSound:SetLoop(false)
+        self.ShootSound:SetVolume(0.5)
+        self.ShootSound:PlayOnStart(false)
+        self.ShootSound:Set3D(true)
+    end
+
 
  end 
  
@@ -62,6 +80,15 @@ local Player =
 
     Shoot(deltaTime, self)
 
+    if (self.toRespawn == true) then
+        self.transform:SetPosition(self.spwanPoint)
+        self.toRespawn = false
+    end
+
+    if (self.isSoundPlaying == true) then
+        self.ShootSound:Play()
+        self.isSoundPlaying = false
+    end
   
  end
  
@@ -130,6 +157,8 @@ function Shoot(deltaTime, this)
             hit.hitObject:GetRigidBody():AddForce(CalculateFront(this.camera) * 20)
             Debug.Log(hit.hitObject:GetName())
         end
+            this.isSoundPlaying = true
+     
     end
     
 end
@@ -206,6 +235,11 @@ end
 
 
 function OnCollisionEnter(otherActor)
+    if(otherActor:GetName() == "KillerBox") then
+        Player.life = Player.life - 1
+        Player.toRespawn = true
+        
+    end
 end
 
 function OnCollisionExit(otherActor)

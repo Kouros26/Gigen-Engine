@@ -1,9 +1,9 @@
 #pragma once
 #include <string>
-
 #include "AudioSource.h"
 #include "Camera.h"
 #include "Light.h"
+#include "UIElement.h"
 
 namespace formatting
 {
@@ -53,6 +53,7 @@ private:
 	void GetValues(GameObject* pGameObject);
 	void GetAudioValues(AudioSource* pAudioSource) const;
 	void GetLightValues(DirLight* pGameObject) const;
+	void GetUIValues(UIElement* pUI) const;
 	void GetCameraValues(const Camera* pGameObject) const;
 	bool IsLight(const std::string& pType);
 

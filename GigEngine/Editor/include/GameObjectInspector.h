@@ -49,6 +49,7 @@ private:
 	void DrawAddComponent(GameObject* pObject) const;
 	void DrawScriptsComponent(GameObject* pObject) const;
 	void DrawAudiosComponent(GameObject* pObject) const;
+	void DrawAnimationsComponent(GameObject* pObject) const;
 
 	void DrawDropTarget(GameObject* pObject) const;
 

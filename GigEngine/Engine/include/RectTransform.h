@@ -37,7 +37,8 @@ public:
 	lm::FVec2 GetPosition();
 	lm::FVec2 GetSize();
 
-	_NODISCARD lm::FMat4& getMatrix();
+	[[nodiscard]] lm::FMat4& getMatrix();
+
 private:
 	AnchorY anchorY = AnchorY::DOWN;
 	AnchorX anchorX = AnchorX::LEFT;
