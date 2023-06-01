@@ -3,8 +3,8 @@
 #include "Mat3/FMat3.hpp"
 
 AnimationState::AnimationState(Animation* pAnimation, const std::string& pStateName, AnimationState* pParentState,
-                               float ptimeToTransitionToThisState)
-		: stateName(pStateName), stateAnim(pAnimation), parent(pParentState), timeToTransitionToThisState(ptimeToTransitionToThisState)
+                               float pTimeToTransitionToThisState)
+		: stateName(pStateName), stateAnim(pAnimation), parent(pParentState), timeToTransitionToThisState(pTimeToTransitionToThisState)
 {
 	if (parent)
 		parent->children.push_back(*this);
@@ -62,6 +62,56 @@ void Animator::Update(float pDeltaTime)
 Component* Animator::Clone(GameObject* newGameObject)
 {
 	return new Animator(newGameObject);
+}
+
+std::string Animator::GetType()
+{
+	const std::string type(typeid(this).name());
+	return type.substr(6, type.size() - 16);
+}
+
+void Animator::AddState(Animation* pAnimation, const std::string& pStateName, const std::string& pParentStateName,
+                        float pTimeToTransitionToThisState)
+{
+	if (pParentStateName == rootState.stateName)
+		AnimationState newState{ pAnimation, pStateName, &rootState, pTimeToTransitionToThisState };
+
+	else if (AnimationState* temp = FindState(pParentStateName, &rootState))
+		AnimationState newState{ pAnimation, pStateName, temp, pTimeToTransitionToThisState };
+}
+
+void Animator::RemoveState(const std::string& pStateName)
+{
+	if (pStateName == rootState.stateName)
+		return;
+
+	if (AnimationState* temp = FindState(pStateName, &rootState))
+	{
+		for (int j = 0; j < temp->parent->children.size(); j++)
+		{
+			if (temp->parent->children[j].stateName == temp->stateName)
+				temp->parent->children.erase(temp->parent->children.begin() + j);
+		}
+
+		temp->~AnimationState();
+	}
+}
+
+AnimationState* Animator::FindState(const std::string& pTargetState, AnimationState* pProcessedState)
+{
+	if (pProcessedState->stateName == pTargetState)
+		return pProcessedState;
+
+	for (auto& i : pProcessedState->children)
+		if (AnimationState* temp = FindState(pTargetState, &i); temp != nullptr)
+			return temp;
+
+	return nullptr;
+}
+
+void Animator::MapStates(std::vector<AnimationState>& pOutStates)
+{
+	RecursiveMapping(pOutStates, &rootState);
 }
 
 void Animator::StateChange(const std::string& pNewStateName)
@@ -152,6 +202,14 @@ void Animator::PerformCrossFade()
 					transitionTimer / targetedState->timeToTransitionToThisState);
 	currentStateNode.localScl = lm::FVec3::Lerp(currentStateNode.localScl, targetedStateNode.localScl,
 		transitionTimer / targetedState->timeToTransitionToThisState);
+}
+
+void Animator::RecursiveMapping(std::vector<AnimationState>& pOutStates, AnimationState* pProcessedState)
+{
+	pOutStates.push_back(*pProcessedState);
+
+	for (int i = 0; i < pProcessedState->children.size(); i++)
+		RecursiveMapping(pOutStates, &pProcessedState->children[i]);
 }
 
 std::vector<lm::FMat4>& Animator::GetFinalBoneMatrices()
