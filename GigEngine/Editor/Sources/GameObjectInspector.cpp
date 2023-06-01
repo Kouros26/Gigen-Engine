@@ -730,6 +730,11 @@ void GameObjectInspector::DrawAddComponent(GameObject * pObject) const
 	{
 		ImGui::SeparatorText("Components");
 
+		if (ImGui::MenuItem(ICON_MD_ANIMATION " Animator"))
+		{
+			pObject->AddComponent<Animator>();
+		}
+
 		if (ImGui::MenuItem(ICON_MD_AUDIO_FILE " Audio source"))
 		{
 			pObject->AddComponent<AudioSource>();
@@ -940,7 +945,7 @@ void GameObjectInspector::DrawAnimationsComponent(GameObject* pObject) const
 	if (animators.empty())
 		return;
 
-	const char* temp = ICON_MD_AUDIO_FILE " Animator##";
+	const char* temp = ICON_MD_ANIMATION " Animator##";
 
 	for (int i = 0; i < animators.size(); i++)
 	{
