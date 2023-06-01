@@ -16,9 +16,6 @@ local Player =
  } 
  
  function Player:Awake() 
-    self.rigidBody = self.owner:GetRigidBody()
-    self.rigidBody:SetAngularFactor(Vector3.new(0,1,0))
-
     self.ShootSound = self.owner:AddAudioSource()
     self.ShootSound:SetAudio("Engine/Audio/shot.mp3")
     self.ShootSound:SetLoop(false)
