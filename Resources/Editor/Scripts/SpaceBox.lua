@@ -10,7 +10,7 @@ function SpaceBox:Awake()
     self.transform:SetRotation(Vector3.new(0))
     self.transform:SetScale(Vector3.new(1))
         
-    self.owner:CreateBoxRigidBody(Vector3.new(0.5), Vector3.new(1),1 )
+    self.owner:CreateBoxRigidBody(Vector3.new(1), Vector3.new(1),1 )
     self.rigidBody = self.owner:GetRigidBody()
     self.rigidBody:SetGravity(Vector3.new(0,0,0))
 end
