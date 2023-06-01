@@ -15,7 +15,7 @@ struct AnimationState
 
     float timeToTransitionToThisState;
 
-    AnimationState(Animation* pAnimation, const std::string& pStateName, AnimationState* pParentState, float ptimeToTransitionToThisState);
+    AnimationState(Animation* pAnimation, const std::string& pStateName, AnimationState* pParentState, float pTimeToTransitionToThisState);
 };
 
 struct HandledNode
@@ -55,6 +55,14 @@ public:
 
 	Component* Clone(GameObject* newGameObject) override;
 
+    std::string GetType() override;
+
+    void AddState(Animation* pAnimation, const std::string& pStateName, const std::string& pParentState, float pTimeToTransitionToThisState);
+    void RemoveState(const std::string& pStateName);
+
+    AnimationState* FindState(const std::string& pTargetState, AnimationState* pProcessedState);
+    void MapStates(std::vector<AnimationState>& pOutStates);
+
     void StateChange(const std::string& pNewStateName);
 
     AnimationState& GetAnimationStateRoot();
@@ -65,4 +73,6 @@ private:
 
 	void CalculateBoneTransform(const NodeData* pNode, const lm::FMat4& pParentTransform);
     void PerformCrossFade();
+
+    void RecursiveMapping(std::vector<AnimationState>& pOutStates, AnimationState* pProcessedState);
 };

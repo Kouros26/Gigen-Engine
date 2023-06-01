@@ -217,13 +217,20 @@ GameObject* GameObjectManager::FindObjectById(unsigned int id)
 
 void GameObjectManager::UpdateLightSpaceMatrix(Camera* cam)
 {
-	if (dirLights.size() == 0)
+	if (dirLights.size() == 0 || !cam)
 	{
 		lightSpaceMatrix = lm::FMat4();
 		return;
 	}
 
 	DirLight* light = dirLights[0];
+
+    if (!light->IsActive()) 
+    {
+        lightSpaceMatrix = lm::FMat4();
+        return;
+    }
+
 	static lm::FMat4 proj = lm::FMat4::Orthographic(-300, 300, 300, -300, 0, 800);
 
 	lm::FVec3 offset = cam->GetTransform().GetWorldPosition();
