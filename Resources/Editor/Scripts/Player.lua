@@ -11,6 +11,8 @@ local Player =
     life = 3,
     spwanPoint = Vector3.new(0,10,0),
     toRespawn = false,
+    ShootSound = nil,
+    isSoundPlaying = false,
  } 
  
  function Player:Awake() 
@@ -19,9 +21,16 @@ local Player =
     self.transform:SetRotation(Vector3.new(0))
     self.transform:SetScale(Vector3.new(1))
         
-     self.owner:CreateSphereRigidBody(5, Vector3.new(1), 1)
+    self.owner:CreateSphereRigidBody(5, Vector3.new(1), 1)
     self.rigidBody = self.owner:GetRigidBody()
     self.rigidBody:SetAngularFactor(Vector3.new(0,1,0))
+
+    self.ShootSound = self.owner:AddAudioSource()
+    self.ShootSound:SetAudio("Engine/Audio/shot.mp3")
+    self.ShootSound:SetLoop(false)
+    self.ShootSound:SetVolume(0.5)
+    self.ShootSound:PlayOnStart(false)
+    self.ShootSound:Set3D(true)
  end
  
  
@@ -44,6 +53,15 @@ local Player =
         self.owner:AddChild(self.camera)
         self.camera:GetTransform():SetPosition(Vector3.new(0, 0, 0))
 
+    end
+
+    if (self.ShootSound == nil) then
+        self.ShootSound = self.owner:GetAudioSource(0)
+        self.ShootSound:SetAudio("Engine/Audio/shot.mp3")
+        self.ShootSound:SetLoop(false)
+        self.ShootSound:SetVolume(0.5)
+        self.ShootSound:PlayOnStart(false)
+        self.ShootSound:Set3D(true)
     end
 
 
@@ -73,6 +91,10 @@ local Player =
         self.toRespawn = false
     end
 
+    if (self.isSoundPlaying == true) then
+        self.ShootSound:Play()
+        self.isSoundPlaying = false
+    end
   
  end
  
@@ -141,6 +163,8 @@ function Shoot(deltaTime, this)
             hit.hitObject:GetRigidBody():AddForce(CalculateFront(this.camera) * 20)
             Debug.Log(hit.hitObject:GetName())
         end
+            this.isSoundPlaying = true
+     
     end
     
 end

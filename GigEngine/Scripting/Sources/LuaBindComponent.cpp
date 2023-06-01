@@ -111,7 +111,8 @@ void GigScripting::LuaBindComponent::BindComponent(sol::state& pLuaState)
         "SetAudio", &AudioSource::SetAudioWithLuaPath,
         "SetLoop", &AudioSource::SetIsLooping,
         "Set3D", &AudioSource::SetIs2D,
-        "IsPlaying", &AudioSource::GetIsPlaying
+        "IsPlaying", &AudioSource::GetIsPlaying,
+        "PlayOnStart", &AudioSource::SetPlayOnStart
     );
 }
 

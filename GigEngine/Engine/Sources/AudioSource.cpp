@@ -130,7 +130,7 @@ void AudioSource::SetAudio(const std::string& path)
 
 void AudioSource::SetAudioWithLuaPath(const std::string& path)
 {
-    audioPath = "../../../Resources/Editor/" + path;
+    audioPath = "../../../Resources/" + path;
 }
 
 std::string AudioSource::GetAudio()
