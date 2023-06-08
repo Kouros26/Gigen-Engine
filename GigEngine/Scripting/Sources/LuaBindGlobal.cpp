@@ -6,6 +6,9 @@
 #include "WorldPhysics.h"
 #include "LuaBindComponent.h"
 #include "WorldPhysics.h"
+#include "SceneSaver.h"
+#include "UIManager.h"
+
 void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
 {
     using namespace GigInput;
@@ -121,6 +124,7 @@ void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
     luaState.create_named_table("Inputs");
     luaState.create_named_table("Tools");
     luaState.create_named_table("Physics");
+    luaState.create_named_table("SceneManager");
 
     luaState["Debug"]["Log"] = [](const std::string& pMessage) { GIG_LOG(pMessage); };
     luaState["Debug"]["LogWarning"] = [](const std::string& pMessage) { GIG_WARNING(pMessage); };
@@ -156,4 +160,6 @@ void GigScripting::LuaBinderGlobal::BindGlobals(sol::state& pLuaState)
 
     );
     luaState["Physics"]["SetGravity"] = &WorldPhysics::SetGravity;
+
+    luaState["SceneManager"]["LoadScene"] = &Scene::LoadScene;
 }
