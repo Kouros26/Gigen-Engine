@@ -8,7 +8,7 @@ C1 GigScripting::Behaviour NewScript0
 NPlayer
 W0.000000 -32.079193 0.000000 0.000000 0.000000 0.000000 1.000000 1.000000 1.000000
 Rcapsule 1.000000 3.500000 1.000000 1.000000 1.000000 1.000000 true 0
-C10 GigScripting::Behaviour Player AudioSource ../../../Resources/Engine/Audio/shot.mp3 true false false 0.500000 5.000000  AudioSource ../../../Resources/Engine/Audio/shot.mp3 true false false 0.500000 5.000000  AudioSource ../../../Resources/Engine/Audio/shot.mp3 true false false 0.500000 5.000000  AudioSource ../../../Resources/Engine/Audio/shot.mp3 true false false 0.500000 5.000000  AudioSource ../../../Resources/Engine/Audio/shot.mp3 true false false 0.500000 5.000000  AudioSource ../../../Resources/Engine/Audio/shot.mp3 true false false 0.500000 5.000000  AudioSource ../../../Resources/Engine/Audio/shot.mp3 true false false 0.500000 5.000000  AudioSource ../../../Resources/Engine/Audio/shot.mp3 true false false 0.500000 5.000000  AudioSource ../../../Resources/Engine/Audio/shot.mp3 true false false 0.500000 5.000000  
+C2 GigScripting::Behaviour Player AudioSource ../../../Resources/Engine/Audio/shot.mp3 true false false 0.500000 5.000000  
 *GameObject
 NSpaceBox
 W9.607746 10.520662 5.826410 0.000000 0.000000 0.000000 1.000000 1.000000 1.000000
