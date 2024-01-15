@@ -70,7 +70,7 @@ private:
 	std::vector<std::string> SplitString(const std::string& pString, char delimiter = ' ');
 
 	std::string sceneFolder = "Scenes/";
-	std::string currentScene = "default.chad";
+	std::string currentScene = "bob.chad";
 
 	std::vector<std::pair<std::string, std::string>> parentChildMemory;
 };
