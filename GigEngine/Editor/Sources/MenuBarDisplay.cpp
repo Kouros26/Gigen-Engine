@@ -20,22 +20,15 @@ void MenuBarDisplay::Draw()
 
     if (ImGui::BeginMenu("File"))
     {
-        if (ImGui::MenuItem("test", "shortcut", false, true)) {}
-        if (ImGui::MenuItem("test2", "truc", false, false)) {}
-
+        if (ImGui::MenuItem("New Scene"))
+        {
+            int n = rand() % 1000;
+            Scene::GetInstance().SaveScene("new" + std::to_string(n) + ".chad");
+            Scene::GetInstance().ReloadScene("new" + std::to_string(n) + ".chad");
+        }
         ImGui::EndMenu();
     }
-    if (ImGui::BeginMenu("Edit"))
-    {
-        if (ImGui::MenuItem("test", "CTRL+Z")) {}
-        if (ImGui::MenuItem("test2", "CTRL+X")) {}
-
-        ImGui::EndMenu();
-    }
-    if (ImGui::Button(ICON_SAVE))
-    {
-        Scene::GetInstance().SaveScene(Scene::GetInstance().GetCurrentSceneName());
-    }
+   
     if (ImGui::BeginMenu("Themes"))
     {
         if (ImGui::MenuItem("Dark", "", false, true))
@@ -84,6 +77,11 @@ void MenuBarDisplay::Draw()
         }
 
         ImGui::EndMenu();
+    }
+
+    if (ImGui::Button(ICON_SAVE))
+    {
+        Scene::GetInstance().SaveScene(Scene::GetInstance().GetCurrentSceneName());
     }
 
     DrawPlayPause();
